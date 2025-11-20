@@ -1,0 +1,154 @@
+/* Add this to your manage-room-booking.component.css */
+
+/* Compact Section Styling */
+.compact-section {
+  margin-bottom: 15px;
+}
+
+.compact-card {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+  /* margin-bottom: 15px; */
+}
+
+.compact-body {
+  /* padding: 15px !important; */
+  margin-top: 10px !important;
+}
+
+.compact-title {
+  font-size: 16px !important;
+  font-weight: 600;
+  margin-bottom: 10px !important;
+  padding: 0 !important;
+  color: #333;
+}
+
+.compact-row {
+  margin: 0 -5px;
+}
+
+/* Compact Form Fields */
+.compact-field {
+  padding: 0 5px !important;
+  margin-bottom: 5px !important;
+}
+
+.compact-field .mat-form-field-wrapper {
+  padding-bottom: 10px !important;
+}
+
+.compact-field .mat-form-field-infix {
+  padding: 8px 0 !important;
+  border-top: 6px solid transparent !important;
+}
+
+.compact-field .mat-form-field-label-wrapper {
+  top: -8px !important;
+}
+
+.compact-field input,
+.compact-field textarea {
+  font-size: 13px !important;
+}
+
+.compact-field .mat-form-field-label {
+  font-size: 13px !important;
+}
+
+.compact-field .mat-form-field-subscript-wrapper {
+  margin-top: 3px !important;
+  font-size: 11px !important;
+}
+
+/* Readonly field styling */
+input[readonly], 
+textarea[readonly] {
+  background-color: #f8f9fa !important;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* Badge for new guest - smaller */
+.badge-new-guest {
+  background-color: #28a745;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  margin-left: 8px;
+  font-weight: 500;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Required field indicator */
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Remove spinner from number inputs */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+/* Autocomplete dropdown styling */
+.mat-autocomplete-panel {
+  max-height: 250px !important;
+}
+
+.mat-option {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  min-height: 40px !important;
+}
+
+.mat-option:hover {
+  background-color: #f5f5f5;
+}
+
+/* Compact icons */
+.mat-icon {
+  font-size: 18px !important;
+  height: 18px !important;
+  width: 18px !important;
+}
+
+.mat-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+/* Datepicker toggle smaller */
+.mat-datepicker-toggle {
+  width: 32px !important;
+}
+
+/* Error messages smaller */
+mat-error {
+  font-size: 11px !important;
+}
+
+/* Table responsive */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Button styling */
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}

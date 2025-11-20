@@ -1,0 +1,303 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#hotelModal" (click)="resetForm()">New Hotel</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('HotelName')">Hotel Name</th>
+                                <th style="cursor:pointer;" (click)="sort('Slogon')">Slogon</th>
+                                <th style="cursor:pointer;" (click)="sort('Email')">Email</th>
+                                <th style="cursor:pointer;" (click)="sort('MobileNo')">Mobile</th>
+                                <th style="cursor:pointer;" (click)="sort('GSTIN')">GSTIN</th>
+                                <th style="cursor:pointer;" (click)="sort('State')">State</th>
+                                <th style="cursor:pointer;" (click)="sort('City')">City</th>
+                                <th style="cursor:pointer;" (click)="sort('Pincode')">Pincode</th>
+                                <th style="cursor:pointer;" (click)="sort('CreatedBy')">Created By</th>
+                                <th style="cursor:pointer;" (click)="sort('CreatedDate')">Created Date</th>
+                                <th style="cursor:pointer;" (click)="sort('UpdatedBy')">Updated By</th>
+                                <th style="cursor:pointer;" (click)="sort('UpdatedDate')">Updated Date</th>
+
+                                <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of HotelList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.HotelName}}</td>
+                                <td>{{item.Slogon}}</td>
+                                <td>{{item.Email}}</td>
+                                <td>{{item.MobileNo}}</td>
+                                <td>{{item.GSTIN}}</td>
+                                <td>{{item.StateName}}</td>
+                                <td>{{item.CityName}}</td>
+                                <td>{{item.Pincode}}</td>
+                                <td>{{item.CreatedByName}}</td>
+                                <td>{{item.CreatedDate | date:'dd/MM/yyyy'}}</td>
+                                <td>{{item.UpdatedByName}}</td>
+                                <td>{{item.UpdatedDate | date:'dd/MM/yyyy'}}</td>
+                                <td class="text-center">
+                                    <span class="p-1"
+                                        [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
+                                        {{AllStatusList[item.Status]}}
+                                    </span>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#hotelModal" (click)="editHotel(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteHotel(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Hotel Modal -->
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="hotelModal" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="hotelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="hotelModalLabel">{{Hotel.HotelId > 0
+                        ?'Update':'New'}} Hotel
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formHotel="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <mat-form-field appearance="outline" class="col-sm-12">
+                                            <mat-label>Hotel Name</mat-label>
+                                            <input matInput #HotelName="ngModel" name="HotelName"
+                                                [(ngModel)]="Hotel.HotelName" required>
+                                            <mat-error>
+                                                Hotel Name is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-12">
+                                            <mat-label>Slogon</mat-label>
+                                            <textarea matInput #Slogon="ngModel" name="Slogon"
+                                                [(ngModel)]="Hotel.Slogon" rows="2"></textarea>
+                                            <mat-error>
+                                                Slogon is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-12">
+                                            <mat-label>Full Address</mat-label>
+                                            <textarea matInput #HotelFullAddress="ngModel" name="HotelFullAddress"
+                                                [(ngModel)]="Hotel.HotelFullAddress" rows="3" required></textarea>
+                                            <mat-error>
+                                                Full Address is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-6">
+                                            <mat-label>State</mat-label>
+                                            <input matInput #StateName="ngModel" name="StateName"
+                                                (ngModelChange)="filterStateList(Hotel.StateName)"
+                                                [(ngModel)]="Hotel.StateName" [matAutocomplete]="autoStateName" required
+                                                autofocus>
+                                            <mat-autocomplete #autoStateName="matAutocomplete"
+                                                (optionSelected)="afterStateSelected($event)">
+                                                <mat-option *ngFor="let option of filterState" [id]="option.StateId"
+                                                    [value]="option.StateName">
+                                                    {{option.StateName}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                            <mat-error
+                                                *ngIf="(StateName.dirty  || StateName.touched) || (StateName.invalid && isSubmitted)">
+                                                State name is <strong>required</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-6">
+                                            <mat-label>City</mat-label>
+                                            <input matInput #CityName="ngModel" name="CityName"
+                                                (ngModelChange)="filterCityList(Hotel.CityName)"
+                                                [(ngModel)]="Hotel.CityName" [matAutocomplete]="autoCityName" required
+                                                autofocus>
+                                            <mat-autocomplete #autoCityName="matAutocomplete"
+                                                (optionSelected)="afterCitySelected($event)">
+                                                <mat-option *ngFor="let option of filterCity" [id]="option.CityId"
+                                                    [value]="option.CityName">
+                                                    {{option.CityName}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                            <mat-error
+                                                *ngIf="(CityName.dirty  || CityName.touched) || (CityName.invalid && isSubmitted)">
+                                                City name is <strong>required</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-4">
+                                            <mat-label>Pin Code</mat-label>
+                                            <input matInput #Pincode="ngModel" name="Pincode"
+                                                [(ngModel)]="Hotel.Pincode" type="number">
+                                            <mat-error>
+                                                Pin Code is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-4">
+                                            <mat-label>Mobile No</mat-label>
+                                            <input type="tel" matInput #MobileNo="ngModel" name="MobileNo"
+                                                [(ngModel)]="Hotel.MobileNo">
+                                            <mat-error>
+                                                Mobile No is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-4">
+                                            <mat-label>Alternative Mobile No</mat-label>
+                                            <input type="tel" matInput #AlternativeMobileNo="ngModel"
+                                                name="AlternativeMobileNo" [(ngModel)]="Hotel.AlternativeMobileNo">
+                                            <mat-error>
+                                                Alternative Mobile No is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-5">
+                                            <mat-label>Email</mat-label>
+                                            <input type="email" matInput #Email="ngModel" name="Email"
+                                                [(ngModel)]="Hotel.Email" email>
+                                            <mat-error *ngIf="Email.errors?.['required']">
+                                                Email is required!
+                                            </mat-error>
+                                            <mat-error *ngIf="Email.errors?.['email']">
+                                                Invalid email format!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline" class="col-sm-4">
+                                            <mat-label>GSTIN</mat-label>
+                                            <input matInput #GSTIN="ngModel" name="GSTIN" [(ngModel)]="Hotel.GSTIN">
+                                            <mat-error>
+                                                GSTIN is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        
+                                        <mat-form-field appearance="outline" class="col-sm-3">
+                                            <mat-label>Status</mat-label>
+                                            <mat-select #Status="ngModel" name="Status" [(ngModel)]="Hotel.Status"
+                                                required>
+                                                <mat-option [value]="status.Key"
+                                                    *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                            </mat-select>
+                                            <mat-error>
+                                                Status is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-body profile-card flex-column align-items-center">
+                                                    <label class="fw-bold mb-2">LOGO</label>
+                                                    <img [src]="LogoPhoto ? LogoPhoto:'assets/img/no-image.avif'"
+                                                        alt="Hotel Logo" class="img-responsive"
+                                                        style="max-width: 100%; height: 180px; object-fit: contain;">
+                                                    <input type="file" accept="image/*" #Logo="ngModel" name="Logo"
+                                                        (change)="setLogoFile($event)" [(ngModel)]="Hotel.Logo"
+                                                        class="form-control mt-2">
+                                                    <mat-error>
+                                                        Logo is required!
+                                                    </mat-error>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 mb-3">
+                                            <div class="card">
+                                                <div class="card-body profile-card flex-column align-items-center">
+                                                    <label class="fw-bold mb-2">HEADER IMAGE</label>
+                                                    <img [src]="HeaderImagePhoto ? HeaderImagePhoto:'assets/img/no-image.avif'"
+                                                        alt="Header Image" class="img-responsive"
+                                                        style="max-width: 100%; height: 180px; object-fit: contain;">
+                                                    <input type="file" accept="image/*" #HeaderImage="ngModel"
+                                                        name="HeaderImage" (change)="setHeaderImageFile($event)"
+                                                        [(ngModel)]="Hotel.HeaderImage" class="form-control mt-2">
+                                                    <mat-error>
+                                                        Header Image is required!
+                                                    </mat-error>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                    <button mat-raised-button color="primary" [disabled]="!formHotel.form.valid"
+                        (click)="saveHotel()">{{Hotel.HotelId > 0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>

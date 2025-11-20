@@ -1,0 +1,484 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+  <div class="row">
+    <div class="pagetitle dashboard col-sm-8">
+      <h1>{{ action.MenuTitle }}</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="admin/admin-dashboard">Home</a>
+          </li>
+          <li class="breadcrumb-item">{{ action.ParentMenuTitle }}</li>
+          <li class="breadcrumb-item active">{{ action.MenuTitle }}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="section compact-section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card compact-card">
+          <div class="card-body compact-body">
+            <h6 class="card-title compact-title">Guest Details
+              <span class="badge-new-guest" *ngIf="isNewGuest">New Guest</span>
+            </h6>
+
+            <form #formGuestDetails="ngForm">
+              <div class="row compact-row">
+                <!-- Guest Search/Name Field -->
+                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                  <mat-label>Guest Name / Mobile</mat-label>
+                  <input matInput name="GuestName" [(ngModel)]="Guest.GuestName"
+                    (ngModelChange)="filterGuestList($event)" [matAutocomplete]="autoTransportPackageCollection"
+                    placeholder="Type name or mobile" required />
+
+                  <mat-autocomplete #autoTransportPackageCollection="matAutocomplete"
+                    (optionSelected)="afterGuestSelected($event)">
+                    <mat-option *ngFor="let option of filteredGuestList" [value]="option.GuestName">
+                      {{ option.GuestName }} / {{ option.MobileNo || option.ContactNo || option.GuestMobile }}
+                    </mat-option>
+                  </mat-autocomplete>
+
+                  <button mat-icon-button matSuffix *ngIf="Guest.GuestName" color="primary" (click)="clearGuest()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+                  <mat-error *ngIf="!Guest.GuestName">Required!</mat-error>
+                </mat-form-field>
+
+                <!-- Contact No -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Contact No *</mat-label>
+                  <input matInput type="tel" name="ContactNo" [(ngModel)]="Guest.ContactNo"
+                    [readonly]="isFieldReadonly()" required />
+                  <mat-error>Required!</mat-error>
+                </mat-form-field>
+
+                <!-- Aadhar No -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Aadhar No</mat-label>
+                  <input matInput type="tel" name="AadharNo" [(ngModel)]="Guest.AadharNo"
+                    [readonly]="isFieldReadonly()" />
+                </mat-form-field>
+
+                <!-- Booking Date -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Booking Date</mat-label>
+                  <input matInput [matDatepicker]="picker" [(ngModel)]="Guest.BookingDate" name="BookingDate"
+                    required />
+                  <mat-datepicker-toggle matSuffix [for]="picker">
+                  </mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Address -->
+                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                  <mat-label>Address *</mat-label>
+                  <input matInput name="Address" [(ngModel)]="Guest.Address" [readonly]="isFieldReadonly()" required />
+                  <mat-error>Required!</mat-error>
+                </mat-form-field>
+
+                <!-- Email -->
+                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                  <mat-label>Email</mat-label>
+                  <input matInput type="email" name="Email" [(ngModel)]="Guest.Email" [readonly]="isFieldReadonly()" />
+                </mat-form-field>
+
+                <!-- Alternative Mobile -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Alt. Mobile</mat-label>
+                  <input matInput type="tel" name="AlternativeMobileNo" [(ngModel)]="Guest.AlternativeMobileNo"
+                    [readonly]="isFieldReadonly()" />
+                </mat-form-field>
+
+                <!-- Pincode -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Pincode</mat-label>
+                  <input matInput type="number" name="Pincode" [(ngModel)]="Guest.Pincode"
+                    [readonly]="isFieldReadonly()" class="no-spinner" />
+                </mat-form-field>
+
+                <!-- Company Name -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Company</mat-label>
+                  <input matInput name="CompanyName" [(ngModel)]="Guest.CompanyName" [readonly]="isFieldReadonly()" />
+                </mat-form-field>
+
+                <!-- GST No -->
+                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                  <mat-label>GST No</mat-label>
+                  <input matInput name="GSTNo" [(ngModel)]="Guest.GSTNo" [readonly]="isFieldReadonly()" />
+                </mat-form-field>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rest of your existing sections remain the same -->
+
+  <div class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Add Room Details</h5>
+            <form #formPaymentDetails="ngForm">
+              <div class="row">
+
+                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                  <mat-label>Select Room</mat-label>
+
+                  <input matInput name="RoomName" [(ngModel)]="RoomBookingDetails.RoomName"
+                    (ngModelChange)="filterRoomList($event)" [matAutocomplete]="roomAuto"
+                    placeholder="Type Room name, Room type or Floor" required />
+
+                  <mat-autocomplete #roomAuto="matAutocomplete" (optionSelected)="afterRoomSelected($event)">
+                    <mat-option *ngFor="let option of filteredRoomList"
+                      [value]="option.FloorName + ' / ' + option.RoomName + ' / ' + option.RoomTypeName"
+                      [id]="option.RoomId">
+                      {{ option.FloorName }} / {{ option.RoomName }} / {{ option.RoomTypeName }}
+                    </mat-option>
+                  </mat-autocomplete>
+
+
+                  <button mat-icon-button matSuffix *ngIf="RoomBookingDetails.RoomName" color="primary"
+                    (click)="clearRoom()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+                  <mat-error *ngIf="!RoomBookingDetails.RoomName">Required!</mat-error>
+                </mat-form-field>
+
+                <!-- NO OF ADULT -->
+                <mat-form-field appearance="outline" class="col-lg-1">
+                  <mat-label>Adult</mat-label>
+                  <input matInput type="number" name="NoOfAdult" [(ngModel)]="RoomBookingDetails.NoOfAdult"
+                    (ngModelChange)="onNoOfPersonChange()" required class="no-spinner" />
+                </mat-form-field>
+
+                <!-- NO OF CHILD -->
+                <mat-form-field appearance="outline" class="col-lg-1">
+                  <mat-label>Child</mat-label>
+                  <input matInput type="number" name="NoOfChild" [(ngModel)]="RoomBookingDetails.NoOfChild"
+                    (ngModelChange)="onNoOfPersonChange()" required class="no-spinner" />
+                </mat-form-field>
+
+                <!-- No of Person -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>No of Person</mat-label>
+                  <input matInput type="number" name="NoOfPerson" [(ngModel)]="RoomBookingDetails.NoOfPerson"
+                    (ngModelChange)="onNoOfPersonChange()" required class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- checkin Date  -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Check In Date</mat-label>
+                  <input matInput [matDatepicker]="pickerss" [(ngModel)]="RoomBookingDetails.CheckInDate"
+                    name="CheckInDate" required />
+                  <mat-datepicker-toggle matSuffix [for]="pickerss">
+                  </mat-datepicker-toggle>
+                  <mat-datepicker #pickerss></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Check-In Time</mat-label>
+                  <input matInput [ngxTimepicker]="checkInPicker" readonly [(ngModel)]="RoomBookingDetails.CheckInTime"
+                    name="CheckInTime" required />
+                  <ngx-material-timepicker #checkInPicker></ngx-material-timepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Charge Amount</mat-label>
+                  <input matInput type="number" name="ChargeAmount" [(ngModel)]="RoomBookingDetails.ChargeAmount"
+                    required class="no-spinner" readonly="true" />
+                </mat-form-field>
+                <!-- No of Days -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>No of Days</mat-label>
+                  <input matInput type="number" name="NoOfDays" [(ngModel)]="RoomBookingDetails.NoOfDays" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- Discount -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Discount</mat-label>
+                  <input matInput type="number" name="Discount" [(ngModel)]="RoomBookingDetails.DiscountAmount"
+                    (ngModelChange)="onDiscountChange()" required class="no-spinner" />
+                </mat-form-field>
+
+                <!-- Tax -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Taxable</mat-label>
+                  <input matInput type="number" name="Taxable" [(ngModel)]="RoomBookingDetails.TaxableAmount" required
+                    class="no-spinner" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>GST %</mat-label>
+                  <mat-select #GSTId="ngModel" name="GSTId" [(ngModel)]="RoomBookingDetails.GSTId">
+                    <mat-option value="">--GST--</mat-option>
+                    <mat-option *ngFor="let model of GSTList" [value]="model.GSTId">
+                      {{ model.GSTName }} %
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>CGST</mat-label>
+                  <input matInput type="number" name="CGST" [(ngModel)]="RoomBookingDetails.CGST" required
+                    class="no-spinner" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>SGST</mat-label>
+                  <input matInput type="number" name="SGST" [(ngModel)]="RoomBookingDetails.SGST" required
+                    class="no-spinner" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>IGST</mat-label>
+                  <input matInput type="number" name="IGST" [(ngModel)]="RoomBookingDetails.IGST" required
+                    class="no-spinner" />
+                </mat-form-field>
+
+                <!-- Total GST -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Total GST</mat-label>
+                  <input matInput type="number" name="TotalGST" [(ngModel)]="RoomBookingDetails.TotalGSTAmount" required
+                    class="no-spinner" />
+                </mat-form-field>
+                
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Line Total</mat-label>
+                  <input matInput type="number" name="LineTotal" [(ngModel)]="Payment.LineTotal" readonly required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+                <div appearance="outline" class="col-sm-1">
+                  <button mat-flat-button color="primary" (click)="addRoomDetail()">
+                    ADD
+                  </button>
+                </div>
+              </div>
+              <a class="list-group-item list-group-item-action" *ngIf="SelectedRoomDetailList.length > 0">
+                <div class="row">
+                  <div class="col-sm-19 table-responsive">
+                    <table class="table table-bordered table-hover table-lg" id="table_list">
+                      <thead class="thead-light">
+                        <tr>
+                          <th class="text-center">#</th>
+                          <th>Room Name</th>
+                          <th class="text-right">Rate</th>
+                          <th class="text-right">Total Amount</th>
+                          <th class="text-center">Quantity</th>
+                          <th class="text-right">Discount Amount</th>
+                          <th class="text-right">Line Amount</th>
+                          <th class="text-center">Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr *ngFor="let model of SelectedRoomDetailList; let i = index">
+                          <td class="text-center">{{ i + 1 }}</td>
+                          <td>{{ model.OpticalName }}</td>
+                          <td class="text-right">{{ model.OpticalItemRate }}</td>
+                          <td class="text-right">{{ model.Amount }}</td>
+                          <td class="text-center">{{ model.Quantity }}</td>
+                          <td class="text-right">{{ model.Discount ?? 0 }}</td>
+                          <td class="text-right">{{ model.LineTotal }}</td>
+                          <td class="text-center">
+                            <button (click)="RemoveHotel(i)" class="btn btn-sm btn-danger">
+                              <i class="bi bi-trash-fill"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Payment Details</h5>
+            <form #formPaymentDetailsTotal="ngForm">
+              <div class="row">
+
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total Discount</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalDiscount" name="TotalDiscountAmount" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Taxable Amount</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TaxableAmount" name="TaxableAmount" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- Total CGST   -->
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total CGST</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalCGST" name="TotalCGST" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- Total SGST   -->
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total SGST</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalSGST" name="TotalSGST" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- Total IGST   -->
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total IGST</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalIGST" name="TotalIGST" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+                <!-- Total GST   -->
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total GST</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalGST" name="TotalGST" required class="no-spinner"
+                    readonly="true" />
+                </mat-form-field>
+
+                <!-- Total Line Amount   -->
+                <mat-form-field appearance="outline" class="col-lg-3">
+                  <mat-label>Total Line Amount</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalLineAmount" name="TotalLineAmount" required
+                    class="no-spinner" readonly="true" />
+                </mat-form-field>
+
+
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Payment Collection</h5>
+            <form #formPaymentCollection="ngForm">
+              <div class="row">
+
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Payment Date</mat-label>
+                  <input matInput [matDatepicker]="pickers" [(ngModel)]="Payment.PaymentDate" name="PaymentDate"
+                    required />
+                  <mat-datepicker-toggle matSuffix [for]="pickers"
+                    class="small-datepicker-icon"></mat-datepicker-toggle>
+                  <mat-datepicker #pickers></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Amount   -->
+                <mat-form-field appearance="outline" class="col-lg-2">
+                  <mat-label>Amount</mat-label>
+                  <input matInput type="number" name="PaidAmount" [(ngModel)]="Payment.PaidAmount" required
+                    class="no-spinner" />
+                </mat-form-field>
+
+                <!-- Payment Type  -->
+
+                <mat-form-field appearance="outline" class="col-sm-2">
+                  <mat-label>Payment Type</mat-label>
+                  <mat-select #PaymentType="ngModel" name="PaymentType" [(ngModel)]="Payment.PaymentType"
+                    required class="no-spinner">
+                    <mat-option [value]="PaymentType.Key" *ngFor="let PaymentType of PaymentTypeList">
+                      {{ PaymentType.Value }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="PaymentType.dirty || PaymentType.touched || (PaymentType.invalid && isSubmitted)">
+                    Payment Type is <strong>required</strong>
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Payment Mode   -->
+                <mat-form-field appearance="outline" class="col-sm-2">
+                  <mat-label>Payment Mode</mat-label>
+                  <mat-select #PaymentMode="ngModel" name="PaymentMode" [(ngModel)]="Payment.PaymentMode"
+                    required class="no-spinner">
+                    <mat-option [value]="PaymentMode.Key" *ngFor="let PaymentMode of PaymentModeList">
+                      {{ PaymentMode.Value }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="PaymentMode.dirty || PaymentMode.touched || (PaymentMode.invalid && isSubmitted)">
+                    Payment Mode is <strong>required</strong>
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Transaction No   -->
+                <mat-form-field appearance="outline" class="col-lg-4">
+                  <mat-label>Transaction No</mat-label>
+                  <input matInput name="TransactionNo" [(ngModel)]="Payment.TransactionNo" />
+                </mat-form-field>
+
+                <div class="col-sm-1 align-items-end">
+                  <button mat-flat-button color="primary" (click)="addToPaymentList()" type="button">
+                    ADD
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="SelectedPaymentCollectionList.length > 0" class="mt-3">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Remarks</th>
+                        <th>Amount</th>
+                        <th>Payment Mode</th>
+                        <th class="text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of SelectedPaymentCollectionList; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.Remarks }}</td>
+                        <td>{{ item.PaidAmount }}</td>
+                        <td>{{ AllPaymentModeList[item.PaymentMode] }}</td>
+                        <td class="text-center">
+                          <button class="btn btn-sm btn-danger" (click)="removePaymentItem(i)">
+                            <i class="bi bi-trash-fill"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center items-center">
+    <button type="submit" mat-raised-button class="mdc-button-final" color="primary" (click)="saveRoomBooking()">
+      Submit
+    </button>
+  </div>
+</main>

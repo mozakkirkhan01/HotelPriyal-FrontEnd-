@@ -1,0 +1,213 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+              </ol>
+            </nav>
+          </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#roomModal" (click)="resetForm()">New Room</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('HotelId')">Hotel Name</th>
+                                <th class="text-center" style="cursor:pointer;" (click)="sort('RoomName')">Room Name</th>
+                                <th style="cursor:pointer;" (click)="sort('RoomTypeId')">Room Type</th>
+                                <th style="cursor:pointer;" (click)="sort('FloorId')">Floor</th>
+                                <th style="cursor:pointer;" (click)="sort('RoomChargeAmount')">Charge Amount</th>
+                                <th style="cursor:pointer;" (click)="sort('IsAvailable')">Availability</th>
+                                <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of RoomList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.HotelName}}</td>
+                                <td class="text-center">{{item.RoomName}}</td>
+                                <td>{{item.RoomTypeName}}</td>
+                                <td>{{item.FloorName}}</td>
+                                <td>₹{{item.RoomChargeAmount | number:'1.2-2'}}</td>
+                                <td class="text-center">
+                                    <span class="p-1"
+                                        [ngClass]="item.IsAvailable ? 'badge text-bg-success':'badge text-bg-danger'">
+                                        {{item.IsAvailable ? 'Available' : 'Occupied'}}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="p-1"
+                                        [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
+                                        {{AllStatusList[item.Status]}}
+                                    </span>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#roomModal" (click)="editRoom(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteRoom(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Room Modal -->
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="roomModal" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="roomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="roomModalLabel">{{Room.RoomId > 0
+                        ?'Update':'New'}} Room
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                   <form #formRoom="ngForm">
+                    <div class="container">
+                        <div class="row">
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Hotel</mat-label>
+                                <mat-select #HotelId="ngModel" name="HotelId" [(ngModel)]="Room.HotelId" required>
+                                    <mat-option [value]="hotel.HotelId" *ngFor="let hotel of HotelList">
+                                        {{hotel.HotelName}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    Hotel is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Room Name</mat-label>
+                                <input type="text" matInput #RoomName="ngModel" name="RoomName"
+                                    [(ngModel)]="Room.RoomName" required>
+                                <mat-error>
+                                    Room Name is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Room Type</mat-label>
+                                <mat-select #RoomTypeId="ngModel" name="RoomTypeId" [(ngModel)]="Room.RoomTypeId" required>
+                                    <mat-option [value]="type.RoomTypeId" *ngFor="let type of RoomTypeList">
+                                        {{type.RoomTypeName}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    Room Type is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Floor</mat-label>
+                                <mat-select #FloorId="ngModel" name="FloorId" [(ngModel)]="Room.FloorId" required>
+                                    <mat-option [value]="floor.FloorId" *ngFor="let floor of FloorList">
+                                        {{floor.FloorName}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    Floor is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Room Charge Amount</mat-label>
+                                <input type="number" matInput #RoomChargeAmount="ngModel" name="RoomChargeAmount"
+                                    [(ngModel)]="Room.RoomChargeAmount" required step="0.01" min="0">
+                                <mat-error>
+                                    Room Charge Amount is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>HSN Code</mat-label>
+                                <input matInput #HSNCode="ngModel" name="HSNCode"
+                                    [(ngModel)]="Room.HSNCode">
+                                <!-- <mat-hint>Harmonized System of Nomenclature Code</mat-hint> -->
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Availability</mat-label>
+                                <mat-select #IsAvailable="ngModel" name="IsAvailable" [(ngModel)]="Room.IsAvailable" required>
+                                    <mat-option [value]="true">Available</mat-option>
+                                    <mat-option [value]="false">Occupied</mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    Availability is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Status</mat-label>
+                                <mat-select #Status="ngModel" name="Status" [(ngModel)]="Room.Status" required>
+                                    <mat-option [value]="status.Key" *ngFor="let status of StatusList">
+                                        {{status.Value}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    Status is required!
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                    <button mat-raised-button color="primary" [disabled]="!formRoom.form.valid" 
+                        (click)="saveRoom()">{{Room.RoomId > 0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>

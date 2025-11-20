@@ -1,0 +1,154 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4">
+            <button mat-raised-button class="float-right" color="primary" *ngIf="action.CanCreate"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New
+                Room Type</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body ">
+                <div class="dataTable-top">
+                    <div class="dataTable-dropdown d-flex">
+                        <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                            <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                        </select>
+                        <span class="ms-2">Entries per page</span>
+                    </div>
+                    <div class="dataTable-search">
+                        <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                            placeholder="Search..." type="text">
+                    </div>
+                </div>
+                <div class="table-container overflow-auto">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('RoomTypeName')">Room Type</th>
+                                <th style="cursor:pointer;" (click)="sort('HotelName')">Hotel Name</th>
+                                <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of RoomTypeList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.RoomTypeName}}</td>
+                                <td>{{item.HotelName}}</td>
+                                <td class="text-center">
+                                    <span class="p-1"
+                                        [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
+                                        {{AllStatusList[item.Status]}}
+                                    </span>
+                                </td >
+                                <td class="text-center" *ngIf="action.CanEdit" class="text-center">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editRoomType(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete" class="text-center">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteRoomType(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="dataTable-bottom">
+                    <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                        class="my-pagination"></pagination-controls>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <div *ngIf="action.CanEdit || action.CanCreate" class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{RoomType.RoomTypeId > 0 ? 'Update':'New'}}
+                        Room Type
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+                    <form #formCity="ngForm">
+                        <div class="container">
+                            <div class="row">
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Room Type Name</mat-label>
+                                    <input matInput #RoomTypeName="ngModel" name="RoomTypeName" [(ngModel)]="RoomType.RoomTypeName"
+                                        required autofocus>
+                                    <mat-error
+                                        *ngIf="(RoomTypeName.dirty  || RoomTypeName.touched) || (RoomTypeName.invalid && isSubmitted)">
+                                        Room Type name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Hotel Name</mat-label>
+                                    <input matInput #HotelName="ngModel" name="HotelName"
+                                        (ngModelChange)="filterHotelList(RoomType.HotelName)" [(ngModel)]="RoomType.HotelName"
+                                        [matAutocomplete]="autoHotelName" required autofocus>
+                                    <mat-autocomplete #autoHotelName="matAutocomplete"
+                                        (optionSelected)="afterHotelSelected($event)">
+                                        <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                            [value]="option.HotelName">
+                                            {{option.HotelName}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error
+                                        *ngIf="(HotelName.dirty  || HotelName.touched) || (HotelName.invalid && isSubmitted)">
+                                        Hotel name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="row">
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="RoomType.Status" required>
+                                        <mat-option [value]="status.Key"
+                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                    </mat-select>
+                                    <mat-error
+                                        *ngIf="(Status.dirty  || Status.touched) || (Status.invalid && isSubmitted)">
+                                        Status is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                    <button mat-raised-button color="primary" (click)="saveRoomType()">{{RoomType.RoomTypeId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>

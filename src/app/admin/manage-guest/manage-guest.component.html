@@ -1,0 +1,195 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+              </ol>
+            </nav>
+          </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#guestModal" (click)="resetForm()">New Guest</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('GuestName')">Guest Name</th>
+                                <th style="cursor:pointer;" (click)="sort('MobileNo')">Mobile No</th>
+                                <th style="cursor:pointer;" (click)="sort('Email')">Email</th>
+                                <th style="cursor:pointer;" (click)="sort('CompanyName')">Company Name</th>
+                                <th style="cursor:pointer;" (click)="sort('AadharNo')">Aadhar No</th>
+                                <th style="cursor:pointer;" (click)="sort('Address')">Address</th>
+                                <th style="cursor:pointer;" (click)="sort('StateId')">State</th>
+                                <th style="cursor:pointer;" (click)="sort('GSTNO')">GST No</th>
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of GuestList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.GuestName}}</td>
+                                <td>{{item.MobileNo}}</td>
+                                <td>{{item.Email}}</td>
+                                <td>{{item.CompanyName}}</td>
+                                <td>{{item.AadharNo}}</td>
+                                <td>{{item.Address}}</td>
+                                <td>{{item.StateName}}</td>
+                                <td>{{item.GSTNo}}</td>
+                                <td class="text-center" *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#guestModal" (click)="editGuest(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteGuest(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Guest Modal -->
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="guestModal" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="guestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="guestModalLabel">{{Guest.GuestId > 0
+                        ?'Update':'New'}} Guest
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                   <form #formGuest="ngForm">
+                    <div class="container">
+                        <div class="row">
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Guest Name</mat-label>
+                                <input matInput #GuestName="ngModel" name="GuestName"
+                                    [(ngModel)]="Guest.GuestName" required>
+                                <mat-error>
+                                    Guest Name is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Mobile No</mat-label>
+                                <input type="tel" matInput #MobileNo="ngModel" name="MobileNo"
+                                    [(ngModel)]="Guest.MobileNo" required>
+                                <mat-error>
+                                    Mobile No is required!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Alternative Mobile No</mat-label>
+                                <input type="tel" matInput #AlternativeMobileNo="ngModel" name="AlternativeMobileNo"
+                                    [(ngModel)]="Guest.AlternativeMobileNo">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Email</mat-label>
+                                <input type="email" matInput #Email="ngModel" name="Email"
+                                    [(ngModel)]="Guest.Email" email>
+                                <mat-error *ngIf="Email.errors?.['email']">
+                                    Invalid email format!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-12">
+                                <mat-label>Address</mat-label>
+                                <textarea matInput #Address="ngModel" name="Address"
+                                    [(ngModel)]="Guest.Address" rows="2"></textarea>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Company Name</mat-label>
+                                <input matInput #CompanyName="ngModel" name="CompanyName"
+                                    [(ngModel)]="Guest.CompanyName">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>State</mat-label>
+                                <mat-select #StateId="ngModel" name="StateId" [(ngModel)]="Guest.StateId">
+                                    <mat-option [value]="state.StateId" *ngFor="let state of StateList">
+                                        {{state.StateName}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Pin Code</mat-label>
+                                <input type="number" matInput #Pincode="ngModel" name="Pincode" 
+                                    [(ngModel)]="Guest.Pincode">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>GST No</mat-label>
+                                <input matInput #GSTNo="ngModel" name="GSTNo" 
+                                    [(ngModel)]="Guest.GSTNo" maxlength="15">
+                                <!-- <mat-hint>Format: 15 characters</mat-hint> -->
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-sm-6">
+                                <mat-label>Aadhar No</mat-label>
+                                <input type="number" matInput #AadharNo="ngModel" name="AadharNo" 
+                                    [(ngModel)]="Guest.AadharNo">
+                                <!-- <mat-hint>12 digit Aadhar number</mat-hint> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                    <button mat-raised-button color="primary" [disabled]="!formGuest.form.valid" 
+                        (click)="saveGuest()">{{Guest.GuestId > 0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
