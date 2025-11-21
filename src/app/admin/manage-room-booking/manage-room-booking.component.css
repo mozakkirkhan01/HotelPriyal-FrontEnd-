@@ -152,3 +152,32 @@ mat-error {
   background-color: #c82333;
   border-color: #bd2130;
 }
+
+.compact-btn {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.compact-btn-primary {
+  background-color: #3f51b5 !important;
+  color: #fff !important;
+}
+
+.compact-btn-danger {
+  background-color: #e53935 !important;
+  color: #fff !important;
+}
+
+.compact-btn-outline {
+  border: 1px solid #3f51b5;
+  color: #3f51b5;
+  background: transparent;
+}
+
+.mybutton {
+    margin-top: -28px;
+}

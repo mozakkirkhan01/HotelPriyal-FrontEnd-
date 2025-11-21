@@ -20,9 +20,7 @@ declare var $: any;
   styleUrls: ['./manage-room-booking.component.css']
 })
 export class ManageRoomBookingComponent {
-saveRoomBooking() {
-throw new Error('Method not implemented.');
-}
+
  dataLoading: boolean = false;
   GuestList: any = [];
   RoomList: any = [];
@@ -51,6 +49,7 @@ throw new Error('Method not implemented.');
   AllGenderList = Gender;
   AllCategoryList = Category;
   AllPaymentModeList = PaymentMode;
+  AllPaymentTypeList = PaymentType;
   currentPayment: any = [];
   tempData: any;
   filteredGuestList: any[] = [];
@@ -61,6 +60,11 @@ throw new Error('Method not implemented.');
   selectedGuestId: number | null = null;
   selectedRoomId: number | null = null;
     GSTList: any[] = [];
+    editingRoomIndex: number = -1;
+  SelectedPaymentCollectionList: any[] = [];
+  SelectedRoomDetailList: any = [];
+
+
 
 
   sort(key: any) {
@@ -82,40 +86,51 @@ throw new Error('Method not implemented.');
   ) {}
   redUrl: string = '';
 
-  ngOnInit(): void {
+    ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
-    console.log(this.staffLogin);
     this.validiateMenu();
     this.resetForm();
-    this.getGuestList();  
+    this.getGuestList();
     this.getRoomList();
     this.getGSTList();
-    this.RoomBookingDetails.checkInDate = this.loadData.loadDateYMD(new Date());
-    this.RoomBookingDetails.checkInTime = this.loadData.getCurrentTime();
-    this.Guest.BookingDate = this.loadData.loadDateYMD(new Date());
-    this.route.queryParams.subscribe((params: any) => {
-      this.Guest.GuestId = params.id;
-      this.redUrl = params.redUrl;
-    });
-    // this.route.queryParams.subscribe((params) => {
-    //   const OpticalBillingId = params['id'];
-    //   const redUrl = params['redUrl'];
-
-    //   const data = this.service.getSelectedOpticalData();
-    //   if (data && data.GetOpticalBilling.OpticalBillingId == OpticalBillingId) {
-    //     this.Guest = {
-    //       ...data.GetOpticalBilling,
-    //       ...data.GetPaymentCollection,
-    //     };
-    //     this.SelectedRoomDetailList = data.GetOpticalsDetails;
-    //     this.SelectedPaymentCollectionList = data.GetPaymentDetails;
-   
-    //   } else {
-    //     // Optional: fallback to fetch data again using surgeryId
-    //   }
-      
-    // });
+    this.initializeRoomBookingDetails();
+    this.initializePayment();
   }
+
+  initializeRoomBookingDetails() {
+    this.RoomBookingDetails = {
+      RoomName: '',
+      NoOfAdult: 0,
+      NoOfChild: 0,
+      NoOfPerson: 0,
+      NoOfDays: 1,
+      ChargeAmount: 0,
+      DiscountAmount: 0,
+      TaxableAmount: 0,
+      GSTId: null,
+      GSTPercentage: 0,
+      CGST: 0,
+      SGST: 0,
+      IGST: 0,
+      TotalGSTAmount: 0,
+      LineTotal: 0,
+      CheckInDate: this.loadData.loadDateYMD(new Date()),
+      CheckInTime: this.loadData.getCurrentTime(),
+      RoomId: null
+    };
+  }
+
+  initializePayment() {
+    this.Payment = {
+      PaymentDate: this.loadData.loadDateYMD(new Date()),
+      PaidAmount: 0,
+      PaymentType: null,
+      PaymentMode: null,
+      TransactionNo: ''
+    };
+  }
+
+
     validiateMenu() {
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify({ Url: this.router.url,StaffLoginId:this.staffLogin.StaffLoginId })).toString()
@@ -132,10 +147,10 @@ throw new Error('Method not implemented.');
 
   @ViewChild('formGuestDetails') formGuestDetails: NgForm;
 
-onNoOfPersonChange() {
-  const { NoOfAdult = 0, NoOfChild = 0 } = this.RoomBookingDetails;
-  this.RoomBookingDetails.NoOfPerson = NoOfAdult + NoOfChild;
-}
+// onNoOfPersonChange() {
+//   const { NoOfAdult = 0, NoOfChild = 0 } = this.RoomBookingDetails;
+//   this.RoomBookingDetails.NoOfPerson = NoOfAdult + NoOfChild;
+// }
 
   getGSTList() {
     this.dataLoading = true;
@@ -179,19 +194,20 @@ onNoOfPersonChange() {
   }
 
   resetForm() {
-    this.Guest = {};
-    this.Guest.OpdDate = this.loadData.loadDateYMD(new Date());
+    this.Guest = { BookingDate: this.loadData.loadDateYMD(new Date()) };
     this.isNewGuest = false;
     this.selectedGuestId = null;
-
+    this.SelectedRoomDetailList = [];
+    this.SelectedPaymentCollectionList = [];
+    this.initializeRoomBookingDetails();
+    this.initializePayment();
+    this.editingRoomIndex = -1;
     if (this.formGuestDetails) {
       this.formGuestDetails.control.markAsPristine();
       this.formGuestDetails.control.markAsUntouched();
-      this.currentPayment = {};
     }
     this.isSubmitted = false;
   }
-
   filterGuestList(value: string) {
     const filterValue = value?.toLowerCase() || '';
 
@@ -285,319 +301,321 @@ onNoOfPersonChange() {
 
 
 filterRoomList(value: string) {
-  const filterValue = value?.toLowerCase() || '';
-
-  this.filteredRoomList = this.RoomList.filter(
-    (option: any) =>
+    const filterValue = value?.toLowerCase() || '';
+    this.filteredRoomList = this.RoomList.filter((option: any) =>
       option.RoomName?.toLowerCase().includes(filterValue) ||
-      option.FloorId?.toString().includes(filterValue) ||
-      option.RoomTypeId?.toString().includes(filterValue)
-      
+      option.FloorName?.toLowerCase().includes(filterValue) ||
+      option.RoomTypeName?.toLowerCase().includes(filterValue)
     );
+    if (this.filteredRoomList.length === 0 && value && value.length > 0) {
+      this.selectedRoomId = null;
+    } else if (value.length === 0) {
+      this.selectedRoomId = null;
+    }
+  }
 
+  afterRoomSelected(event: any) {
+    const selectedRoomId = event.option.id;
+    const selected = this.RoomList.find((x: any) => x.RoomId === selectedRoomId);
+    if (selected) {
+      this.selectedRoomId = selected.RoomId;
+      this.RoomBookingDetails.RoomId = selected.RoomId;
+      this.RoomBookingDetails.RoomName = `${selected.FloorName} / ${selected.RoomName} / ${selected.RoomTypeName}`;
+      this.RoomBookingDetails.ChargeAmount = selected.RoomChargeAmount || 0;
+      this.RoomBookingDetails.HSNCode = selected.HSNCode;
+      this.calculateRoomCharges();
+    }
+  }
 
-  if (this.filteredRoomList.length === 0 && value && value.length > 0) {
+  clearRoom() {
+    this.initializeRoomBookingDetails();
     this.selectedRoomId = null;
-    this.Room.RoomName = value;
-  } else if (value.length === 0) {
-    this.selectedRoomId = null;
-  }
-}
-
-afterRoomSelected(event: any) {
-  const selectedName = event.option.value;
-  const selectedRoomId = event.option.id; 
-
-  console.log(selectedName);
-  console.log(selectedRoomId);
-  
-  const selected = this.RoomList.find(
-    (x: any) => x.RoomId === selectedRoomId
-  );
-  if (selected) {
-    this.selectedRoomId = selected.RoomId;
-
-    this.Room = {
-      ...selected,
-      RoomId: selected.RoomId,
-      HotelId: selected.HotelId,
-      RoomName: selected.RoomName,
-      RoomTypeId: selected.RoomTypeId,
-      FloorId: selected.FloorId,
-      RoomChargeAmount: selected.RoomChargeAmount,
-      HSNCode: selected.HSNCode,
-      IsAvailable: selected.IsAvailable,
-      Status: selected.Status
-    };
-    this.RoomBookingDetails.ChargeAmount = selected.RoomChargeAmount;
-    console.log(this.RoomBookingDetails.ChargeAmount);
-    
-  }
-}
-
-clearRoom() {
-  this.filteredRoomList = this.RoomList;
-  this.RoomBookingDetails = {
-    RoomName: '',
-    NoOfAdult: 0,
-    NoOfChild: 0,
-    NoOfPerson: 0,
-    ChargeAmount: 0,
-    RoomId: null,
-    HotelId: null,
-    RoomTypeId: null,
-    FloorId: null,
-    RoomChargeAmount: null,
-    HSNCode: null,
-    IsAvailable: null,
-    Status: null,
-    checkInDate: this.loadData.loadDateYMD(new Date()),
-    checkInTime: this.loadData.getCurrentTime(),
-  };
-  this.selectedRoomId = null;
-}
-
-
-  recalculateTotals() {
-  let totalAmount = 0;
-  let totalDiscount = 0;
-  let totalLineTotal = 0;
-
-  this.SelectedRoomDetailList.forEach((item: { Amount: any; Discount: any; LineTotal: any; }) => {
-    totalAmount += item.Amount || 0;
-    totalDiscount += item.Discount || 0;
-    totalLineTotal += item.LineTotal || 0;
-  });
-
-  this.Guest.TotalAmount = totalAmount;
-  this.Guest.DiscountAmount = totalDiscount;
-  this.Guest.PayableAmount = totalLineTotal;
-  this.currentPayment.PaidAmount = totalLineTotal;
-}
-
-
-clearCurrentPayment() {
-  this.Payment = {
-    OpticalName: '',
-    Rate: 0,
-    Quantity: 1,
-    Amount: 0,
-    Discount: 0,
-    LineTotal: 0
-  };
-}
-
-
-  SelectedRoomDetailList: any = [];
-  addRoomDetail() {
-    if (this.Payment.Amount == null || this.Payment.Amount == '') {
-      this.toastr.error('Please Enter Paid Amount!!!');
-      return;
-    }
-    if (this.Payment.OpticalName == null || this.Payment.OpticalName == '') {
-      this.toastr.error('Please Select Payment Mode!!!');
-      return;
-    }
-    this.Payment.OpticalId = this.Payment.OpticalId;
-    this.SelectedRoomDetailList.push(this.Payment);
-    this.recalculateTotals();  // Call a function to calculate the totals
-  this.clearCurrentPayment();
+    this.editingRoomIndex = -1;
   }
 
-
-
-  RemoveHotel(index: number) {
-    this.SelectedRoomDetailList.splice(index, 1);
-    this.CalculateTotalAmount();
+  onNoOfPersonChange() {
+    const { NoOfAdult = 0, NoOfChild = 0 } = this.RoomBookingDetails;
+    this.RoomBookingDetails.NoOfPerson = NoOfAdult + NoOfChild;
   }
 
-  resetHotelPayment() {
-    this.Payment = {};
-    this.isSubmitted = false;
-  }
-
-  CalculateTotalAmount() {
-    let TotalAmount = 0;
-
-    for (let i = 0; i < this.SelectedRoomDetailList.length; i++) {
-      const paymentDetail = this.SelectedRoomDetailList[i];
-      TotalAmount += parseFloat(paymentDetail.Amount) || 0;
-    }
-
-    this.Guest.TotalAmount = TotalAmount;
-    this.Guest.DiscountAmount = 0;
-    this.Guest.PayableAmount = TotalAmount;
-    this.Guest.PaidAmount = 0;
-    this.currentPayment.PaidAmount = TotalAmount;
-  }
-
-  updatePaymentFields() {
-    this.Guest.PayableAmount =
-      this.Guest.TotalAmount - this.Guest.DiscountAmount;
-    this.Guest.PaidAmount =
-      this.Guest.TotalAmount - this.Guest.DiscountAmount;
-    this.currentPayment.PaidAmount =
-      this.Guest.TotalAmount - this.Guest.DiscountAmount;
-  }
-
-  ChangeDuesAmount() {
-    this.Guest.DueAmount =
-      this.Guest.PayableAmount - this.Guest.PaidAmount;
-  }
-
-  // saveRoomBooking() {
-  //   this.isSubmitted = true;
-
-  //   if (
-  //     !this.SelectedPaymentCollectionList ||
-  //     this.SelectedPaymentCollectionList.length === 0
-  //   ) {
-  //     this.toastr.error('Please add at least one payment to the list!');
-  //     return;
-  //   }
-  //   if (
-  //     !this.SelectedRoomDetailList ||
-  //     this.SelectedRoomDetailList.length === 0
-  //   ) {
-  //     this.toastr.error(
-  //       'Please add at least one registration charge to the list!'
-  //     );
-  //     return;
-  //   }
-
-  //   this.Guest.CreatedBy = this.staffLogin.StaffId;
-  //   this.Guest.UpdatedBy = this.staffLogin.StaffId;
-  //   this.Guest.PaymentDate = this.loadData.loadDateYMD(
-  //     this.Guest.PaymentDate
-  //   );
-
-  //   if (this.tempData != undefined) {
-  //     this.Guest.PaymentCollectionId =
-  //       this.tempData.GetPaymentCollection.PaymentCollectionId;
-  //   }
-
-  //   const data = {
-  //     GetGuest: this.Guest,
-  //     GetPaymentCollection: this.Guest,
-  //     GetOpticalsDetails: this.SelectedRoomDetailList,
-  //     GetPaymentDetails: this.SelectedPaymentCollectionList,
-  //   };
-
-  //   const obj: RequestModel = {
-  //     request: this.localService.encrypt(JSON.stringify(data)).toString(),
-  //   };
-
-  //   this.dataLoading = true;
-  //   this.service.saveOpticalsBill(obj).subscribe(
-  //     (r1) => {
-  //       const response = r1 as any;
-
-  //       if (response.Message === ConstantData.SuccessMessage) {
-  //         if (this.Guest.OpdId > 0) {
-  //           this.toastr.success('Booking Updated successfully');
-  //           $('hashtag#staticBackdrop').modal('hide');
-  //         } else {
-  //           this.toastr.success('Booking added successfully');
-  //         }
-  //          this.service.PrintOpticlalBill(response.OpticalBillingId);
-  //         this.SelectedRoomDetailList = [];
-  //         this.SelectedPaymentCollectionList = [];
-  //         this.resetForm();
-  //       } else {
-  //         this.toastr.error(response.Message);
-  //       }
-
-  //       this.dataLoading = false;
-  //     },
-  //     (err) => {
-  //       this.toastr.error('Error occurred while submitting data');
-  //       this.dataLoading = false;
-  //     }
-  //   );
-  // }
-
-  SelectedPaymentCollectionList: any[] = [];
-
-addToPaymentList() {
-  if (
-    
-    this.currentPayment.PaidAmount != null &&
-    this.currentPayment.PaymentMode
-  ) {
-    // Calculate the sum of already paid amounts
-    const totalPaid = this.SelectedPaymentCollectionList.reduce(
-      (sum, payment) => sum + (payment.PaidAmount || 0),
-      0
-    );
-
-    // Calculate remaining amount
-    const remainingAmount = this.Guest.PayableAmount - totalPaid;
-
-    // Validate that PaidAmount does not exceed remaining
-    if (this.currentPayment.PaidAmount > remainingAmount) {
-      alert('Paid amount cannot exceed remaining payable amount!');
-      this.currentPayment.PaidAmount = remainingAmount;
-      return;
-    }
-
-    // Push a copy of the current payment into the list
-    this.SelectedPaymentCollectionList.push({ ...this.currentPayment });
-
-    // Calculate the new remaining amount after this payment
-    const newTotalPaid = totalPaid + this.currentPayment.PaidAmount;
-    const newRemainingAmount = this.Guest.PayableAmount - newTotalPaid;
-
-    // Reset currentPayment
-    this.currentPayment = {
-      Particular: '',
-      Remarks: '',
-      PaymentMode: '',
-      PaidAmount: newRemainingAmount > 0 ? newRemainingAmount : 0
-    };
-
-    // Optional: Notify if payment completed
-    // if (newRemainingAmount <= 0) {
-    //   alert('All payments are completed!');
-    // }
-
-  } else {
-    alert('Please fill all fields!');
-  }
-}
-
-
- removePaymentItem(index: number) {
-  const removedItem = this.SelectedPaymentCollectionList[index];
-
-  // Restore the amount to currentPayment.PaidAmount
-  if (removedItem && removedItem.PaidAmount != null) {
-    this.currentPayment.PaidAmount += removedItem.PaidAmount;
-  }
-
-  // Remove the item from the list
-  this.SelectedPaymentCollectionList.splice(index, 1);
-}
-
-  onRateChange() {
-    if (this.Payment.Quantity && this.Payment.OpticalItemRate) {
-      this.Payment.Amount = this.Payment.OpticalItemRate * this.Payment.Quantity;
-      this.updateLineTotal();
-    }
-  }
-
-  onQuantityChange() {
-    if (this.Payment.OpticalItemRate && this.Payment.Quantity) {
-      this.Payment.Amount = this.Payment.OpticalItemRate * this.Payment.Quantity;
-      this.updateLineTotal();
-    }
+  onNoOfDaysChange() {
+    this.calculateRoomCharges();
   }
 
   onDiscountChange() {
-    this.updateLineTotal();
+    this.calculateRoomCharges();
   }
 
-  updateLineTotal() {
-    this.Payment.LineTotal =
-      (this.Payment.Amount || 0) - (this.Payment.Discount || 0);
+
+
+  onGSTChange() {
+    const selectedGST = this.GSTList.find(g => g.GSTId === this.RoomBookingDetails.GSTId);
+    if (selectedGST) {
+      this.RoomBookingDetails.GSTPercentage = selectedGST.GSTPercentage || parseFloat(selectedGST.GSTName) || 0;
+    } else {
+      this.RoomBookingDetails.GSTPercentage = 0;
+    }
+    this.calculateGST();
   }
+
+  calculateRoomCharges() {
+    const chargeAmount = this.RoomBookingDetails.ChargeAmount || 0;
+    const noOfDays = this.RoomBookingDetails.NoOfDays || 1;
+    const discount = this.RoomBookingDetails.DiscountAmount || 0;
+    const totalCharge = chargeAmount * noOfDays;
+    this.RoomBookingDetails.TaxableAmount = totalCharge - discount;
+    this.autoSelectGSTRate();
+    this.calculateGST();
+  }
+
+
+  autoSelectGSTRate() {
+    const chargeAmount = this.RoomBookingDetails.ChargeAmount || 0;
+    let gstPercentage = 0;
+    if (chargeAmount < 1000) {
+      gstPercentage = 0;
+    } else if (chargeAmount >= 1000 && chargeAmount <= 7500) {
+      gstPercentage = 5;
+    } else {
+      gstPercentage = 18;
+    }
+    const matchingGST = this.GSTList.find(g => {
+      const gstValue = g.GSTPercentage || parseFloat(g.GSTName) || 0;
+      return gstValue === gstPercentage;
+    });
+    if (matchingGST) {
+      this.RoomBookingDetails.GSTId = matchingGST.GSTId;
+      this.RoomBookingDetails.GSTPercentage = gstPercentage;
+    } else {
+      this.RoomBookingDetails.GSTId = null;
+      this.RoomBookingDetails.GSTPercentage = gstPercentage;
+    }
+  }
+
+  calculateGST() {
+    const taxableAmount = this.RoomBookingDetails.TaxableAmount || 0;
+    const gstPercentage = this.RoomBookingDetails.GSTPercentage || 0;
+    const totalGSTAmount = (taxableAmount * gstPercentage) / 100;
+    const isIntraState = this.checkIntraState();
+    if (isIntraState) {
+      this.RoomBookingDetails.CGST = totalGSTAmount / 2;
+      this.RoomBookingDetails.SGST = totalGSTAmount / 2;
+      this.RoomBookingDetails.IGST = 0;
+    } else {
+      this.RoomBookingDetails.CGST = 0;
+      this.RoomBookingDetails.SGST = 0;
+      this.RoomBookingDetails.IGST = totalGSTAmount;
+    }
+    this.RoomBookingDetails.TotalGSTAmount = totalGSTAmount;
+    this.RoomBookingDetails.LineTotal = taxableAmount + totalGSTAmount;
+  }
+
+  checkIntraState(): boolean {
+    const hotelGSTIN = this.staffLogin.GSTIN || '';
+    const guestGSTNo = this.Guest.GSTNo || '';
+    if (hotelGSTIN.length >= 2 && guestGSTNo.length >= 2) {
+      return hotelGSTIN.substring(0, 2) === guestGSTNo.substring(0, 2);
+    }
+    return true;
+  }
+
+  calculateAllRoomTaxes() {
+    this.SelectedRoomDetailList.forEach((room: { TotalGSTAmount: number; CGST: number; SGST: number; IGST: number; }, index: any) => {
+      const isIntraState = this.checkIntraState();
+      const totalGSTAmount = room.TotalGSTAmount || 0;
+      if (isIntraState) {
+        room.CGST = totalGSTAmount / 2;
+        room.SGST = totalGSTAmount / 2;
+        room.IGST = 0;
+      } else {
+        room.CGST = 0;
+        room.SGST = 0;
+        room.IGST = totalGSTAmount;
+      }
+    });
+    this.recalculateTotals();
+  }
+
+  
+  addRoomDetail() {
+
+    if(!this.Guest.GuestName || !this.Guest.ContactNo){
+      this.toastr.error('Please Select Guest!');
+      return;
+    }
+    if (!this.RoomBookingDetails.RoomId) {
+      this.toastr.error('Please select a room!');
+      return;
+    }
+    if (!this.RoomBookingDetails.NoOfDays || this.RoomBookingDetails.NoOfDays < 1) {
+      this.toastr.error('Please enter number of days!');
+      return;
+    }
+
+    if (!this.RoomBookingDetails.NoOfPerson || this.RoomBookingDetails.NoOfPerson < 1) {
+      this.toastr.error('Please enter number of person!');
+      return;
+    }
+    const roomDetail = { ...this.RoomBookingDetails };
+    if (this.editingRoomIndex >= 0) {
+      this.SelectedRoomDetailList[this.editingRoomIndex] = roomDetail;
+      this.editingRoomIndex = -1;
+      this.toastr.success('Room detail updated!');
+    } else {
+      this.SelectedRoomDetailList.push(roomDetail);
+      this.toastr.success('Room added to list!');
+    }
+    this.recalculateTotals();
+    this.clearRoom();
+  }
+
+
+  editRoomDetail(index: number) {
+    const room = this.SelectedRoomDetailList[index];
+    this.RoomBookingDetails = { ...room };
+    this.selectedRoomId = room.RoomId;
+    this.editingRoomIndex = index;
+  }
+
+  RemoveRoomDetail(index: number) {
+    this.SelectedRoomDetailList.splice(index, 1);
+    this.recalculateTotals();
+    this.toastr.success('Room removed from list!');
+  }
+
+  recalculateTotals() {
+    let totalDiscount = 0, totalTaxable = 0, totalCGST = 0, totalSGST = 0, totalIGST = 0, totalGST = 0, totalLineAmount = 0;
+    this.SelectedRoomDetailList.forEach((item: { DiscountAmount: any; TaxableAmount: any; CGST: any; SGST: any; IGST: any; TotalGSTAmount: any; LineTotal: any; }) => {
+      totalDiscount += item.DiscountAmount || 0;
+      totalTaxable += item.TaxableAmount || 0;
+      totalCGST += item.CGST || 0;
+      totalSGST += item.SGST || 0;
+      totalIGST += item.IGST || 0;
+      totalGST += item.TotalGSTAmount || 0;
+      totalLineAmount += item.LineTotal || 0;
+    });
+    this.Guest.TotalDiscount = totalDiscount;
+    this.Guest.TaxableAmount = totalTaxable;
+    this.Guest.TotalCGST = totalCGST;
+    this.Guest.TotalSGST = totalSGST;
+    this.Guest.TotalIGST = totalIGST;
+    this.Guest.TotalGST = totalGST;
+    this.Guest.TotalLineAmount = totalLineAmount;
+    this.updatePaymentPaidAmount();
+  }
+
+  updatePaymentPaidAmount() {
+    const totalPaid = this.SelectedPaymentCollectionList.reduce((sum, p) => sum + (p.PaidAmount || 0), 0);
+    const remaining = (this.Guest.TotalLineAmount || 0) - totalPaid;
+    this.Payment.PaidAmount = remaining > 0 ? remaining : 0;
+  }
+
+  addToPaymentList() {
+    if (!this.Payment.PaidAmount || this.Payment.PaidAmount <= 0) {
+      this.toastr.error('Please enter a valid amount!');
+      return;
+    }
+    if (!this.Payment.PaymentType) {
+      this.toastr.error('Please select payment type!');
+      return;
+    }
+    if (!this.Payment.PaymentMode) {
+      this.toastr.error('Please select payment mode!');
+      return;
+    }
+    const totalPaid = this.SelectedPaymentCollectionList.reduce((sum, p) => sum + (p.PaidAmount || 0), 0);
+    const remaining = (this.Guest.TotalLineAmount || 0) - totalPaid;
+    if (this.Payment.PaidAmount > remaining) {
+      this.toastr.error('Paid amount cannot exceed remaining amount!');
+      this.Payment.PaidAmount = remaining;
+      return;
+    }
+    this.SelectedPaymentCollectionList.push({ ...this.Payment });
+    this.toastr.success('Payment added!');
+    const newTotalPaid = totalPaid + this.Payment.PaidAmount;
+    const newRemaining = (this.Guest.TotalLineAmount || 0) - newTotalPaid;
+    this.Payment = {
+      PaymentDate: this.loadData.loadDateYMD(new Date()),
+      PaidAmount: newRemaining > 0 ? newRemaining : 0,
+      PaymentType: null,
+      PaymentMode: null,
+      TransactionNo: ''
+    };
+  }
+
+  removePaymentItem(index: number) {
+    this.SelectedPaymentCollectionList.splice(index, 1);
+    this.updatePaymentPaidAmount();
+    this.toastr.success('Payment removed!');
+  }
+
+
+saveRoomBooking() {
+    this.isSubmitted = true;
+
+    // if (
+    //   !this.SelectedPaymentCollectionList ||
+    //   this.SelectedPaymentCollectionList.length === 0
+    // ) {
+    //   this.toastr.error('Please add at least one payment to the list!');
+    //   return;
+    // }
+    if (
+      !this.SelectedRoomDetailList ||
+      this.SelectedRoomDetailList.length === 0
+    ) {
+      this.toastr.error(
+        'Please add at least one Room Details!'
+      );
+      return;
+    }
+
+    this.Guest.CreatedBy = this.staffLogin.StaffId;
+    this.Guest.UpdatedBy = this.staffLogin.StaffId;
+    this.Guest.BookingDate = this.loadData.loadDateYMD(
+      this.Guest.BookingDate
+    );
+
+    const data = {
+      GetGuest: this.Guest,
+      GetRoomDetails: this.SelectedRoomDetailList,
+      GetPaymentDetails: this.SelectedPaymentCollectionList,
+    };
+    console.log(data);
+    
+
+    const obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify(data)).toString(),
+    };
+
+    this.dataLoading = true;
+    this.service.saveBooking(obj).subscribe(
+      (r1) => {
+        const response = r1 as any;
+
+        if (response.Message === ConstantData.SuccessMessage) {
+          if (this.Guest.BookingId > 0) {
+            this.toastr.success('Booking Updated successfully');
+            $('hashtag#staticBackdrop').modal('hide');
+          } else {
+            this.toastr.success('Booking added successfully');
+          }
+          //  this.service.PrintOpticlalBill(response.OpticalBillingId);
+          this.SelectedRoomDetailList = [];
+          this.SelectedPaymentCollectionList = [];
+          this.resetForm();
+        } else {
+          this.toastr.error(response.Message);
+        }
+
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error occurred while submitting data');
+        this.dataLoading = false;
+      }
+    );
+}
+
+
 }
