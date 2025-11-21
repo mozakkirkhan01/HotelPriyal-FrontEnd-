@@ -36,7 +36,7 @@
                   <mat-autocomplete #autoTransportPackageCollection="matAutocomplete"
                     (optionSelected)="afterGuestSelected($event)">
                     <mat-option *ngFor="let option of filteredGuestList" [value]="option.GuestName">
-                      {{ option.GuestName }} / {{ option.MobileNo || option.ContactNo || option.GuestMobile }}
+                      {{ option.GuestName }} / {{ option.ContactNo }}
                     </mat-option>
                   </mat-autocomplete>
 
@@ -269,7 +269,8 @@
 
                 <!-- ADD Button -->
                 <div class="col-sm-1 d-flex align-items-center">
-                  <button mat-flat-button color="primary" class="mybutton"  (click)="addRoomDetail()">{{editingRoomIndex >= 0 ? 'Update' : 'Add'}}</button>
+                  <button mat-flat-button color="primary" class="mybutton" (click)="addRoomDetail()">{{editingRoomIndex
+                    >= 0 ? 'Update' : 'Add'}}</button>
                 </div>
 
               </div>
@@ -283,6 +284,7 @@
                   <th class="text-right">Charge Amount</th>
                   <th class="text-right">Taxable Amount</th>
                   <th class="text-center">No of Days</th>
+                  <th class="text-center">Check-in (Date / Time)</th>
                   <th class="text-center">Guests (A/C/P)</th>
                   <th class="text-right">Discount</th>
                   <th class="text-right">GST (C/S/I)</th>
@@ -303,7 +305,11 @@
                   <td class="text-right">{{ model.TaxableAmount }}</td>
 
                   <td class="text-center">{{ model.NoOfDays }}</td>
-                  
+                  <td class="text-center">
+                    {{ model.CheckInDate | date:'dd-MM-yyyy' }} / {{ model.CheckInTime }}
+                  </td>
+
+
                   <td class="text-center">
                     A: {{ model.NoOfAdult }} |
                     C: {{ model.NoOfChild }} |
@@ -322,8 +328,8 @@
 
                   <td class="text-right">{{ model.LineTotal }}</td>
 
-                  <td class="text-center" >
-                    <button (click)="editRoomDetail(i)" class="btn btn-sm btn-primary" style="margin-right: 5px;" >
+                  <td class="text-center">
+                    <button (click)="editRoomDetail(i)" class="btn btn-sm btn-primary" style="margin-right: 5px;">
                       <i class="bi bi-pencil-fill"></i>
                     </button>
                     <button (click)="RemoveRoomDetail(i)" class="btn btn-sm btn-danger">
@@ -405,19 +411,20 @@
 
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total Dues Amount</mat-label>
-                  <input matInput type="number" [(ngModel)]="Guest.TotalDueAmount" name="TotalDuesAmount"  class="no-spinner text-danger" readonly />
+                  <input matInput type="number" [(ngModel)]="Guest.TotalDuesAmount" name="TotalDuesAmount"
+                    class="no-spinner text-danger fw-bold" readonly />
                 </mat-form-field>
 
-                <!-- Total Paid Amount  -->
-                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total Paid Amount</mat-label>
-                  <input matInput type="number" [(ngModel)]="Guest.totalPaidAmount" name="TotalPaidAmount" class="no-spinner" readonly />
+                  <input matInput type="number" [(ngModel)]="Guest.TotalPaidAmount" name="TotalPaidAmount"
+                    class="no-spinner text-success fw-bold" readonly />
                 </mat-form-field>
 
                 <!-- Booking source type  -->
-                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Booking Source</mat-label>
-                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourctypeId">
+                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId">
                     <mat-option value="">--Select--</mat-option>
                     <mat-option *ngFor="let x of BookingSourceTypeList" [value]="x.BookingSourceTypeId">
                       {{ x.BookingSourceName }}
@@ -530,7 +537,7 @@
                     <td>{{ model.TransactionNo }}</td>
 
                     <!-- Action -->
-                    <td  class="text-center">
+                    <td class="text-center">
                       <button (click)="removePaymentItem(i)" class="btn btn-sm btn-danger">
                         <i class="bi bi-trash-fill"></i>
                       </button>

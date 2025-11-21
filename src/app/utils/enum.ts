@@ -59,10 +59,19 @@ export enum PaymentType{
   Full = 3,
 }
 
+
+
 export enum BillStatus {
   Paid = 1,
   Cancel = 2,
 }
+
+export enum RoomBookingStatus {
+  Checkin = 1,
+  Checkout = 2,
+  Cancelled = 3,
+}
+
 export enum BookingStatus {
   'Tour Pending' = 1,
   'Tour Completed' = 2,

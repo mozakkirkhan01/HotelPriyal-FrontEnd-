@@ -40,7 +40,7 @@
                             <tr>
                                 <th class="text-center">S.No</th>
                                 <th style="cursor:pointer;" (click)="sort('GuestName')">Guest Name</th>
-                                <th style="cursor:pointer;" (click)="sort('MobileNo')">Mobile No</th>
+                                <th style="cursor:pointer;" (click)="sort('ContactNo')">Contact No</th>
                                 <th style="cursor:pointer;" (click)="sort('Email')">Email</th>
                                 <th style="cursor:pointer;" (click)="sort('CompanyName')">Company Name</th>
                                 <th style="cursor:pointer;" (click)="sort('AadharNo')">Aadhar No</th>
@@ -56,7 +56,7 @@
                                 *ngFor="let item of GuestList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
                                 <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
                                 <td>{{item.GuestName}}</td>
-                                <td>{{item.MobileNo}}</td>
+                                <td>{{item.ContactNo}}</td>
                                 <td>{{item.Email}}</td>
                                 <td>{{item.CompanyName}}</td>
                                 <td>{{item.AadharNo}}</td>
@@ -115,16 +115,16 @@
                             </mat-form-field>
 
                             <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Mobile No</mat-label>
-                                <input type="tel" matInput #MobileNo="ngModel" name="MobileNo"
-                                    [(ngModel)]="Guest.MobileNo" required>
+                                <mat-label>Contact No</mat-label>
+                                <input type="tel" matInput #ContactNo="ngModel" name="ContactNo"
+                                    [(ngModel)]="Guest.ContactNo" required>
                                 <mat-error>
-                                    Mobile No is required!
+                                    Contact No is required!
                                 </mat-error>
                             </mat-form-field>
 
                             <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Alternative Mobile No</mat-label>
+                                <mat-label>Alternative Contact No</mat-label>
                                 <input type="tel" matInput #AlternativeMobileNo="ngModel" name="AlternativeMobileNo"
                                     [(ngModel)]="Guest.AlternativeMobileNo">
                             </mat-form-field>

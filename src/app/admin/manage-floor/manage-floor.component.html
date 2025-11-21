@@ -14,7 +14,7 @@
         <div class="col-sm-4">
             <button mat-raised-button class="float-right" color="primary" *ngIf="action.CanCreate"
                 data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New
-                Room Type</button>
+                Floor</button>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
                         <thead>
                             <tr>
                                 <th class="text-center">S.No</th>
-                                <th style="cursor:pointer;" (click)="sort('FloorName')">Room Type</th>
+                                <th style="cursor:pointer;" (click)="sort('FloorName')">Floor Name</th>
                                 <th style="cursor:pointer;" (click)="sort('HotelName')">Hotel Name</th>
                                 <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
                                 <th class="text-center" *ngIf="action.CanEdit">Edit</th>
@@ -88,7 +88,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{Floor.FloorId > 0 ? 'Update':'New'}}
-                        Room Type
+                        Floor
                     </h1>
                     <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         (click)="resetForm()"></button>
@@ -98,7 +98,7 @@
                         <div class="container">
                             <div class="row">
                                 <mat-form-field appearance="outline" class="col-sm-6">
-                                    <mat-label>Room Type Name</mat-label>
+                                    <mat-label>Floor Name</mat-label>
                                     <input matInput #FloorName="ngModel" name="FloorName" [(ngModel)]="Floor.FloorName"
                                         required autofocus>
                                     <mat-error

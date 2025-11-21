@@ -9,6 +9,8 @@ import {
   Status,
   Category,
   PaymentType,
+  RoomBookingStatus,
+  BookingStatus,
 } from '../../utils/enum';
 import { LoadDataService } from '../../utils/load-data.service';
 import {
@@ -93,6 +95,10 @@ export class ManageRoomBookingComponent {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validiateMenu();
     this.resetForm();
+    this.initializeAllData();
+  }
+
+  initializeAllData(){
     this.getGuestList();
     this.getRoomList();
     this.getGSTList();
@@ -122,6 +128,8 @@ export class ManageRoomBookingComponent {
       CheckInTime: this.loadData.getCurrentTime(),
       RoomId: null,
     };
+
+
   }
 
   initializePayment() {
@@ -132,6 +140,8 @@ export class ManageRoomBookingComponent {
       PaymentMode: null,
       TransactionNo: '',
     };
+
+    
   }
 
   validiateMenu() {
@@ -233,7 +243,11 @@ export class ManageRoomBookingComponent {
   }
 
   resetForm() {
-    this.Guest = { BookingDate: this.loadData.loadDateYMD(new Date()) };
+    this.Guest = { 
+      BookingDate: this.loadData.loadDateYMD(new Date()),
+      TotalPaidAmount: 0,
+      TotalDuesAmount: 0
+    };
     this.isNewGuest = false;
     this.selectedGuestId = null;
     this.SelectedRoomDetailList = [];
@@ -253,8 +267,7 @@ export class ManageRoomBookingComponent {
     this.filteredGuestList = this.GuestList.filter(
       (option: any) =>
         option.GuestName?.toLowerCase().includes(filterValue) ||
-        option.ContactNo?.toLowerCase().includes(filterValue) ||
-        option.GuestMobile?.toLowerCase().includes(filterValue)
+        String(option.ContactNo)?.toLowerCase().includes(filterValue)
     );
 
     if (this.filteredGuestList.length === 0 && value && value.length > 0) {
@@ -509,6 +522,7 @@ export class ManageRoomBookingComponent {
       this.toastr.error('Please enter number of person!');
       return;
     }
+    this.RoomBookingDetails.RoomBookingDetailStatus = BookingStatus.Checkin
     const roomDetail = { ...this.RoomBookingDetails };
     if (this.editingRoomIndex >= 0) {
       this.SelectedRoomDetailList[this.editingRoomIndex] = roomDetail;
@@ -536,44 +550,55 @@ export class ManageRoomBookingComponent {
   }
 
   recalculateTotals() {
-    let totalDiscount = 0,
-      totalTaxable = 0,
-      totalCGST = 0,
-      totalSGST = 0,
-      totalIGST = 0,
-      totalGST = 0,
-      totalLineAmount = 0,
-      TotalDuesAmount = 0;
-    this.SelectedRoomDetailList.forEach(
-      (item: {
-        DiscountAmount: any;
-        TaxableAmount: any;
-        CGST: any;
-        SGST: any;
-        IGST: any;
-        TotalGSTAmount: any;
-        LineTotal: any;
-      }) => {
-        totalDiscount += item.DiscountAmount || 0;
-        totalTaxable += item.TaxableAmount || 0;
-        totalCGST += item.CGST || 0;
-        totalSGST += item.SGST || 0;
-        totalIGST += item.IGST || 0;
-        totalGST += item.TotalGSTAmount || 0;
-        totalLineAmount += item.LineTotal || 0;
-        TotalDuesAmount = totalLineAmount;
-      }
-    );
-    this.Guest.TotalDiscount = totalDiscount;
-    this.Guest.TaxableAmount = totalTaxable;
-    this.Guest.TotalCGST = totalCGST;
-    this.Guest.TotalSGST = totalSGST;
-    this.Guest.TotalIGST = totalIGST;
-    this.Guest.TotalGST = totalGST;
-    this.Guest.TotalLineAmount = totalLineAmount;
-    this.Guest.TotalDuesAmount = TotalDuesAmount;
-    this.updatePaymentPaidAmount();
-  }
+  let totalDiscount = 0,
+    totalTaxable = 0,
+    totalCGST = 0,
+    totalSGST = 0,
+    totalIGST = 0,
+    totalGST = 0,
+    totalLineAmount = 0;
+
+  this.SelectedRoomDetailList.forEach(
+    (item: {
+      DiscountAmount: any;
+      TaxableAmount: any;
+      CGST: any;
+      SGST: any;
+      IGST: any;
+      TotalGSTAmount: any;
+      LineTotal: any;
+    }) => {
+      totalDiscount += item.DiscountAmount || 0;
+      totalTaxable += item.TaxableAmount || 0;
+      totalCGST += item.CGST || 0;
+      totalSGST += item.SGST || 0;
+      totalIGST += item.IGST || 0;
+      totalGST += item.TotalGSTAmount || 0;
+      totalLineAmount += item.LineTotal || 0;
+    }
+  );
+
+  this.Guest.TotalDiscount = totalDiscount;
+  this.Guest.TaxableAmount = totalTaxable;
+  this.Guest.TotalCGST = totalCGST;
+  this.Guest.TotalSGST = totalSGST;
+  this.Guest.TotalIGST = totalIGST;
+  this.Guest.TotalGST = totalGST;
+  this.Guest.TotalLineAmount = totalLineAmount;
+
+  // Calculate paid and dues
+  this.calculatePaidAndDues();
+  this.updatePaymentPaidAmount();
+}
+
+calculatePaidAndDues() {
+  const totalPaid = this.SelectedPaymentCollectionList.reduce(
+    (sum, p) => sum + (p.PaidAmount || 0),
+    0
+  );
+  this.Guest.TotalPaidAmount = totalPaid;
+  this.Guest.TotalDuesAmount = (this.Guest.TotalLineAmount || 0) - totalPaid;
+}
 
   updatePaymentPaidAmount() {
     const totalPaid = this.SelectedPaymentCollectionList.reduce(
@@ -610,6 +635,8 @@ export class ManageRoomBookingComponent {
     }
     this.SelectedPaymentCollectionList.push({ ...this.Payment });
     this.toastr.success('Payment added!');
+
+    this.calculatePaidAndDues();
     const newTotalPaid = totalPaid + this.Payment.PaidAmount;
     const newRemaining = (this.Guest.TotalLineAmount || 0) - newTotalPaid;
     this.Payment = {
@@ -623,20 +650,19 @@ export class ManageRoomBookingComponent {
 
   removePaymentItem(index: number) {
     this.SelectedPaymentCollectionList.splice(index, 1);
+    this.calculatePaidAndDues();
     this.updatePaymentPaidAmount();
+
     this.toastr.success('Payment removed!');
   }
 
   saveRoomBooking() {
     this.isSubmitted = true;
 
-    // if (
-    //   !this.SelectedPaymentCollectionList ||
-    //   this.SelectedPaymentCollectionList.length === 0
-    // ) {
-    //   this.toastr.error('Please add at least one payment to the list!');
-    //   return;
-    // }
+    if(!this.Guest.BookingSourcetypeId) {
+      this.toastr.error('Please select booking source!');
+      return;
+    }
     if (
       !this.SelectedRoomDetailList ||
       this.SelectedRoomDetailList.length === 0
@@ -645,12 +671,17 @@ export class ManageRoomBookingComponent {
       return;
     }
 
-    this.Guest.CreatedBy = this.staffLogin.StaffId;
-    this.Guest.UpdatedBy = this.staffLogin.StaffId;
+    this.Guest.CreatedBy = this.staffLogin.StaffLoginId;
+    this.Guest.UpdatedBy = this.staffLogin.StaffLoginId;
     this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
+    this.Guest.HotelId = this.Guest.HotelId || this.staffLogin.HotelId;
+
+    this.Guest.GuestId = this.selectedGuestId || 0;
+    this.Guest.RoomBookingStatus = RoomBookingStatus.Checkin;
 
     const data = {
       GetGuest: this.Guest,
+      GetRoomBooking: this.Guest,
       GetRoomDetails: this.SelectedRoomDetailList,
       GetPaymentDetails: this.SelectedPaymentCollectionList,
     };
@@ -676,6 +707,7 @@ export class ManageRoomBookingComponent {
           this.SelectedRoomDetailList = [];
           this.SelectedPaymentCollectionList = [];
           this.resetForm();
+          this.initializeAllData();
         } else {
           this.toastr.error(response.Message);
         }

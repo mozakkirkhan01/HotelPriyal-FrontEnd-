@@ -172,7 +172,7 @@ export class ManageRoomComponent {
         } else {
           this.toastr.success("Room added successfully")
         }
-        $('#roomModal').modal('hide')
+        // $('#roomModal').modal('hide')
         this.resetForm()
         this.getRoomList()
       } else {
