@@ -3,7 +3,13 @@ import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AppService } from '../../utils/app.service';
 import { ConstantData } from '../../utils/constant-data';
-import { Gender, PaymentMode, Status,Category, PaymentType } from '../../utils/enum';
+import {
+  Gender,
+  PaymentMode,
+  Status,
+  Category,
+  PaymentType,
+} from '../../utils/enum';
 import { LoadDataService } from '../../utils/load-data.service';
 import {
   ActionModel,
@@ -17,11 +23,10 @@ declare var $: any;
 @Component({
   selector: 'app-manage-room-booking',
   templateUrl: './manage-room-booking.component.html',
-  styleUrls: ['./manage-room-booking.component.css']
+  styleUrls: ['./manage-room-booking.component.css'],
 })
 export class ManageRoomBookingComponent {
-
- dataLoading: boolean = false;
+  dataLoading: boolean = false;
   GuestList: any = [];
   RoomList: any = [];
   ChargeList: any = [];
@@ -38,6 +43,7 @@ export class ManageRoomBookingComponent {
   sortKey: string = '';
   itemPerPage: number = this.PageSize[0];
   StateList: any[] = [];
+  BookingSourceTypeList: any[] = [];  
   filterState: any[] = [];
   StatusList = this.loadData.GetEnumList(Status);
   GenderList = this.loadData.GetEnumList(Gender);
@@ -56,16 +62,13 @@ export class ManageRoomBookingComponent {
   filteredRoomList: any[] = [];
   GuestListAll: any;
   OpticalList: any = [];
-    isNewGuest: boolean = false; // Track if adding new guest
+  isNewGuest: boolean = false; // Track if adding new guest
   selectedGuestId: number | null = null;
   selectedRoomId: number | null = null;
-    GSTList: any[] = [];
-    editingRoomIndex: number = -1;
+  GSTList: any[] = [];
+  editingRoomIndex: number = -1;
   SelectedPaymentCollectionList: any[] = [];
   SelectedRoomDetailList: any = [];
-
-
-
 
   sort(key: any) {
     this.sortKey = key;
@@ -86,13 +89,14 @@ export class ManageRoomBookingComponent {
   ) {}
   redUrl: string = '';
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validiateMenu();
     this.resetForm();
     this.getGuestList();
     this.getRoomList();
     this.getGSTList();
+    this.getBookingSourceTypeList();
     this.initializeRoomBookingDetails();
     this.initializePayment();
   }
@@ -116,7 +120,7 @@ export class ManageRoomBookingComponent {
       LineTotal: 0,
       CheckInDate: this.loadData.loadDateYMD(new Date()),
       CheckInTime: this.loadData.getCurrentTime(),
-      RoomId: null
+      RoomId: null,
     };
   }
 
@@ -126,31 +130,39 @@ export class ManageRoomBookingComponent {
       PaidAmount: 0,
       PaymentType: null,
       PaymentMode: null,
-      TransactionNo: ''
+      TransactionNo: '',
     };
   }
 
-
-    validiateMenu() {
+  validiateMenu() {
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({ Url: this.router.url,StaffLoginId:this.staffLogin.StaffLoginId })).toString()
-    }
-    this.dataLoading = true
-    this.service.validiateMenu(obj).subscribe((response: any) => {
-      this.action = this.loadData.validiateMenu(response, this.toastr, this.router)
-      this.dataLoading = false;
-    }, (err => {
-      this.toastr.error("Error while fetching records")
-      this.dataLoading = false;
-    }))
+      request: this.localService
+        .encrypt(
+          JSON.stringify({
+            Url: this.router.url,
+            StaffLoginId: this.staffLogin.StaffLoginId,
+          })
+        )
+        .toString(),
+    };
+    this.dataLoading = true;
+    this.service.validiateMenu(obj).subscribe(
+      (response: any) => {
+        this.action = this.loadData.validiateMenu(
+          response,
+          this.toastr,
+          this.router
+        );
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
   }
 
   @ViewChild('formGuestDetails') formGuestDetails: NgForm;
-
-// onNoOfPersonChange() {
-//   const { NoOfAdult = 0, NoOfChild = 0 } = this.RoomBookingDetails;
-//   this.RoomBookingDetails.NoOfPerson = NoOfAdult + NoOfChild;
-// }
 
   getGSTList() {
     this.dataLoading = true;
@@ -174,23 +186,50 @@ export class ManageRoomBookingComponent {
     );
   }
 
-   getGuestList() {
+  getGuestList() {
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({})).toString()
-    }
-    this.dataLoading = true
-    this.service.getGuestList(obj).subscribe(r1 => {
-      let response = r1 as any
-      if (response.Message == ConstantData.SuccessMessage) {
-        this.GuestList = response.GuestList;
-      } else {
-        this.toastr.error(response.Message)
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getGuestList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.GuestList = response.GuestList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
       }
-      this.dataLoading = false
-    }, (err => {
-      this.toastr.error("Error while fetching records")
-      this.dataLoading = false
-    }))
+    );
+  }
+
+  
+
+  getBookingSourceTypeList() {
+    this.dataLoading = true;
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.service.getBookingSourceTypeList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.BookingSourceTypeList = response.BookingSourceTypeList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
   }
 
   resetForm() {
@@ -238,15 +277,13 @@ export class ManageRoomBookingComponent {
     if (selected) {
       this.isNewGuest = false;
       this.selectedGuestId = selected.GuestId;
-      this.Guest = { 
+      this.Guest = {
         ...selected,
         GuestName: selected.GuestName,
-        ContactNo: selected.MobileNo || selected.ContactNo || selected.GuestMobile,
+        ContactNo:
+          selected.MobileNo || selected.ContactNo || selected.GuestMobile,
         AadharNo: selected.AadharNo,
         Address: selected.Address,
-        Age: selected.Age,
-        Gender: selected.Gender,
-        Category: selected.Category,
         Email: selected.Email,
         AlternativeMobileNo: selected.AlternativeMobileNo,
         Pincode: selected.Pincode,
@@ -270,42 +307,42 @@ export class ManageRoomBookingComponent {
     return !this.isNewGuest && this.selectedGuestId !== null;
   }
 
+  // room
 
-  // room 
-
-   getRoomList() {
-
-    const data ={
+  getRoomList() {
+    const data = {
       HotelId: this.staffLogin.HotelId,
       IsAvailable: true,
-      Status: 1
-    }
+      Status: 1,
+    };
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify(data)).toString()
-    }
-    this.dataLoading = true
-    this.service.getRoomList(obj).subscribe(r1 => {
-      let response = r1 as any
-      if (response.Message == ConstantData.SuccessMessage) {
-        this.RoomList = response.RoomList;
-        
-      } else {
-        this.toastr.error(response.Message)
+      request: this.localService.encrypt(JSON.stringify(data)).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getRoomList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.RoomList = response.RoomList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
       }
-      this.dataLoading = false
-    }, (err => {
-      this.toastr.error("Error while fetching records")
-      this.dataLoading = false
-    }))
+    );
   }
 
-
-filterRoomList(value: string) {
+  filterRoomList(value: string) {
     const filterValue = value?.toLowerCase() || '';
-    this.filteredRoomList = this.RoomList.filter((option: any) =>
-      option.RoomName?.toLowerCase().includes(filterValue) ||
-      option.FloorName?.toLowerCase().includes(filterValue) ||
-      option.RoomTypeName?.toLowerCase().includes(filterValue)
+    this.filteredRoomList = this.RoomList.filter(
+      (option: any) =>
+        option.RoomName?.toLowerCase().includes(filterValue) ||
+        option.FloorName?.toLowerCase().includes(filterValue) ||
+        option.RoomTypeName?.toLowerCase().includes(filterValue)
     );
     if (this.filteredRoomList.length === 0 && value && value.length > 0) {
       this.selectedRoomId = null;
@@ -316,7 +353,9 @@ filterRoomList(value: string) {
 
   afterRoomSelected(event: any) {
     const selectedRoomId = event.option.id;
-    const selected = this.RoomList.find((x: any) => x.RoomId === selectedRoomId);
+    const selected = this.RoomList.find(
+      (x: any) => x.RoomId === selectedRoomId
+    );
     if (selected) {
       this.selectedRoomId = selected.RoomId;
       this.RoomBookingDetails.RoomId = selected.RoomId;
@@ -346,12 +385,13 @@ filterRoomList(value: string) {
     this.calculateRoomCharges();
   }
 
-
-
   onGSTChange() {
-    const selectedGST = this.GSTList.find(g => g.GSTId === this.RoomBookingDetails.GSTId);
+    const selectedGST = this.GSTList.find(
+      (g) => g.GSTId === this.RoomBookingDetails.GSTId
+    );
     if (selectedGST) {
-      this.RoomBookingDetails.GSTPercentage = selectedGST.GSTPercentage || parseFloat(selectedGST.GSTName) || 0;
+      this.RoomBookingDetails.GSTPercentage =
+        selectedGST.GSTPercentage || parseFloat(selectedGST.GSTName) || 0;
     } else {
       this.RoomBookingDetails.GSTPercentage = 0;
     }
@@ -368,7 +408,6 @@ filterRoomList(value: string) {
     this.calculateGST();
   }
 
-
   autoSelectGSTRate() {
     const chargeAmount = this.RoomBookingDetails.ChargeAmount || 0;
     let gstPercentage = 0;
@@ -379,7 +418,7 @@ filterRoomList(value: string) {
     } else {
       gstPercentage = 18;
     }
-    const matchingGST = this.GSTList.find(g => {
+    const matchingGST = this.GSTList.find((g) => {
       const gstValue = g.GSTPercentage || parseFloat(g.GSTName) || 0;
       return gstValue === gstPercentage;
     });
@@ -420,26 +459,34 @@ filterRoomList(value: string) {
   }
 
   calculateAllRoomTaxes() {
-    this.SelectedRoomDetailList.forEach((room: { TotalGSTAmount: number; CGST: number; SGST: number; IGST: number; }, index: any) => {
-      const isIntraState = this.checkIntraState();
-      const totalGSTAmount = room.TotalGSTAmount || 0;
-      if (isIntraState) {
-        room.CGST = totalGSTAmount / 2;
-        room.SGST = totalGSTAmount / 2;
-        room.IGST = 0;
-      } else {
-        room.CGST = 0;
-        room.SGST = 0;
-        room.IGST = totalGSTAmount;
+    this.SelectedRoomDetailList.forEach(
+      (
+        room: {
+          TotalGSTAmount: number;
+          CGST: number;
+          SGST: number;
+          IGST: number;
+        },
+        index: any
+      ) => {
+        const isIntraState = this.checkIntraState();
+        const totalGSTAmount = room.TotalGSTAmount || 0;
+        if (isIntraState) {
+          room.CGST = totalGSTAmount / 2;
+          room.SGST = totalGSTAmount / 2;
+          room.IGST = 0;
+        } else {
+          room.CGST = 0;
+          room.SGST = 0;
+          room.IGST = totalGSTAmount;
+        }
       }
-    });
+    );
     this.recalculateTotals();
   }
 
-  
   addRoomDetail() {
-
-    if(!this.Guest.GuestName || !this.Guest.ContactNo){
+    if (!this.Guest.GuestName || !this.Guest.ContactNo) {
       this.toastr.error('Please Select Guest!');
       return;
     }
@@ -447,12 +494,18 @@ filterRoomList(value: string) {
       this.toastr.error('Please select a room!');
       return;
     }
-    if (!this.RoomBookingDetails.NoOfDays || this.RoomBookingDetails.NoOfDays < 1) {
+    if (
+      !this.RoomBookingDetails.NoOfDays ||
+      this.RoomBookingDetails.NoOfDays < 1
+    ) {
       this.toastr.error('Please enter number of days!');
       return;
     }
 
-    if (!this.RoomBookingDetails.NoOfPerson || this.RoomBookingDetails.NoOfPerson < 1) {
+    if (
+      !this.RoomBookingDetails.NoOfPerson ||
+      this.RoomBookingDetails.NoOfPerson < 1
+    ) {
       this.toastr.error('Please enter number of person!');
       return;
     }
@@ -469,7 +522,6 @@ filterRoomList(value: string) {
     this.clearRoom();
   }
 
-
   editRoomDetail(index: number) {
     const room = this.SelectedRoomDetailList[index];
     this.RoomBookingDetails = { ...room };
@@ -484,16 +536,34 @@ filterRoomList(value: string) {
   }
 
   recalculateTotals() {
-    let totalDiscount = 0, totalTaxable = 0, totalCGST = 0, totalSGST = 0, totalIGST = 0, totalGST = 0, totalLineAmount = 0;
-    this.SelectedRoomDetailList.forEach((item: { DiscountAmount: any; TaxableAmount: any; CGST: any; SGST: any; IGST: any; TotalGSTAmount: any; LineTotal: any; }) => {
-      totalDiscount += item.DiscountAmount || 0;
-      totalTaxable += item.TaxableAmount || 0;
-      totalCGST += item.CGST || 0;
-      totalSGST += item.SGST || 0;
-      totalIGST += item.IGST || 0;
-      totalGST += item.TotalGSTAmount || 0;
-      totalLineAmount += item.LineTotal || 0;
-    });
+    let totalDiscount = 0,
+      totalTaxable = 0,
+      totalCGST = 0,
+      totalSGST = 0,
+      totalIGST = 0,
+      totalGST = 0,
+      totalLineAmount = 0,
+      TotalDuesAmount = 0;
+    this.SelectedRoomDetailList.forEach(
+      (item: {
+        DiscountAmount: any;
+        TaxableAmount: any;
+        CGST: any;
+        SGST: any;
+        IGST: any;
+        TotalGSTAmount: any;
+        LineTotal: any;
+      }) => {
+        totalDiscount += item.DiscountAmount || 0;
+        totalTaxable += item.TaxableAmount || 0;
+        totalCGST += item.CGST || 0;
+        totalSGST += item.SGST || 0;
+        totalIGST += item.IGST || 0;
+        totalGST += item.TotalGSTAmount || 0;
+        totalLineAmount += item.LineTotal || 0;
+        TotalDuesAmount = totalLineAmount;
+      }
+    );
     this.Guest.TotalDiscount = totalDiscount;
     this.Guest.TaxableAmount = totalTaxable;
     this.Guest.TotalCGST = totalCGST;
@@ -501,13 +571,18 @@ filterRoomList(value: string) {
     this.Guest.TotalIGST = totalIGST;
     this.Guest.TotalGST = totalGST;
     this.Guest.TotalLineAmount = totalLineAmount;
+    this.Guest.TotalDuesAmount = TotalDuesAmount;
     this.updatePaymentPaidAmount();
   }
 
   updatePaymentPaidAmount() {
-    const totalPaid = this.SelectedPaymentCollectionList.reduce((sum, p) => sum + (p.PaidAmount || 0), 0);
+    const totalPaid = this.SelectedPaymentCollectionList.reduce(
+      (sum, p) => sum + (p.PaidAmount || 0),
+      0
+    );
     const remaining = (this.Guest.TotalLineAmount || 0) - totalPaid;
     this.Payment.PaidAmount = remaining > 0 ? remaining : 0;
+
   }
 
   addToPaymentList() {
@@ -523,7 +598,10 @@ filterRoomList(value: string) {
       this.toastr.error('Please select payment mode!');
       return;
     }
-    const totalPaid = this.SelectedPaymentCollectionList.reduce((sum, p) => sum + (p.PaidAmount || 0), 0);
+    const totalPaid = this.SelectedPaymentCollectionList.reduce(
+      (sum, p) => sum + (p.PaidAmount || 0),
+      0
+    );
     const remaining = (this.Guest.TotalLineAmount || 0) - totalPaid;
     if (this.Payment.PaidAmount > remaining) {
       this.toastr.error('Paid amount cannot exceed remaining amount!');
@@ -539,7 +617,7 @@ filterRoomList(value: string) {
       PaidAmount: newRemaining > 0 ? newRemaining : 0,
       PaymentType: null,
       PaymentMode: null,
-      TransactionNo: ''
+      TransactionNo: '',
     };
   }
 
@@ -549,8 +627,7 @@ filterRoomList(value: string) {
     this.toastr.success('Payment removed!');
   }
 
-
-saveRoomBooking() {
+  saveRoomBooking() {
     this.isSubmitted = true;
 
     // if (
@@ -564,17 +641,13 @@ saveRoomBooking() {
       !this.SelectedRoomDetailList ||
       this.SelectedRoomDetailList.length === 0
     ) {
-      this.toastr.error(
-        'Please add at least one Room Details!'
-      );
+      this.toastr.error('Please add at least one Room Details!');
       return;
     }
 
     this.Guest.CreatedBy = this.staffLogin.StaffId;
     this.Guest.UpdatedBy = this.staffLogin.StaffId;
-    this.Guest.BookingDate = this.loadData.loadDateYMD(
-      this.Guest.BookingDate
-    );
+    this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
 
     const data = {
       GetGuest: this.Guest,
@@ -582,7 +655,6 @@ saveRoomBooking() {
       GetPaymentDetails: this.SelectedPaymentCollectionList,
     };
     console.log(data);
-    
 
     const obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(data)).toString(),
@@ -615,7 +687,5 @@ saveRoomBooking() {
         this.dataLoading = false;
       }
     );
-}
-
-
+  }
 }

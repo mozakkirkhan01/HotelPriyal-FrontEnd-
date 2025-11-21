@@ -296,42 +296,32 @@
                 <tr *ngFor="let model of SelectedRoomDetailList; let i = index">
                   <td class="text-center">{{ i + 1 }}</td>
 
-                  <!-- Room Name -->
                   <td>{{ model.RoomName }}</td>
 
-                  <!-- Charge Amount -->
                   <td class="text-right">{{ model.ChargeAmount }}</td>
 
-                  <!-- Taxable Amount -->
                   <td class="text-right">{{ model.TaxableAmount }}</td>
 
-                  <!-- No of Days -->
                   <td class="text-center">{{ model.NoOfDays }}</td>
-
-                  <!-- Guests: Adult | Child | Person -->
+                  
                   <td class="text-center">
                     A: {{ model.NoOfAdult }} |
                     C: {{ model.NoOfChild }} |
                     P: {{ model.NoOfPerson }}
                   </td>
 
-                  <!-- Discount -->
                   <td class="text-right">{{ model.DiscountAmount }}</td>
 
-                  <!-- GST -->
                   <td class="text-right">
                     CGST: {{ model.CGST }} |
                     SGST: {{ model.SGST }} |
                     IGST: {{ model.IGST }}
                   </td>
 
-                  <!-- Total GST -->
                   <td class="text-right">{{ model.TotalGSTAmount }}</td>
 
-                  <!-- Line Total -->
                   <td class="text-right">{{ model.LineTotal }}</td>
 
-                  <!-- Action -->
                   <td class="text-center" >
                     <button (click)="editRoomDetail(i)" class="btn btn-sm btn-primary" style="margin-right: 5px;" >
                       <i class="bi bi-pencil-fill"></i>
@@ -393,26 +383,47 @@
                 </mat-form-field>
 
                 <!-- Total IGST -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total IGST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalIGST" name="TotalIGST" class="no-spinner"
                     readonly />
                 </mat-form-field>
 
                 <!-- Total GST -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total GST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalGST" name="TotalGST" class="no-spinner"
                     readonly />
                 </mat-form-field>
 
                 <!-- Total Line Amount -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total Line Amount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalLineAmount" name="TotalLineAmount"
                     class="no-spinner" readonly />
                 </mat-form-field>
 
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Total Dues Amount</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.TotalDueAmount" name="TotalDuesAmount"  class="no-spinner text-danger" readonly />
+                </mat-form-field>
+
+                <!-- Total Paid Amount  -->
+                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Total Paid Amount</mat-label>
+                  <input matInput type="number" [(ngModel)]="Guest.totalPaidAmount" name="TotalPaidAmount" class="no-spinner" readonly />
+                </mat-form-field>
+
+                <!-- Booking source type  -->
+                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Booking Source</mat-label>
+                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourctypeId">
+                    <mat-option value="">--Select--</mat-option>
+                    <mat-option *ngFor="let x of BookingSourceTypeList" [value]="x.BookingSourceTypeId">
+                      {{ x.BookingSourceName }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </form>
 
