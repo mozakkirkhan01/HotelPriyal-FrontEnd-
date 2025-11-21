@@ -57,6 +57,7 @@ import { ManageRoomComponent } from './admin/manage-room/manage-room.component';
 import { ManageRoomBookingComponent } from './admin/manage-room-booking/manage-room-booking.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { GstComponent } from './admin/gst/gst.component';
+import { ManageBookingListComponent } from './admin/manage-booking-list/manage-booking-list.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +92,7 @@ import { GstComponent } from './admin/gst/gst.component';
     ManageRoomComponent,
     ManageRoomBookingComponent,
     GstComponent,
+    ManageBookingListComponent,
   ],
   imports: [
     BrowserModule,

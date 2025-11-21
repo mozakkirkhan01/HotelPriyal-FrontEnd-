@@ -4,13 +4,13 @@
         <div class="pagetitle dashboard col-sm-8">
             <h1>{{action.MenuTitle}}</h1>
             <nav>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
-                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
-                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
-              </ol>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
             </nav>
-          </div>
+        </div>
         <div class="col-sm-4">
             <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
                 data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New
@@ -125,13 +125,21 @@
                     <form #formStaff="ngForm" class="d-flex justify-content-evenly flex-wrap">
                         <div class="container">
 
-                            
+
                             <div class="row">
                                 <mat-form-field appearance="outline" class="col-sm-3">
                                     <mat-label>Hotel Name</mat-label>
+
                                     <input matInput #HotelName="ngModel" name="HotelName"
                                         (ngModelChange)="filterHotelList(Staff.HotelName)" [(ngModel)]="Staff.HotelName"
                                         [matAutocomplete]="autoHotelName" required autofocus>
+
+                                    <!-- Clear Button -->
+                                    <button mat-icon-button matSuffix *ngIf="Staff.HotelName" (click)="clearHotel()"
+                                        tabindex="-1">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+
                                     <mat-autocomplete #autoHotelName="matAutocomplete"
                                         (optionSelected)="afterHotelSelected($event)">
                                         <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
@@ -139,11 +147,13 @@
                                             {{option.HotelName}}
                                         </mat-option>
                                     </mat-autocomplete>
+
                                     <mat-error
-                                        *ngIf="(HotelName.dirty  || HotelName.touched) || (HotelName.invalid && isSubmitted)">
+                                        *ngIf="(HotelName.dirty || HotelName.touched) || (HotelName.invalid && isSubmitted)">
                                         Hotel name is <strong>required</strong>
                                     </mat-error>
                                 </mat-form-field>
+
 
                                 <mat-form-field appearance="outline" class="col-sm-3 form-group">
                                     <mat-label>Staff Name</mat-label>
@@ -229,7 +239,7 @@
                                         [matDatepicker]="DOBPicker">
                                     <mat-datepicker-toggle matIconSuffix [for]="DOBPicker"></mat-datepicker-toggle>
                                     <mat-datepicker #DOBPicker></mat-datepicker>
-                                    
+
                                 </mat-form-field>
 
                                 <!--mobile-->

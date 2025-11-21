@@ -27,6 +27,27 @@
             <form #formGuestDetails="ngForm">
               <div class="row compact-row">
                 <!-- Guest Search/Name Field -->
+
+                <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline" class="col-sm-3 compact-field">
+                  <mat-label>Hotel Name</mat-label>
+                  <input matInput #HotelName="ngModel" name="HotelName"
+                    (ngModelChange)="filterHotelList(Hotel.HotelName)" [(ngModel)]="Hotel.HotelName"
+                    [matAutocomplete]="autoHotelName" required autofocus>
+
+                  <button mat-icon-button matSuffix *ngIf="Hotel.HotelName" (click)="clearHotel()" tabindex="-1">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+                  <mat-autocomplete #autoHotelName="matAutocomplete" (optionSelected)="afterHotelSelected($event)">
+                    <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId" [value]="option.HotelName">
+                      {{option.HotelName}}
+                    </mat-option>
+                  </mat-autocomplete>
+
+                  <mat-error *ngIf="(HotelName.dirty || HotelName.touched) || (HotelName.invalid && isSubmitted)">
+                    Hotel name is <strong>required</strong>
+                  </mat-error>
+                </mat-form-field>
                 <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Guest Name / Mobile</mat-label>
                   <input matInput name="GuestName" [(ngModel)]="Guest.GuestName"
@@ -424,7 +445,7 @@
                 <!-- Booking source type  -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Booking Source</mat-label>
-                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId">
+                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId" required  >
                     <mat-option value="">--Select--</mat-option>
                     <mat-option *ngFor="let x of BookingSourceTypeList" [value]="x.BookingSourceTypeId">
                       {{ x.BookingSourceName }}

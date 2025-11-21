@@ -253,4 +253,11 @@ export class StaffComponent {
     afterHotelSelected(event: any) {
       this.Staff.HotelId  = event.option.id;
     }
+
+    clearHotel() {
+  this.Staff.HotelName = '';
+  this.Staff.HotelId = 0;  // Optional: reset hotel selection
+  this.filterHotel = this.HotelList; // reset filtered list
+}
+
 }

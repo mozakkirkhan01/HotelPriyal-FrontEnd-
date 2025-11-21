@@ -35,6 +35,7 @@ export class ManageRoomBookingComponent {
   FeeChargeList: any = [];
   Guest: any = {};
   Room: any = {};
+  Hotel:any = {};
   RoomBookingDetails: any = {};
   Payment: any = {};
   isSubmitted = false;
@@ -93,9 +94,18 @@ export class ManageRoomBookingComponent {
 
   ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
+    console.log(this.staffLogin);
+    
     this.validiateMenu();
     this.resetForm();
-    this.initializeAllData();
+    console.log("Role ID:", this.staffLogin.RoleId);
+
+    if(this.staffLogin.RoleId == 5){
+      this.getHotelList();
+    }
+    else{
+      this.initializeAllData();
+    }
   }
 
   initializeAllData(){
@@ -323,8 +333,9 @@ export class ManageRoomBookingComponent {
   // room
 
   getRoomList() {
+    const hotelId = this.staffLogin.RoleId == 5 ? this.Hotel.HotelId : (this.Guest.HotelId || this.staffLogin.HotelId);
     const data = {
-      HotelId: this.staffLogin.HotelId,
+      HotelId: hotelId,
       IsAvailable: true,
       Status: 1,
     };
@@ -659,10 +670,19 @@ calculatePaidAndDues() {
   saveRoomBooking() {
     this.isSubmitted = true;
 
-    if(!this.Guest.BookingSourcetypeId) {
-      this.toastr.error('Please select booking source!');
+
+    if(this.staffLogin.RoleId === 5) {
+      if(!this.Hotel || !this.Hotel.HotelId) {
+        this.toastr.error('Please select a hotel!');
+        return;
+      }
+    }
+    
+    if(!this.Guest.GuestName) {
+      this.toastr.error('Please enter guest name!');
       return;
     }
+
     if (
       !this.SelectedRoomDetailList ||
       this.SelectedRoomDetailList.length === 0
@@ -671,11 +691,23 @@ calculatePaidAndDues() {
       return;
     }
 
+      if(!this.Guest.BookingSourcetypeId) {
+      this.toastr.error('Please select booking source!');
+      return;
+    }
+
     this.Guest.CreatedBy = this.staffLogin.StaffLoginId;
     this.Guest.UpdatedBy = this.staffLogin.StaffLoginId;
     this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
-    this.Guest.HotelId = this.Guest.HotelId || this.staffLogin.HotelId;
-
+    
+    if(this.staffLogin.RoleId == 5){
+      this.Guest.HotelId = this.Hotel.HotelId;
+      console.log("Admin hotel ID:", this.Hotel.HotelId);
+    }
+    else{
+      this.Guest.HotelId = this.staffLogin.HotelId;
+      console.log("Setting hotel ID to staff's hotel:", this.Guest.HotelId);
+    }
     this.Guest.GuestId = this.selectedGuestId || 0;
     this.Guest.RoomBookingStatus = RoomBookingStatus.Checkin;
 
@@ -720,4 +752,51 @@ calculatePaidAndDues() {
       }
     );
   }
+
+       getHotelList() {
+      var obj: RequestModel = {
+        request: this.localService.encrypt(JSON.stringify({ })).toString()
+      }
+      this.dataLoading = true
+      this.service.getHotelList(obj).subscribe(r1 => {
+        let response = r1 as any
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+          this.filterHotel= this.HotelList;
+        } else {
+          this.toastr.error(response.Message)
+        }
+        this.dataLoading = false;
+      }, (err => {
+        this.toastr.error("Error while fetching records")
+        this.dataLoading = false;
+      }))
+    }
+
+    HotelList: any[] = [];
+    filterHotel: any[] = [];
+          filterHotelList(value: any) {
+      if (value) {
+        const filterValue = value.toLowerCase();
+        this.filterHotel = this.HotelList.filter((option: any) => option.HotelName.toLowerCase().includes(filterValue));
+      } else {
+        this.filterHotel = this.HotelList;
+      }
+    }
+  
+    afterHotelSelected(event: any) {
+      this.Hotel.HotelId  = event.option.id;
+      this.initializeAllData();
+    }
+
+    clearHotel() {
+      this.Hotel.HotelName = '';
+      this.Hotel.HotelId = 0;  
+      this.RoomList =[];
+      this.filteredRoomList = [];
+      this.GuestList = [];
+      this.filteredGuestList =[];
+      this.Guest.HotelId = null;
+      this.filterHotel = this.HotelList; 
+    }
 }
