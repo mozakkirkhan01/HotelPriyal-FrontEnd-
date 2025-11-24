@@ -25,6 +25,12 @@ import { ManageGuestComponent } from './admin/manage-guest/manage-guest.componen
 import { ManageRoomComponent } from './admin/manage-room/manage-room.component';
 import { ManageRoomBookingComponent } from './admin/manage-room-booking/manage-room-booking.component';
 import { GstComponent } from './admin/gst/gst.component';
+import { ManageRoomBookingListComponent } from './admin/manage-room-booking-list/manage-room-booking-list.component';
+import { ManageRoomBookingListTodayComponent } from './admin/manage-room-booking-list-today/manage-room-booking-list-today.component';
+import { ManageCancelRoomBookingListComponent } from './admin/manage-cancel-room-booking-list/manage-cancel-room-booking-list.component';
+import { OfficeExpenseCategoryComponent } from './admin/office-expense-category/office-expense-category.component';
+import { OfficeExpenseHeadComponent } from './admin/office-expense-head/office-expense-head.component';
+import { OfficeTransactionComponent } from './admin/office-transaction/office-transaction.component';
 
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
@@ -53,7 +59,14 @@ const routes: Routes = [
       { path: 'manage-guest', component: ManageGuestComponent },
       { path: 'manage-room', component: ManageRoomComponent },
       { path: 'manage-room-booking', component: ManageRoomBookingComponent },
+      { path: 'manage-room-booking/:id', component: ManageRoomBookingComponent },
       { path: 'gst', component: GstComponent },
+      { path: 'manage-room-booking-list', component: ManageRoomBookingListComponent },
+      { path: 'manage-room-booking-list-today', component: ManageRoomBookingListTodayComponent },
+      { path: 'manage-cancel-room-booking-list', component: ManageCancelRoomBookingListComponent },
+      { path: 'office-expense-category', component: OfficeExpenseCategoryComponent },
+      { path: 'office-expense-head', component: OfficeExpenseHeadComponent },
+      { path: 'office-transaction', component: OfficeTransactionComponent },
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },

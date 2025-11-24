@@ -17,10 +17,52 @@ export class AppService {
   getImageUrl(): string {
     return ConstantData.getBaseUrl();
   }
+// office-transaction
+  getOfficeTransactionList(obj: any) {
+    return this.http.post(this.apiUrl + "OETransaction/OfficeTransactionList", obj, { headers: this.headers })
+  }
+
+  saveOfficeTransaction(obj: any) {
+    return this.http.post(this.apiUrl + "OETransaction/saveOfficeTransaction", obj, { headers: this.headers })
+  }
+  
+  deleteOfficeTransaction(obj: any) {
+    return this.http.post(this.apiUrl + "OETransaction/deleteOfficeTransaction", obj, { headers: this.headers })
+  }
+
+
+  // office-expense-head
+  getOfficeExpenseHeadList(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseHead/OfficeExpenseHeadList", obj, { headers: this.headers })
+  }
+
+  saveOfficeExpenseHead(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseHead/saveOfficeExpenseHead", obj, { headers: this.headers })
+  }
+  deleteOfficeExpenseHead(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseHead/deleteOfficeExpenseHead", obj, { headers: this.headers })
+  }
+
+  // Office Expense Category
+
+  getOfficeExpenseCategoryList(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseCategory/OfficeExpenseCategoryList", obj, { headers: this.headers })
+  }
+
+  saveOfficeExpenseCategory(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseCategory/saveOfficeExpenseCategory", obj, { headers: this.headers })
+  }
+  deleteOfficeExpenseCategory(obj: any) {
+    return this.http.post(this.apiUrl + "OfficeExpenseCategory/deleteOfficeExpenseCategory", obj, { headers: this.headers })
+  }
 
   // Booking
   getBookingList(obj: any) {
     return this.http.post(this.apiUrl + "Booking/BookingList", obj, { headers: this.headers })
+  }
+
+    getBookingListById(obj: any) {
+    return this.http.post(this.apiUrl + "Booking/getBookingById", obj, { headers: this.headers })
   }
 
   saveBooking(obj: any) {

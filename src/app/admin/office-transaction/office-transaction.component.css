@@ -1,0 +1,8 @@
+.green-btn {
+  background-color: #217346 !important; /* Material green 500 */
+  color: white !important;
+  outline: none !important;
+  border-radius: 5px !important;
+  border: none !important;
+  padding: 5px 10px !important;
+}

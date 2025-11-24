@@ -1,0 +1,499 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{ action.MenuTitle }}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a routerLink="admin/admin-dashboard">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">{{ action.ParentMenuTitle }}</li>
+                    <li class="breadcrumb-item active">{{ action.MenuTitle }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex w-auto">
+                            <mat-form-field appearance="outline" class="col-sm-2">
+                                <mat-label>Entries per page</mat-label>
+                                <mat-select [(ngModel)]="itemPerPage">
+                                    <mat-option *ngFor="let option of PageSize" [value]="option">{{ option
+                                        }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" class="col-lg-2" [style]="{ 'margin-left': '30px' }">
+                                <mat-label>Start Date</mat-label>
+                                <input matInput [matDatepicker]="startPicker" name="StartFrom" #StartFrom="ngModel"
+                                    [(ngModel)]="filterModel.StartFrom">
+                                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #startPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-lg-2" [style]="{ 'margin-left': '10px' }">
+                                <mat-label>End Date</mat-label>
+                                <input matInput [matDatepicker]="endPicker" name="EndFrom" #EndFrom="ngModel"
+                                    [(ngModel)]="filterModel.EndFrom">
+                                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #endPicker></mat-datepicker>
+                            </mat-form-field>
+
+
+                            <mat-form-field appearance="outline" class="col-sm-2" [style]="{ 'margin-left': '10px' }">
+                                <mat-label>Booking Status</mat-label>
+                                <mat-select [(ngModel)]="filterModel.RoomBookingStatus" name="PaymentStatus">
+                                    <mat-option [value]="0">All</mat-option>
+                                    <mat-option [value]="status.Key" *ngFor="let status of RoomBookingStatusList">{{
+                                        status.Value
+                                        }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <button style="margin-top: 5px; margin-left: 10px" (click)="getBookingList()"
+                                mat-raised-button color="primary">
+                                Search
+                            </button>
+                            <mat-form-field appearance="outline" class="col-sm-2" [style]="{ 'margin-left': '10px' }">
+                                <mat-label>Search</mat-label>
+                                <input matInput [(ngModel)]="Search" placeholder="Search..." />
+                            </mat-form-field>
+                        </div>
+                        <div class="dataTable-search"></div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">S.No</th>
+                                <th style="cursor: pointer; text-align: center" (click)="sort('BookingDate')">
+                                    Booking Date
+                                </th>
+                                <th style="cursor: pointer; text-align: center" (click)="sort('BookingCode')">
+                                    Booking Code
+                                </th>
+                                <th style="cursor: pointer" (click)="sort('HotelName')">
+                                    Hotel Name
+                                </th>
+                                <th style="cursor: pointer" (click)="sort('GuestName')">
+                                    Guest Name
+                                </th>
+                                <!-- <th class="text-center" style="cursor: pointer" (click)="sort('BookingSourceName')">
+                                    Source
+                                </th> -->
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TaxableAmount')">
+                                    Taxable Amt.
+                                </th>
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TotalGST')">
+                                    GST Amt.
+                                </th>
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TotalDiscount')">
+                                    Disc Amt.
+                                </th>
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TotalAmount')">
+                                    Total Amt.
+                                </th>
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TotalPaidAmount')">
+                                    Paid Amt.
+                                </th>
+                                <th class="text-end" style="cursor: pointer" (click)="sort('TotalDuesAmount')">
+                                    Due Amt.
+                                </th>
+                                <!-- <th class="text-center" style="cursor: pointer; text-align: center"
+                                    (click)="sort('DeliveryStatus')">
+                                    Delivery Status
+                                </th> -->
+                                <th class="text-center" style="cursor: pointer; text-align: center"
+                                    (click)="sort('RoomBookingStatus')">
+                                    Status
+                                </th>
+                                <!-- <th class="text-center">Payment Mode</th> -->
+                                <!-- <th class="text-center" style="cursor: pointer; text-align: center"
+                                    (click)="sort('Status')">
+                                    Pay
+                                </th> -->
+                                <th class="text-center" style="cursor: pointer" (click)="sort('Bill')">
+                                    Bill
+                                </th>
+                                <th class="text-center" style="cursor: pointer" (click)="sort('View')">
+                                    View
+                                </th>
+
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="
+    let item of BookingList 
+      | filter : Search 
+      | orderBy : sortKey : false
+      | paginate : { itemsPerPage: itemPerPage, currentPage: p };
+    let i = index
+  " [ngClass]="{
+      'cancel-row': item.RoomBookingStatus == AllStatusList.Cancelled
+  }">
+
+                                <td style="text-align: center">
+                                    {{ itemPerPage * (p - 1) + i + 1 }}
+                                </td>
+                                <td style="text-align: center">
+                                    {{ item.BookingDate | date : "dd-MM-yyyy" }}
+                                </td>
+                                <td style="text-align: center">
+                                    {{ item.BookingCode }}
+                                </td>
+                                <td>{{ item.HotelName }}</td>
+                                <td>{{ item.GuestName }}</td>
+                                <!-- <td class="text-center">{{ item.BookingSourceName }}</td> -->
+                                <td class="text-end">{{ item.TaxableAmount | currency:'INR' }}</td>
+                                <td class="text-end">{{ item.TotalGST | currency:'INR' }}</td>
+                                <td class="text-end">{{ item.TotalDiscount | currency:'INR' }}</td>
+                                <td class="text-end">{{ item.TotalLineAmount | currency:'INR' }}</td>
+                                <td class="text-end">{{ item.TotalPaidAmount | currency:'INR' }}</td>
+                                <td class="text-end" style="color: red; font-weight: 600">
+                                    {{ item.TotalDuesAmount | currency:'INR' }}
+                                </td>
+
+                                <!-- <td style="text-align: center">
+                                    <span class="p-1" [ngClass]="
+                      item.DeliveryStatus === 1
+                        ? 'badge text-bg-success'
+                        : 'badge text-bg-danger'
+                    ">
+                                        {{ getDeliveryStatus(item?.DeliveryStatus) }}
+                                    </span>
+
+                                    <ng-container *ngIf="item.DeliveryStatus === 2">
+                                        <button style="margin-left: 14px" class="btn btn-primary btn-sm"
+                                            (click)="DeliveryModal(item)">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </ng-container>
+                                </td> -->
+
+                                <td class="text-center">
+                                    <span class="p-1" style="border-radius: 10%; font-size: 10px;" [ngClass]="{
+          'badge text-bg-success': item.RoomBookingStatus == AllStatusList.Checkin,
+          'badge text-bg-primary': item.RoomBookingStatus == AllStatusList.Checkout,
+          'badge text-bg-danger': item.RoomBookingStatus == AllStatusList.Cancelled
+        }">
+                                        {{ AllStatusList[item.RoomBookingStatus] }}
+                                    </span>
+                                </td>
+
+                                <!-- <td class="text-center">{{ item.PaymentModeName}}</td> -->
+
+
+                                <!-- Show Pay Due button only if PaymentStatus == 0 (due) -->
+                                <!-- <td class="text-center">
+                                    <ng-container *ngIf="item.PaymentStatus == 2; else paidTemplate">
+                                        <button class="btn btn-sm btn btn-primary" (click)="openViewModalForDue(item)">
+                                            <i class="bi bi-currency-rupee"></i>
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #paidTemplate>
+                                        <button class="btn btn-sm" style="pointer-events: none">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </ng-template>
+                                </td> -->
+
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success" (click)="getPrint(item)">
+                                        <i class="bi bi-printer"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn btn-primary" (click)="openViewModal(item)">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editBooking(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="DeleteBooking(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class=""></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th style="font-weight: 600;" class="text-right">Total</th>
+                                <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalTaxableAmount |
+                                    currency:'INR' }}</th>
+                                <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalGSTAmount |
+                                    currency:'INR' }}</th>
+                                <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalDiscountAmount |
+                                    currency:'INR' }}</th>
+                                <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalAmount |
+                                    currency:'INR' }}</th>
+                                <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalPaidAmount |
+                                    currency:'INR' }}</th>
+                                <th style="font-weight: 600;" class="text-right" style="color: red;">{{
+                                    BookingTotal.TotalDuesAmount | currency:'INR' }}</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float: right"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Form -->
+    <!-- View Details Modal -->
+    <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewDetailsModalLabel">
+                        Billing Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div *ngIf="DueBill" class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Billing Date:</strong>
+                                {{ selectedBill.BillingDate | date : "dd-MM-yyyy" }}
+                            </div>
+                            <div class="col-6">
+                                <strong>Receipt No.:</strong>
+                                {{ selectedBill.OpticalBillingCode }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Patient Name:</strong> {{ selectedBill.PatientName }}
+                            </div>
+                            <div class="col-6">
+                                <strong>Status :</strong>
+                                {{ AllStatusList[selectedBill.PaymentStatus] }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>UHID:</strong> {{ selectedBill.UHID }}
+                            </div>
+                            <div class="col-6">
+                                <strong>Payable Amount:</strong>
+                                {{ selectedBill.PayableAmount }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Age:</strong> {{ selectedBill.Age }}
+                            </div>
+                            <div class="col-6">
+                                <strong>Paid Amount:</strong> {{ selectedBill.PaidAmount }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Contact:</strong> {{ selectedBill.ContactNo }}
+                            </div>
+                            <div class="col-6">
+                                <strong>Due Amount:</strong> {{ selectedBill.DueAmount }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <!-- <div class="col-6">
+                                <strong>Delivery Status:</strong>
+                                {{ getDeliveryStatus(selectedBill?.DeliveryStatus) }}
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="">
+                        Opticals Details
+                    </div>
+                    <!-- Optical Items Table -->
+                    <div *ngIf="OpticalSellListALL?.length > 0">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item Name</th>
+                                    <th>Rate</th>
+                                    <th>Qty</th>
+                                    <th>Amount</th>
+                                    <th>Discount</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of OpticalSellListALL; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ item.OpticalName }}</td>
+                                    <td>{{ item.OpticalItemRate | number : "1.2-2" }}</td>
+                                    <td>{{ item.Quantity }}</td>
+                                    <td>{{ item.Amount | number : "1.2-2" }}</td>
+                                    <td>{{ item.Discount | number : "1.2-2" }}</td>
+                                    <td>{{ item.LineTotal | number : "1.2-2" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Optional fallback -->
+                    <div *ngIf="OpticalSellListALL?.length === 0" class="alert alert-warning mt-3">
+                        No item details found for this bill.
+                    </div>
+
+
+                    <div class="">
+                        Payments Details
+                    </div>
+
+
+                    <div *ngIf="OpticalSellListPayments?.length > 0">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Payment Date</th>
+                                    <th>Amount</th>
+                                    <th>Payment Mode</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of OpticalSellListPayments; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ item.PaymentDate | date : "dd-MM-yyyy" }}</td>
+                                    <td>{{ item.PaidAmount | number : "1.2-2" }}</td>
+                                    <td>{{PaymentModeAll[item.PaymentMode] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Optional fallback -->
+                    <div *ngIf="OpticalSellListALL?.length === 0" class="alert alert-warning mt-3">
+                        No item details found for this bill.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- view model for due  -->
+    <div class="modal fade" id="viewDueModal" tabindex="-2" aria-labelledby="viewDueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewDueModalLabel">Due Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div style="padding: 30px;">
+                    <mat-form-field appearance="outline" class="col-lg-2 ">
+                        <mat-label>Payment date</mat-label>
+                        <input matInput [matDatepicker]="pickers" name="PaymentDate " required #PaymentDate="ngModel"
+                            [(ngModel)]="DueBill.PaymentDate" />
+                        <mat-datepicker-toggle matSuffix [for]="pickers"
+                            class="small-datepicker-icon"></mat-datepicker-toggle>
+                        <mat-datepicker #pickers></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-lg-2">
+                        <mat-label>Amount</mat-label>
+                        <input matInput type="number" name="Amount" [(ngModel)]="DueBill.DueAmount" required
+                            class="no-spinner" readonly />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-sm-3">
+                        <mat-label>Payment Mode</mat-label>
+                        <mat-select #PaymentMode="ngModel" name="PaymentMode" [(ngModel)]="DueBill.PaymentMode" required
+                            class="no-spinner">
+                            <mat-option [value]="PaymentMode.Key" *ngFor="let PaymentMode of PaymentModeList">{{
+                                PaymentMode.Value
+                                }}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="
+                      PaymentMode.dirty ||
+                      PaymentMode.touched ||
+                      (PaymentMode.invalid && isSubmitted)
+                    ">
+                            Payment Mode is <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- <button (click)="ClearDueAmount(DueBill)" mat-raised-button color="primary">
+                        Make Payment
+                    </button> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="DeliveryModal" tabindex="-2" aria-labelledby="viewDueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewDueModalLabel">Due Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div style="padding: 30px;">
+                    <mat-form-field appearance="outline" class="col-lg-2 ">
+                        <mat-label>Delivery date</mat-label>
+                        <input matInput [matDatepicker]="picker" name="DeliveryDate " required #DeliveryDate="ngModel"
+                            [(ngModel)]="Deliverystatus.DeliveryDate" />
+                        <mat-datepicker-toggle matSuffix [for]="pickers"
+                            class="small-datepicker-icon"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+
+
+                    <!-- <mat-form-field appearance="outline" class="col-sm-3">
+                        <mat-label>Delivery Status</mat-label>
+                        <mat-select #PaymentMode="ngModel" name="PaymentMode"
+                            [(ngModel)]="Deliverystatus.DeliveryStatus" required class="no-spinner">
+                            <mat-option [value]="DeliveryStatus.Key"
+                                *ngFor="let DeliveryStatus of DeliveryStatusList">{{
+                                DeliveryStatus.Value }}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="
+                      PaymentMode.dirty ||
+                      PaymentMode.touched ||
+                      (PaymentMode.invalid && isSubmitted)
+                    ">
+                            Payment Mode is <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+                    <button (click)="DeliveryStatusUpdate(Deliverystatus)" mat-raised-button color="primary">
+                        Delivery Optical
+                    </button> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>

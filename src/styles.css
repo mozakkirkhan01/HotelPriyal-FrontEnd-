@@ -707,4 +707,18 @@
     min-height: 100vh;
   }
   
+/* 
+  .cancel-row {
+  border: 2px solid red !important;
+  border-left: 2px solid red !important;
+  border-right: 2px solid red !important;
+  border-top: 2px solid red !important;
+  border-bottom: 2px solid red !important;
+} */
+
+.cancel-row {
+  border-left: 4px solid red !important;
+  background-color: #ffe5e5 !important; /* light red shade */
+}
+
   

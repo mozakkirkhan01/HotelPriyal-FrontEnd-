@@ -57,7 +57,12 @@ import { ManageRoomComponent } from './admin/manage-room/manage-room.component';
 import { ManageRoomBookingComponent } from './admin/manage-room-booking/manage-room-booking.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { GstComponent } from './admin/gst/gst.component';
-import { ManageBookingListComponent } from './admin/manage-booking-list/manage-booking-list.component';
+import { ManageRoomBookingListComponent } from './admin/manage-room-booking-list/manage-room-booking-list.component';
+import { ManageRoomBookingListTodayComponent } from './admin/manage-room-booking-list-today/manage-room-booking-list-today.component';
+import { ManageCancelRoomBookingListComponent } from './admin/manage-cancel-room-booking-list/manage-cancel-room-booking-list.component';
+import { OfficeExpenseCategoryComponent } from './admin/office-expense-category/office-expense-category.component';
+import { OfficeExpenseHeadComponent } from './admin/office-expense-head/office-expense-head.component';
+import { OfficeTransactionComponent } from './admin/office-transaction/office-transaction.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +97,12 @@ import { ManageBookingListComponent } from './admin/manage-booking-list/manage-b
     ManageRoomComponent,
     ManageRoomBookingComponent,
     GstComponent,
-    ManageBookingListComponent,
+    ManageRoomBookingListComponent,
+    ManageRoomBookingListTodayComponent,
+    ManageCancelRoomBookingListComponent,
+    OfficeExpenseCategoryComponent,
+    OfficeExpenseHeadComponent,
+    OfficeTransactionComponent,
   ],
   imports: [
     BrowserModule,

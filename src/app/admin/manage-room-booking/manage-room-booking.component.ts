@@ -35,7 +35,7 @@ export class ManageRoomBookingComponent {
   FeeChargeList: any = [];
   Guest: any = {};
   Room: any = {};
-  Hotel:any = {};
+  Hotel: any = {};
   RoomBookingDetails: any = {};
   Payment: any = {};
   isSubmitted = false;
@@ -46,7 +46,7 @@ export class ManageRoomBookingComponent {
   sortKey: string = '';
   itemPerPage: number = this.PageSize[0];
   StateList: any[] = [];
-  BookingSourceTypeList: any[] = [];  
+  BookingSourceTypeList: any[] = [];
   filterState: any[] = [];
   StatusList = this.loadData.GetEnumList(Status);
   GenderList = this.loadData.GetEnumList(Gender);
@@ -92,23 +92,34 @@ export class ManageRoomBookingComponent {
   ) {}
   redUrl: string = '';
 
-  ngOnInit(): void {
-    this.staffLogin = this.localService.getEmployeeDetail();
-    console.log(this.staffLogin);
-    
-    this.validiateMenu();
-    this.resetForm();
-    console.log("Role ID:", this.staffLogin.RoleId);
+ ngOnInit(): void {
+  this.staffLogin = this.localService.getEmployeeDetail();
+  this.resetForm();
 
+  this.route.queryParams.subscribe((params: any) => {
+    this.Guest.RoomBookingId = params.id;
+    this.redUrl = params.redUrl;
+    
+    // Validate menu with clean URL (without query params)
+    this.validiateMenu();
+    
+    if (this.Guest.RoomBookingId > 0) {
+      this.loadBookingForEdit(this.Guest.RoomBookingId);
+      return;
+    }
+
+    // only run when NOT editing
     if(this.staffLogin.RoleId == 5){
       this.getHotelList();
     }
     else{
       this.initializeAllData();
     }
-  }
+  });
+}
 
-  initializeAllData(){
+
+  initializeAllData() {
     this.getGuestList();
     this.getRoomList();
     this.getGSTList();
@@ -138,8 +149,6 @@ export class ManageRoomBookingComponent {
       CheckInTime: this.loadData.getCurrentTime(),
       RoomId: null,
     };
-
-
   }
 
   initializePayment() {
@@ -150,40 +159,136 @@ export class ManageRoomBookingComponent {
       PaymentMode: null,
       TransactionNo: '',
     };
-
-    
   }
 
   validiateMenu() {
-    var obj: RequestModel = {
-      request: this.localService
-        .encrypt(
-          JSON.stringify({
-            Url: this.router.url,
-            StaffLoginId: this.staffLogin.StaffLoginId,
-          })
-        )
-        .toString(),
-    };
-    this.dataLoading = true;
-    this.service.validiateMenu(obj).subscribe(
-      (response: any) => {
-        this.action = this.loadData.validiateMenu(
-          response,
-          this.toastr,
-          this.router
-        );
-        this.dataLoading = false;
-      },
-      (err) => {
-        this.toastr.error('Error while fetching records');
-        this.dataLoading = false;
-      }
-    );
-  }
+  // Strip query parameters from URL
+  const cleanUrl = this.router.url.split('?')[0];
+  
+  var obj: RequestModel = {
+    request: this.localService
+      .encrypt(
+        JSON.stringify({
+          Url: cleanUrl,  // Use clean URL without query params
+          StaffLoginId: this.staffLogin.StaffLoginId,
+        })
+      )
+      .toString(),
+  };
+  
+  this.dataLoading = true;
+  this.service.validiateMenu(obj).subscribe(
+    (response: any) => {
+      this.action = this.loadData.validiateMenu(
+        response,
+        this.toastr,
+        this.router
+      );
+      this.dataLoading = false;
+    },
+    (err) => {
+      this.toastr.error('Error while fetching records');
+      this.dataLoading = false;
+    }
+  );
+}
 
   @ViewChild('formGuestDetails') formGuestDetails: NgForm;
 
+loadBookingForEdit(bookingId: number) {
+  const obj: RequestModel = {
+    request: this.localService.encrypt(JSON.stringify(bookingId)).toString(),
+  };
+
+  this.dataLoading = true;
+  this.service.getBookingListById(obj).subscribe(
+    (response: any) => {
+      if (response.Message === 'Success') {
+        const booking = response.GetRoomBooking;
+        
+        // ✅ For admin role, load hotel list first if not already loaded
+        if (this.staffLogin.RoleId == 5 && (!this.HotelList || this.HotelList.length === 0)) {
+          this.getHotelList();
+        }
+        
+        // ✅ Set hotel details
+        if (this.staffLogin.RoleId == 5) {
+          this.Hotel.HotelId = booking.HotelId;
+          
+          // ✅ If HotelList is already loaded, set the name
+          if (this.HotelList && this.HotelList.length > 0) {
+            const selectedHotel = this.HotelList.find((h: any) => h.HotelId === booking.HotelId);
+            if (selectedHotel) {
+              this.Hotel.HotelName = selectedHotel.HotelName;
+            }
+          } else {
+            // ✅ Otherwise, wait a bit for getHotelList to complete, then set
+            setTimeout(() => {
+              const selectedHotel = this.HotelList.find((h: any) => h.HotelId === booking.HotelId);
+              if (selectedHotel) {
+                this.Hotel.HotelName = selectedHotel.HotelName;
+              }
+            }, 500);
+          }
+        }
+        
+        this.getGSTList();
+        this.getBookingSourceTypeList();
+
+        // --- Guest ---
+        this.Guest = response.GetGuest;
+        this.selectedGuestId = this.Guest.GuestId;
+        this.isNewGuest = false;
+
+        // --- Room Booking ---
+        this.Guest.BookingDate = this.loadData.loadDateYMD(booking.BookingDate);
+        this.Guest.BookingSourcetypeId = booking.BookingSourceTypeId;
+        this.Guest.RoomBookingId = booking.RoomBookingId;
+        this.Guest.TotalLineAmount = booking.TotalLineAmount;
+        this.Guest.TotalDiscount = booking.TotalDiscount;
+        this.Guest.TaxableAmount = booking.TaxableAmount;
+        this.Guest.TotalGST = booking.TotalGST;
+        this.Guest.TotalCGST = booking.TotalCGST;
+        this.Guest.TotalSGST = booking.TotalSGST;
+        this.Guest.TotalIGST = booking.TotalIGST;
+        this.Guest.TotalPaidAmount = booking.TotalPaidAmount;
+        this.Guest.TotalDuesAmount = booking.TotalDuesAmount;
+        this.Guest.HotelId = booking.HotelId;
+
+        // ✅ Load guest and room lists
+        this.getGuestList();
+        this.getRoomList();
+
+        // --- Room Details ---
+        this.SelectedRoomDetailList = response.GetRoomDetails.map((item: any) => {
+          return {
+            ...item,
+            CheckInDate: this.loadData.loadDateYMD(item.CheckInDate),
+          };
+        });
+
+        // --- Payment Details ---
+        this.SelectedPaymentCollectionList = response.GetPaymentDetails.map((p: any) => {
+          return {
+            ...p,
+            PaymentDate: this.loadData.loadDateYMD(p.PaymentDate),
+          };
+        });
+
+        this.recalculateTotals();
+        this.toastr.success('Booking loaded for editing');
+      } else {
+        this.toastr.error(response.Message);
+      }
+
+      this.dataLoading = false;
+    },
+    (err) => {
+      this.toastr.error('Error while loading booking details');
+      this.dataLoading = false;
+    }
+  );
+}
   getGSTList() {
     this.dataLoading = true;
     var obj: RequestModel = {
@@ -194,6 +299,7 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.GSTList = response.GSTList;
+          console.log('GST List:', this.GSTList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -216,6 +322,7 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.GuestList = response.GuestList;
+          console.log('Guest List:', this.GuestList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -228,8 +335,6 @@ export class ManageRoomBookingComponent {
     );
   }
 
-  
-
   getBookingSourceTypeList() {
     this.dataLoading = true;
     var obj: RequestModel = {
@@ -240,6 +345,7 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.BookingSourceTypeList = response.BookingSourceTypeList;
+          console.log('Booking Source Type List:', this.BookingSourceTypeList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -253,10 +359,10 @@ export class ManageRoomBookingComponent {
   }
 
   resetForm() {
-    this.Guest = { 
+    this.Guest = {
       BookingDate: this.loadData.loadDateYMD(new Date()),
       TotalPaidAmount: 0,
-      TotalDuesAmount: 0
+      TotalDuesAmount: 0,
     };
     this.isNewGuest = false;
     this.selectedGuestId = null;
@@ -333,7 +439,10 @@ export class ManageRoomBookingComponent {
   // room
 
   getRoomList() {
-    const hotelId = this.staffLogin.RoleId == 5 ? this.Hotel.HotelId : (this.Guest.HotelId || this.staffLogin.HotelId);
+    const hotelId =
+      this.staffLogin.RoleId == 5
+        ? this.Hotel.HotelId
+        : this.Guest.HotelId || this.staffLogin.HotelId;
     const data = {
       HotelId: hotelId,
       IsAvailable: true,
@@ -348,6 +457,7 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.RoomList = response.RoomList;
+          console.log('Room List:', this.RoomList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -533,7 +643,7 @@ export class ManageRoomBookingComponent {
       this.toastr.error('Please enter number of person!');
       return;
     }
-    this.RoomBookingDetails.RoomBookingDetailStatus = BookingStatus.Checkin
+    this.RoomBookingDetails.RoomBookingDetailStatus = BookingStatus.Checkin;
     const roomDetail = { ...this.RoomBookingDetails };
     if (this.editingRoomIndex >= 0) {
       this.SelectedRoomDetailList[this.editingRoomIndex] = roomDetail;
@@ -561,55 +671,55 @@ export class ManageRoomBookingComponent {
   }
 
   recalculateTotals() {
-  let totalDiscount = 0,
-    totalTaxable = 0,
-    totalCGST = 0,
-    totalSGST = 0,
-    totalIGST = 0,
-    totalGST = 0,
-    totalLineAmount = 0;
+    let totalDiscount = 0,
+      totalTaxable = 0,
+      totalCGST = 0,
+      totalSGST = 0,
+      totalIGST = 0,
+      totalGST = 0,
+      totalLineAmount = 0;
 
-  this.SelectedRoomDetailList.forEach(
-    (item: {
-      DiscountAmount: any;
-      TaxableAmount: any;
-      CGST: any;
-      SGST: any;
-      IGST: any;
-      TotalGSTAmount: any;
-      LineTotal: any;
-    }) => {
-      totalDiscount += item.DiscountAmount || 0;
-      totalTaxable += item.TaxableAmount || 0;
-      totalCGST += item.CGST || 0;
-      totalSGST += item.SGST || 0;
-      totalIGST += item.IGST || 0;
-      totalGST += item.TotalGSTAmount || 0;
-      totalLineAmount += item.LineTotal || 0;
-    }
-  );
+    this.SelectedRoomDetailList.forEach(
+      (item: {
+        DiscountAmount: any;
+        TaxableAmount: any;
+        CGST: any;
+        SGST: any;
+        IGST: any;
+        TotalGSTAmount: any;
+        LineTotal: any;
+      }) => {
+        totalDiscount += item.DiscountAmount || 0;
+        totalTaxable += item.TaxableAmount || 0;
+        totalCGST += item.CGST || 0;
+        totalSGST += item.SGST || 0;
+        totalIGST += item.IGST || 0;
+        totalGST += item.TotalGSTAmount || 0;
+        totalLineAmount += item.LineTotal || 0;
+      }
+    );
 
-  this.Guest.TotalDiscount = totalDiscount;
-  this.Guest.TaxableAmount = totalTaxable;
-  this.Guest.TotalCGST = totalCGST;
-  this.Guest.TotalSGST = totalSGST;
-  this.Guest.TotalIGST = totalIGST;
-  this.Guest.TotalGST = totalGST;
-  this.Guest.TotalLineAmount = totalLineAmount;
+    this.Guest.TotalDiscount = totalDiscount;
+    this.Guest.TaxableAmount = totalTaxable;
+    this.Guest.TotalCGST = totalCGST;
+    this.Guest.TotalSGST = totalSGST;
+    this.Guest.TotalIGST = totalIGST;
+    this.Guest.TotalGST = totalGST;
+    this.Guest.TotalLineAmount = totalLineAmount;
 
-  // Calculate paid and dues
-  this.calculatePaidAndDues();
-  this.updatePaymentPaidAmount();
-}
+    // Calculate paid and dues
+    this.calculatePaidAndDues();
+    this.updatePaymentPaidAmount();
+  }
 
-calculatePaidAndDues() {
-  const totalPaid = this.SelectedPaymentCollectionList.reduce(
-    (sum, p) => sum + (p.PaidAmount || 0),
-    0
-  );
-  this.Guest.TotalPaidAmount = totalPaid;
-  this.Guest.TotalDuesAmount = (this.Guest.TotalLineAmount || 0) - totalPaid;
-}
+  calculatePaidAndDues() {
+    const totalPaid = this.SelectedPaymentCollectionList.reduce(
+      (sum, p) => sum + (p.PaidAmount || 0),
+      0
+    );
+    this.Guest.TotalPaidAmount = totalPaid;
+    this.Guest.TotalDuesAmount = (this.Guest.TotalLineAmount || 0) - totalPaid;
+  }
 
   updatePaymentPaidAmount() {
     const totalPaid = this.SelectedPaymentCollectionList.reduce(
@@ -618,7 +728,6 @@ calculatePaidAndDues() {
     );
     const remaining = (this.Guest.TotalLineAmount || 0) - totalPaid;
     this.Payment.PaidAmount = remaining > 0 ? remaining : 0;
-
   }
 
   addToPaymentList() {
@@ -668,135 +777,212 @@ calculatePaidAndDues() {
   }
 
   saveRoomBooking() {
-    this.isSubmitted = true;
+  this.isSubmitted = true;
 
-
-    if(this.staffLogin.RoleId === 5) {
-      if(!this.Hotel || !this.Hotel.HotelId) {
-        this.toastr.error('Please select a hotel!');
-        return;
-      }
-    }
-    
-    if(!this.Guest.GuestName) {
-      this.toastr.error('Please enter guest name!');
+  if (this.staffLogin.RoleId === 5) {
+    if (!this.Hotel || !this.Hotel.HotelId) {
+      this.toastr.error('Please select a hotel!');
       return;
     }
+  }
 
-    if (
-      !this.SelectedRoomDetailList ||
-      this.SelectedRoomDetailList.length === 0
-    ) {
-      this.toastr.error('Please add at least one Room Details!');
-      return;
-    }
+  if (!this.Guest.GuestName) {
+    this.toastr.error('Please enter guest name!');
+    return;
+  }
 
-      if(!this.Guest.BookingSourcetypeId) {
-      this.toastr.error('Please select booking source!');
-      return;
-    }
+  if (
+    !this.SelectedRoomDetailList ||
+    this.SelectedRoomDetailList.length === 0
+  ) {
+    this.toastr.error('Please add at least one Room Details!');
+    return;
+  }
 
-    this.Guest.CreatedBy = this.staffLogin.StaffLoginId;
-    this.Guest.UpdatedBy = this.staffLogin.StaffLoginId;
-    this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
-    
-    if(this.staffLogin.RoleId == 5){
-      this.Guest.HotelId = this.Hotel.HotelId;
-      console.log("Admin hotel ID:", this.Hotel.HotelId);
-    }
-    else{
-      this.Guest.HotelId = this.staffLogin.HotelId;
-      console.log("Setting hotel ID to staff's hotel:", this.Guest.HotelId);
-    }
-    this.Guest.GuestId = this.selectedGuestId || 0;
-    this.Guest.RoomBookingStatus = RoomBookingStatus.Checkin;
+  if (!this.Guest.BookingSourcetypeId) {
+    this.toastr.error('Please select booking source!');
+    return;
+  }
 
-    const data = {
-      GetGuest: this.Guest,
-      GetRoomBooking: this.Guest,
-      GetRoomDetails: this.SelectedRoomDetailList,
-      GetPaymentDetails: this.SelectedPaymentCollectionList,
-    };
-    console.log(data);
+  this.Guest.CreatedBy = this.staffLogin.StaffLoginId;
+  this.Guest.UpdatedBy = this.staffLogin.StaffLoginId;
+  this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
 
-    const obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify(data)).toString(),
-    };
+  // Set HotelId
+  let hotelId: number;
+  if (this.staffLogin.RoleId == 5) {
+    hotelId = this.Hotel.HotelId;
+    console.log('Admin hotel ID:', hotelId);
+  } else {
+    hotelId = this.staffLogin.HotelId;
+    console.log("Setting hotel ID to staff's hotel:", hotelId);
+  }
 
-    this.dataLoading = true;
-    this.service.saveBooking(obj).subscribe(
-      (r1) => {
-        const response = r1 as any;
+  this.Guest.HotelId = hotelId;
+  this.Guest.GuestId = this.selectedGuestId || 0;
+  this.Guest.RoomBookingStatus =
+  this.Guest.RoomBookingStatus ?? RoomBookingStatus.Checkin;
 
-        if (response.Message === ConstantData.SuccessMessage) {
-          if (this.Guest.BookingId > 0) {
-            this.toastr.success('Booking Updated successfully');
-            $('hashtag#staticBackdrop').modal('hide');
-          } else {
-            this.toastr.success('Booking added successfully');
+
+  console.log('Guest data:', this.Guest.RoomBookingStatus);
+  
+
+
+  const data = {
+    GetGuest: {
+      GuestId: this.Guest.GuestId || 0,
+      HotelId: hotelId,
+      GuestName: this.Guest.GuestName,
+      ContactNo: this.Guest.ContactNo,
+      AlternativeMobileNo: this.Guest.AlternativeMobileNo,
+      Email: this.Guest.Email,
+      Address: this.Guest.Address,
+      Pincode: this.Guest.Pincode,
+      StateId: this.Guest.StateId,
+      GSTNo: this.Guest.GSTNo,
+      AadharNo: this.Guest.AadharNo,
+      CompanyName: this.Guest.CompanyName,
+    },
+    GetRoomBooking: {
+      RoomBookingId: this.Guest.RoomBookingId || 0,  // ✅ CRITICAL for edit
+      HotelId: hotelId,  // ✅ Added HotelId
+      BookingSourceTypeId: this.Guest.BookingSourcetypeId,
+      BookingDate: this.Guest.BookingDate,
+      TotalLineAmount: this.Guest.TotalLineAmount || 0,
+      TotalDiscount: this.Guest.TotalDiscount || 0,
+      TaxableAmount: this.Guest.TaxableAmount || 0,
+      TotalGST: this.Guest.TotalGST || 0,
+      TotalCGST: this.Guest.TotalCGST || 0,
+      TotalSGST: this.Guest.TotalSGST || 0,
+      TotalIGST: this.Guest.TotalIGST || 0,
+      TotalPaidAmount: this.Guest.TotalPaidAmount || 0,
+      TotalDuesAmount: this.Guest.TotalDuesAmount || 0,
+      RoomBookingStatus: this.Guest.RoomBookingStatus,
+      CreatedBy: this.Guest.CreatedBy,
+      UpdatedBy: this.Guest.UpdatedBy,
+    },
+    GetRoomDetails: this.SelectedRoomDetailList.map((room: { RoomId: any; NoOfPerson: any; NoOfChild: any; NoOfAdult: any; CheckInDate: any; CheckInTime: any; ChargeAmount: any; NoOfDays: any; DiscountAmount: any; TaxableAmount: any; GSTId: any; GSTPercentage: any; CGST: any; SGST: any; IGST: any; TotalGSTAmount: any; LineTotal: any; RoomBookingDetailStatus: any; }) => ({
+      RoomId: room.RoomId,
+      NoOfPerson: room.NoOfPerson || 0,
+      NoOfChild: room.NoOfChild || 0,
+      NoOfAdult: room.NoOfAdult || 0,
+      CheckInDate: room.CheckInDate,
+      CheckInTime: room.CheckInTime,
+      ChargeAmount: room.ChargeAmount || 0,
+      NoOfDays: room.NoOfDays || 1,
+      DiscountAmount: room.DiscountAmount || 0,
+      TaxableAmount: room.TaxableAmount || 0,
+      GSTId: room.GSTId,
+      GSTPercentage: room.GSTPercentage || 0,
+      CGST: room.CGST || 0,
+      SGST: room.SGST || 0,
+      IGST: room.IGST || 0,
+      TotalGSTAmount: room.TotalGSTAmount || 0,
+      LineTotal: room.LineTotal || 0,
+      RoomBookingDetailStatus: room.RoomBookingDetailStatus || BookingStatus.Checkin,
+    })),
+    GetPaymentDetails: this.SelectedPaymentCollectionList.map(payment => ({
+      PaymentDate: payment.PaymentDate,
+      PaidAmount: payment.PaidAmount || 0,
+      PaymentType: payment.PaymentType,
+      PaymentMode: payment.PaymentMode,
+      TransactionNo: payment.TransactionNo || '',
+    })),
+  };
+
+  console.log('Sending data:', data);
+
+  const obj: RequestModel = {
+    request: this.localService.encrypt(JSON.stringify(data)).toString(),
+  };
+
+  this.dataLoading = true;
+  this.service.saveBooking(obj).subscribe(
+    (r1) => {
+      const response = r1 as any;
+
+      if (response.Message === ConstantData.SuccessMessage) {
+        if (this.Guest.RoomBookingId > 0) {
+          this.toastr.success('Booking Updated successfully');
+          
+          // Navigate back if redUrl exists
+          if (this.redUrl) {
+            this.router.navigate([this.redUrl]);
           }
-          //  this.service.PrintOpticlalBill(response.OpticalBillingId);
-          this.SelectedRoomDetailList = [];
-          this.SelectedPaymentCollectionList = [];
-          this.resetForm();
+        } else {
+          this.toastr.success('Booking added successfully');
+        }
+        
+        this.SelectedRoomDetailList = [];
+        this.SelectedPaymentCollectionList = [];
+        this.resetForm();
+        
+        if (!this.redUrl) {
           this.initializeAllData();
+        }
+      } else {
+        this.toastr.error(response.Message);
+      }
+
+      this.dataLoading = false;
+    },
+    (err) => {
+      this.toastr.error('Error occurred while submitting data');
+      this.dataLoading = false;
+    }
+  );
+}
+
+  getHotelList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getHotelList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+          this.filterHotel = this.HotelList;
         } else {
           this.toastr.error(response.Message);
         }
-
         this.dataLoading = false;
       },
       (err) => {
-        this.toastr.error('Error occurred while submitting data');
+        this.toastr.error('Error while fetching records');
         this.dataLoading = false;
       }
     );
   }
 
-       getHotelList() {
-      var obj: RequestModel = {
-        request: this.localService.encrypt(JSON.stringify({ })).toString()
-      }
-      this.dataLoading = true
-      this.service.getHotelList(obj).subscribe(r1 => {
-        let response = r1 as any
-        if (response.Message == ConstantData.SuccessMessage) {
-          this.HotelList = response.HotelList;
-          this.filterHotel= this.HotelList;
-        } else {
-          this.toastr.error(response.Message)
-        }
-        this.dataLoading = false;
-      }, (err => {
-        this.toastr.error("Error while fetching records")
-        this.dataLoading = false;
-      }))
+  HotelList: any[] = [];
+  filterHotel: any[] = [];
+  filterHotelList(value: any) {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      this.filterHotel = this.HotelList.filter((option: any) =>
+        option.HotelName.toLowerCase().includes(filterValue)
+      );
+    } else {
+      this.filterHotel = this.HotelList;
     }
+  }
 
-    HotelList: any[] = [];
-    filterHotel: any[] = [];
-          filterHotelList(value: any) {
-      if (value) {
-        const filterValue = value.toLowerCase();
-        this.filterHotel = this.HotelList.filter((option: any) => option.HotelName.toLowerCase().includes(filterValue));
-      } else {
-        this.filterHotel = this.HotelList;
-      }
-    }
-  
-    afterHotelSelected(event: any) {
-      this.Hotel.HotelId  = event.option.id;
-      this.initializeAllData();
-    }
+  afterHotelSelected(event: any) {
+    this.Hotel.HotelId = event.option.id;
+    this.initializeAllData();
+  }
 
-    clearHotel() {
-      this.Hotel.HotelName = '';
-      this.Hotel.HotelId = 0;  
-      this.RoomList =[];
-      this.filteredRoomList = [];
-      this.GuestList = [];
-      this.filteredGuestList =[];
-      this.Guest.HotelId = null;
-      this.filterHotel = this.HotelList; 
-    }
+  clearHotel() {
+    this.Hotel.HotelName = '';
+    this.Hotel.HotelId = 0;
+    this.RoomList = [];
+    this.filteredRoomList = [];
+    this.GuestList = [];
+    this.filteredGuestList = [];
+    this.Guest.HotelId = null;
+    this.filterHotel = this.HotelList;
+  }
 }
+

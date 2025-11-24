@@ -1,0 +1,266 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Office
+                Transaction</button>
+        </div>
+
+        <mat-form-field appearance="outline" class="col-lg-2">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="pickers" [(ngModel)]="Filter.FromDate" name="FromDate" />
+            <mat-datepicker-toggle matSuffix [for]="pickers" class="small-datepicker-icon"></mat-datepicker-toggle>
+            <mat-datepicker #pickers></mat-datepicker>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="outline" class="col-lg-2">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="Filter.ToDate" name="ToDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker" class="small-datepicker-icon"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-sm-2">
+            <mat-label>Expense Category</mat-label>
+            <mat-select #OECategoryId="ngModel" name="OECategoryId" [(ngModel)]="Filter.OECategoryId">
+                <mat-option [value]="0">All</mat-option>
+                <mat-option [value]="oe.OECategoryId"
+                    *ngFor="let oe of OfficeExpenseCategoryListForFilter">{{oe.OECategoryName}}</mat-option>
+            </mat-select>
+
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-sm-2">
+            <mat-label>Expense Head</mat-label>
+            <mat-select #OEHeadId="ngModel" name="OEHeadId" [(ngModel)]="Filter.OEHeadId">
+                <mat-option [value]="0">All</mat-option>
+                <mat-option [value]="oe.OEHeadId"
+                    *ngFor="let oe of OfficeExpenseHeadListForFilter">{{oe.OEHeadName}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="col-sm-4  d-flex align-items-top gap-2">
+            <button type="submit" mat-raised-button color="accent" (click)="getOfficeTransactionList()"
+                class="px-3 py-1 text-sm">
+                Search
+            </button>
+
+
+
+
+            <button mat-raised-button color="warn" (click)="resetFilter()">Reset</button>
+
+            <button mat-raised-button class="green-btn" (click)="ExportTOExcel1()">
+                Export to Excel
+            </button>
+        </div>
+
+
+    </div>
+
+    <section class="section dashboard mt-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('OETransactionDate')">Transaction Date</th>
+                                <th style="cursor:pointer;" (click)="sort('OECategoryName')">Expense Category</th>
+                                <th style="cursor:pointer;" (click)="sort('OEHeadName')">Expense Head</th>
+                                <th style="cursor:pointer;" (click)="sort('Particular')">Particular</th>
+                                <th class="text-right" style="cursor:pointer; text-align: right;"
+                                    (click)="sort('Amount')">Amount</th>
+                                <th style="cursor:pointer;" (click)="sort('Remarks')">Remarks</th>
+                                <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center" *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of OfficeTransactionList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.OETransactionDate | date:'dd/MM/yyyy'}}</td>
+                                <td>{{item.OECategoryName}}</td>
+                                <td>{{item.OEHeadName}}</td>
+                                <td>{{item.Particular}}</td>
+                                <td class="text-right">{{item.Amount | currency:'INR'}}</td>
+                                <td>{{item.Remarks}}</td>
+                                <td class="text-center" *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editOfficeTransaction(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center" *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteOfficeTransaction(item)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end"><strong>Total Amount:</strong></td>
+                                <td class="text-end" style="font-weight: bold;">{{TotalAmount.SumOfTotalAmount |
+                                    currency:'INR'}}</td>
+                                <td></td>
+                                <td *ngIf="action.CanEdit"></td>
+                                <td *ngIf="action.CanDelete"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{OfficeTransaction.OETransactionId > 0
+                        ?'Update':'New'}} OfficeTransaction
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formOfficeTransaction="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+
+                                <mat-form-field appearance="outline" class="col-lg-6">
+                                    <mat-label>Transaction Date</mat-label>
+                                    <input matInput [matDatepicker]="TransactionDatePicker"
+                                        [(ngModel)]="OfficeTransaction.OETransactionDate" name="TransactionDate"
+                                        required (click)="TransactionDatePicker.open()" />
+                                    <mat-datepicker-toggle matSuffix
+                                        [for]="TransactionDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #TransactionDatePicker disabled="false"></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Expense Category</mat-label>
+                                    <mat-select #OECategoryId="ngModel" name="OECategoryId"
+                                        [(ngModel)]="OfficeTransaction.OECategoryId" required
+                                        (ngModelChange)="afterCategorySelected($event)">
+                                        <mat-option [value]="oe.OECategoryId"
+                                            *ngFor="let oe of OfficeExpenseCategoryList">{{oe.OECategoryName}}</mat-option>
+                                    </mat-select>
+                                    <mat-error
+                                        *ngIf="(OECategoryId.dirty  || OECategoryId.touched) || (OECategoryId.invalid && isSubmitted)">
+                                        Expense Category is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Expense Head</mat-label>
+                                    <mat-select #OEHeadId="ngModel" name="OEHeadId"
+                                        [(ngModel)]="OfficeTransaction.OEHeadId" required>
+                                        <mat-option [value]="oe.OEHeadId"
+                                            *ngFor="let oe of OfficeExpenseHeadList">{{oe.OEHeadName}}</mat-option>
+                                    </mat-select>
+                                    <mat-error
+                                        *ngIf="(OEHeadId.dirty  || OEHeadId.touched) || (OEHeadId.invalid && isSubmitted)">
+                                        Expense Head is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Particular</mat-label>
+                                    <input matInput #Particular="ngModel" name="Particular"
+                                        [(ngModel)]="OfficeTransaction.Particular" required autofocus>
+                                    <mat-error>
+                                        Particular is <strong>required</strong>
+                                    </mat-error>
+
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Amount</mat-label>
+                                    <input matInput #Amount="ngModel" name="Amount"
+                                        [(ngModel)]="OfficeTransaction.Amount" required autofocus>
+                                    <mat-error>
+                                        Amount is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- textarea description -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Remarks</mat-label>
+                                    <textarea matInput #Remarks="ngModel" name="Remarks"
+                                        [(ngModel)]="OfficeTransaction.Remarks"></textarea>
+                                    <mat-error>
+                                        Remarks is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="OfficeTransaction.Status"
+                                        required>
+                                        <mat-option [value]="status.Key"
+                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Status is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field> -->
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                    <button mat-raised-button color="primary"
+                        (click)="saveOfficeTransaction()">{{OfficeTransaction.OETransactionId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
