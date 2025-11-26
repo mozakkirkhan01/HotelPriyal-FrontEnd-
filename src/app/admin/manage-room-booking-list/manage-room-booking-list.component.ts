@@ -12,6 +12,7 @@ import {
   PaymentStatus,
   PaymentMode,
   RoomBookingStatus,
+  PaymentType,
 } from '../../utils/enum';
 import {
   ActionModel,
@@ -27,9 +28,10 @@ declare var $: any;
   styleUrls: ['./manage-room-booking-list.component.css'],
 })
 export class ManageRoomBookingListComponent {
-editPackageCollection(data: any) {
-  return 0;
-}
+  BookingSourceTypeList: any = {};
+  editPackageCollection(data: any) {
+    return 0;
+  }
   DueDate: any;
   DuePayment: any;
   Deliverystatus: any = {};
@@ -41,10 +43,11 @@ editPackageCollection(data: any) {
   StatusList = this.loadData.GetEnumList(Status);
   RoomBookingStatusList = this.loadData.GetEnumList(RoomBookingStatus);
   PaymentModeList = this.loadData.GetEnumList(PaymentMode);
+  PaymentTypeList = this.loadData.GetEnumList(PaymentType);
   PageSize = ConstantData.PageSizes;
   p: number = 1;
-  PaymentMode = this.loadData.GetEnumList(PaymentMode);
   PaymentModeAll = PaymentMode;
+  PaymentTypeAll = PaymentType;
   Search: string = '';
   reverse: boolean = true;
   sortKey: string = '';
@@ -64,9 +67,17 @@ editPackageCollection(data: any) {
   filterModel: any = {};
   BookingTotal: any = {};
   selectedBill: any = {};
+  selectedForCancel: any = {};
+  selectedBillForCancel: any = {};
   OpticalSellListALL: any = {};
   OpticalSellListPayments: any = {};
   DueBill: any = {};
+
+  // View Modal Properties
+  selectedBooking: any = null;
+  guestDetails: any = null;
+  roomDetails: any;
+  paymentDetails: any;
 
   constructor(
     private service: AppService,
@@ -81,10 +92,11 @@ editPackageCollection(data: any) {
     this.validiateMenu();
     this.resetForm();
     this.getBookingList();
+    this.getBookingSourceTypeList(); // ✅ Load booking sources on init
 
     // Initialize pagination defaults
     this.p = 1;
-    this.itemPerPage = 10; // Or your default
+    this.itemPerPage = 10;
 
     // Initialize filter model
     this.filterModel = {
@@ -143,7 +155,7 @@ editPackageCollection(data: any) {
   }
 
   getPrint(data: any) {
-    //  this.service.PrintOpticlalBill(data.OpticalBillingId);
+    // this.service.PrintOpticlalBill(data.OpticalBillingId);
   }
 
   getBookingList() {
@@ -188,166 +200,166 @@ editPackageCollection(data: any) {
     );
   }
 
-  
+  DeleteBooking(obj: any) {
+    if (confirm('Are you sure you want to delete this record?')) {
+      var request: RequestModel = {
+        request: this.localService.encrypt(JSON.stringify(obj)).toString(),
+      };
 
-   DeleteBooking(obj: any) {
-     if (confirm('Are you sure you want to delete this record?')) {
-       var request: RequestModel = {
-         request: this.localService.encrypt(JSON.stringify(obj)).toString(),
-       };
-
-       this.dataLoading = true;
-       this.service.deleteBooking(request).subscribe(
-         (r1) => {
-           let response = r1 as any;
-           if (response.Message == ConstantData.SuccessMessage) {
-             this.toastr.success('The record has been deleted successfully.', response.Message);
-             this.getBookingList();
-           } else {
-             this.toastr.error(response.Message);
-             this.dataLoading = false;
-           }
-         },
-         (err) => {
-           this.toastr.error('An error occurred while deleting the record.');
-           this.dataLoading = false;
-         }
-       );
-     }
-   }
-
-   editBooking(data: any) {
-
-     this.router.navigate(['/admin/manage-room-booking'], {
-       queryParams: {
-         id: data.RoomBookingId,
-         redUrl: '/admin/manage-room-booking-list',
-       },
-     });
+      this.dataLoading = true;
+      this.service.deleteBooking(request).subscribe(
+        (r1) => {
+          let response = r1 as any;
+          if (response.Message == ConstantData.SuccessMessage) {
+            this.toastr.success('The record has been deleted successfully.');
+            this.getBookingList();
+          } else {
+            this.toastr.error(response.Message);
+            this.dataLoading = false;
+          }
+        },
+        (err) => {
+          this.toastr.error('An error occurred while deleting the record.');
+          this.dataLoading = false;
+        }
+      );
+    }
   }
+
+  editBooking(data: any) {
+    this.router.navigate(['/admin/manage-room-booking'], {
+      queryParams: {
+        id: data.RoomBookingId,
+        redUrl: '/admin/manage-room-booking-list',
+      },
+    });
+  }
+
+  openViewModalForCancel(item: any) {
+    this.selectedBillForCancel = {}; // Reset
+    this.selectedBillForCancel.CancelDate = this.loadData.loadDateYMD(
+      new Date()
+    );
+    this.selectedBillForCancel.RoomBookingId = item.RoomBookingId;
+    this.selectedBillForCancel.TotalAmount = item.TotalLineAmount;
+    this.selectedBillForCancel.PaidAmount = item.TotalPaidAmount;
+    this.selectedBillForCancel.RefundAmount = 0;
+    this.selectedBillForCancel.CancelReason = '';
+    
+    $('#CancelModal').modal('show');
+  }
+
+  CancelBooking() {
+    this.isSubmitted = true;
+    
+    // Validation
+    if (!this.selectedBillForCancel.CancelReason) {
+      this.toastr.error('Cancel reason is required');
+      return;
+    }
+    
+    this.selectedBillForCancel.CreatedBy = this.staffLogin.StaffLoginId;
+    var request: RequestModel = {
+      request: this.localService
+        .encrypt(JSON.stringify(this.selectedBillForCancel))
+        .toString(),
+    };
+
+    this.dataLoading = true;
+    this.service.cancelBooking(request).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage || response.Success) {
+          this.toastr.success('The booking has been cancelled successfully.');
+          $('#CancelModal').modal('hide');
+          this.getBookingList();
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('An error occurred while cancelling the booking.');
+        this.dataLoading = false;
+      }
+    );
+  }
+
+  // ✅ Load Booking Source Types
+  getBookingSourceTypeList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.service.getBookingSourceTypeList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          // Convert array to key-value object for easy lookup
+          this.BookingSourceTypeList = {};
+          if (Array.isArray(response.BookingSourceTypeList)) {
+            response.BookingSourceTypeList.forEach((item: any) => {
+              this.BookingSourceTypeList[item.BookingSourceTypeId] = item.BookingSourceName;
+            });
+          }
+          console.log('Booking Source Type List:', this.BookingSourceTypeList);
+        } else {
+          this.toastr.error(response.Message);
+        }
+      },
+      (err) => {
+        this.toastr.error('Error while fetching booking sources');
+        console.error(err);
+      }
+    );
+  }
+
+  // ✅ Open View Modal
   openViewModal(item: any) {
-    this.selectedBill = item;
-    $('#viewDetailsModal').modal('show');
+    // Reset data
+    this.selectedBooking = null;
+    this.guestDetails = null;
+    this.roomDetails = [];
+    this.paymentDetails = [];
+
+    // Show modal
+    $('#viewBookingDetailsModal').modal('show');
+
+    // Fetch complete booking details
+    this.getBookingDetails(item.RoomBookingId);
   }
-   }
-  // openViewModal(item: any) {
-  //   this.selectedBill = item;
-  //   $('#viewDetailsModal').modal('show');
-  //   //  this.OpticalSellList(item);
-  //   //  this.OpticalSellListPayment(item);
-  // }
 
-  //  OpticalSellList(obj: any) {
-  //    var request: RequestModel = {
-  //      request: this.localService.encrypt(JSON.stringify(obj)).toString(),
-  //    };
-  //    this.dataLoading = true;
-  //    this.service.OpticalSellList(request).subscribe(
-  //      (r1) => {
-  //        let response = r1 as any;
-  //        if (response.Message == ConstantData.SuccessMessage) {
-  //          this.OpticalSellListALL = response.OpticalSellList;
+  // ✅ Fetch Booking Details by ID
+  getBookingDetails(roomBookingId: number) {
+    const obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify(roomBookingId)).toString(),
+    };
 
-  //          this.dataLoading = false;
-  //        } else {
-  //          this.toastr.error('Error occured while Fetching  the recored');
-  //        }
-  //      },
-  //      (err) => {
-  //        this.toastr.error('Error occured while Fetching  the recored');
-  //        this.dataLoading = false;
-  //      }
-  //    );
-  //  }
+    this.service.getBookingListById(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (
+          response.Message === 'Success' ||
+          response.Message === ConstantData.SuccessMessage
+        ) {
+          this.selectedBooking = response.GetRoomBooking;
+          this.guestDetails = response.GetGuest;
+          this.roomDetails = response.GetRoomDetails || [];
+          this.paymentDetails = response.GetPaymentDetails || [];
 
-  //    OpticalSellListPayment(obj: any) {
-  //    var request: RequestModel = {
-  //      request: this.localService.encrypt(JSON.stringify(obj)).toString(),
-  //    };
-  //    this.dataLoading = true;
-  //    this.service.OpticalSellListPayment(request).subscribe(
-  //      (r1) => {
-  //        let response = r1 as any;
-  //        if (response.Message == ConstantData.SuccessMessage) {
-  //          this.OpticalSellListPayments = response.OpticalSellListPayment;
-  //          this.dataLoading = false;
-  //        } else {
-  //          this.toastr.error('Error occured while Fetching  the recored');
-  //        }
-  //      },
-  //      (err) => {
-  //        this.toastr.error('Error occured while Fetching  the recored');
-  //        this.dataLoading = false;
-  //      }
-  //    );
-  //  }
-
-  // openViewModalForDue(item: any) {
-  //   this.DueBill = item;
-  //   this.DueBill.PaymentDate = new Date();
-  //   $('#viewDueModal').modal('show');
-  // }
-
-  // DeliveryModal(item: any) {
-  //   this.Deliverystatus = item;
-
-  //   this.Deliverystatus.DeliveryDate = new Date();
-  //   $('#DeliveryModal').modal('show');
-  // }
-
-  //  DeliveryStatusUpdate(obj:any){
-  //    this.Deliverystatus.DeliveryStatuss = obj.DeliveryStatus;
-  //    this.Deliverystatus.DeliveryDate= this.loadData.loadDateYMD(this.Deliverystatus.DeliveryDate);
-
-  //      var request: RequestModel = {
-  //      request: this.localService.encrypt(JSON.stringify(this.Deliverystatus)).toString(),
-  //    };
-  //    this.dataLoading = true;
-  //    this.service.DeliveryStatus(request).subscribe(
-  //      (r1) => {
-  //        let response = r1 as any;
-  //        if (response.Message == ConstantData.SuccessMessage) {
-  //          this.dataLoading = false;
-  //          this.toastr.success("Optical Delivered successfully");
-  //    $('#DeliveryModal').modal('hide');
-  //          this.getOpticalsBillList();
-  //        } else {
-  //          this.toastr.error('Error occured while Fetching  the recored');
-  //        }
-  //      },
-  //      (err) => {
-  //        this.toastr.error('Error occured while Fetching  the recored');
-  //        this.dataLoading = false;
-  //      }
-  //    );
-  //  }
-
-  //  ClearDueAmount(obj: any) {
-
-  //    this.DueBill = obj;
-  //    this.DueBill.CreatedBy = this.staffLogin.StaffId;
-  //    this.DueBill.PaymentDate = this.loadData.loadDateYMD(
-  //        this.DueBill.PaymentDate);
-
-  //    var request: RequestModel = {
-  //      request: this.localService.encrypt(JSON.stringify(this.DueBill)).toString(),
-  //    };
-  //    this.dataLoading = true;
-  //    this.service.saveOpticalsBillDue(request).subscribe(
-  //      (r1) => {
-  //        let response = r1 as any;
-  //        if (response.Message == ConstantData.SuccessMessage) {
-  //          this.dataLoading = false;
-  //          this.toastr.success("Due amount cleared successfully");
-  //          $('#viewDueModal').modal('hide')
-  //          this.getOpticalsBillList();
-  //        } else {
-  //          this.toastr.error('Error occured while Clearing  the Due');
-  //        }
-  //      },
-  //      (err) => {
-  //        this.toastr.error('Error occured while Fetching  the recored');
-  //        this.dataLoading = false;
-  //      }
-  //    );
-  //  }
+          console.log('Selected Booking:', this.selectedBooking);
+          console.log('Guest Details:', this.guestDetails);
+          console.log('Room Details:', this.roomDetails);
+          console.log('Payment Details:', this.paymentDetails);
+        } else {
+          this.toastr.error(response.Message);
+          $('#viewBookingDetailsModal').modal('hide');
+        }
+      },
+      (err) => {
+        this.toastr.error('Error while fetching booking details');
+        console.error(err);
+        $('#viewBookingDetailsModal').modal('hide');
+      }
+    );
+  }
+}

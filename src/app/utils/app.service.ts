@@ -73,6 +73,10 @@ export class AppService {
     return this.http.post(this.apiUrl + "Booking/deleteBooking", obj, { headers: this.headers })
   }
 
+  cancelBooking(obj: any) {
+    return this.http.post(this.apiUrl + "Booking/cancelBooking", obj, { headers: this.headers })
+  }
+
   //hotel
   getHotelList(obj: any) {
     return this.http.post(this.apiUrl + "Hotel/HotelList", obj, { headers: this.headers })
