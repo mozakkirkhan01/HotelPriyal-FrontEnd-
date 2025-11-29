@@ -677,7 +677,7 @@
     margin-right: 10px;
   }
   .card-title{
-    padding: 20px 0 15px 0 !important;
+    padding: 0px 0 15px 0 !important;
     font-size: 18px !important;
     font-weight: 500 !important;
     color: #012970 !important;
@@ -700,7 +700,7 @@
     background: linear-gradient(180deg, #210cd1, transparent);
   } */
   .login-background {
-    background-image: url(assets/img/cake.webp);
+    background-image: url(assets/img/hotelbg.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -721,4 +721,17 @@
   background-color: #ffe5e5 !important; /* light red shade */
 }
 
-  
+  .mat-mdc-form-field-bottom-align::before {
+    content: "";
+    display: inline-block;
+    height: 0px !important;
+}
+.mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--mat-form-field-subscript-text-font);
+    line-height: 0px !important;
+    font-size: var(--mat-form-field-subscript-text-size);
+    letter-spacing: var(--mat-form-field-subscript-text-tracking);
+    font-weight: var(--mat-form-field-subscript-text-weight);
+}

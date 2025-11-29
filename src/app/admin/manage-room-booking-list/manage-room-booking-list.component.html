@@ -21,14 +21,34 @@
                 <div class="table-container overflow-auto">
                     <div class="dataTable-top">
                         <div class="dataTable-dropdown d-flex w-auto">
-                            <mat-form-field appearance="outline" class="col-sm-2">
+                            <mat-form-field appearance="outline" class="col-sm-1">
                                 <mat-label>Entries per page</mat-label>
                                 <mat-select [(ngModel)]="itemPerPage">
                                     <mat-option *ngFor="let option of PageSize" [value]="option">{{ option
                                         }}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                            <mat-form-field appearance="outline" class="col-lg-2" [style]="{ 'margin-left': '30px' }">
+                            <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                class="col-sm-2 compact-field" [style]="{ 'margin-left': '10px' }">
+                                <mat-label>Hotel Name</mat-label>
+                                <input matInput #HotelName="ngModel" name="HotelName"
+                                    (ngModelChange)="filterHotelList(filterModel.HotelName)" [(ngModel)]="filterModel.HotelName"
+                                    [matAutocomplete]="autoHotelName">
+
+                                <button mat-icon-button matSuffix *ngIf="filterModel.HotelName" (click)="clearHotel()"
+                                    tabindex="-1">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+
+                                <mat-autocomplete #autoHotelName="matAutocomplete"
+                                    (optionSelected)="afterHotelSelected($event)">
+                                    <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                        [value]="option.HotelName">
+                                        {{option.HotelName}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" class="col-lg-2" [style]="{ 'margin-left': '10px' }">
                                 <mat-label>Start Date</mat-label>
                                 <input matInput [matDatepicker]="startPicker" name="StartFrom" #StartFrom="ngModel"
                                     [(ngModel)]="filterModel.StartFrom">
@@ -45,7 +65,7 @@
                             </mat-form-field>
 
 
-                            <mat-form-field appearance="outline" class="col-sm-2" [style]="{ 'margin-left': '10px' }">
+                            <mat-form-field appearance="outline" class="col-sm-1" [style]="{ 'margin-left': '10px' }">
                                 <mat-label>Booking Status</mat-label>
                                 <mat-select [(ngModel)]="filterModel.RoomBookingStatus" name="PaymentStatus">
                                     <mat-option [value]="0">All</mat-option>
@@ -225,13 +245,15 @@
                                     </button>
                                 </td>
                                 <td class="text-center" *ngIf="action.CanDelete">
-                                    <button *ngIf="item.RoomBookingStatus != AllStatusList.Cancelled && item.RoomBookingStatus != AllStatusList.Checkout"
+                                    <button
+                                        *ngIf="item.RoomBookingStatus != AllStatusList.Cancelled && item.RoomBookingStatus != AllStatusList.Checkout"
                                         class="btn btn-sm btn-danger" (click)="DeleteBooking(item)">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <button *ngIf="item.RoomBookingStatus != AllStatusList.Cancelled && item.RoomBookingStatus != AllStatusList.Checkout"
+                                    <button
+                                        *ngIf="item.RoomBookingStatus != AllStatusList.Cancelled && item.RoomBookingStatus != AllStatusList.Checkout"
                                         class="btn btn-sm btn-danger" (click)="openViewModalForCancel(item)">
                                         <i class="bi bi-x-circle-fill"></i>
                                     </button>
@@ -311,7 +333,7 @@
                                             <td>
                                                 <span [ngClass]="{
                         'text-success': selectedBooking.RoomBookingStatus === 1,
-                        'text-warning': selectedBooking.RoomBookingStatus === 2,
+                        'text-primary': selectedBooking.RoomBookingStatus === 2,
                         'text-danger': selectedBooking.RoomBookingStatus === 3
                       }">
                                                     {{ AllStatusList[selectedBooking.RoomBookingStatus] }}

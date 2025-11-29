@@ -20,7 +20,6 @@ export class AdminMasterComponent implements OnInit {
   imageUrl = this.service.getImageUrl();
   screenWidth: any;
   docElm: any;
-
   constructor(
     @Inject(DOCUMENT) private document: any,
     private localService: LocalService,

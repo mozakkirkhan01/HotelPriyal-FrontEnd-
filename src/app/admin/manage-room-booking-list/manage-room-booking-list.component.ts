@@ -29,9 +29,6 @@ declare var $: any;
 })
 export class ManageRoomBookingListComponent {
   BookingSourceTypeList: any = {};
-  editPackageCollection(data: any) {
-    return 0;
-  }
   DueDate: any;
   DuePayment: any;
   Deliverystatus: any = {};
@@ -92,7 +89,8 @@ export class ManageRoomBookingListComponent {
     this.validiateMenu();
     this.resetForm();
     this.getBookingList();
-    this.getBookingSourceTypeList(); // ✅ Load booking sources on init
+    this.getBookingSourceTypeList();
+    this.getHotelList();
 
     // Initialize pagination defaults
     this.p = 1;
@@ -170,11 +168,17 @@ export class ManageRoomBookingListComponent {
       );
     }
 
+    if(this.staffLogin.RoleId!=5){
+      this.filterModel.HotelId = this.staffLogin.HotelId;
+    }
+
     const obj: RequestModel = {
       request: this.localService
         .encrypt(JSON.stringify(this.filterModel))
         .toString(),
     };
+    console.log(this.filterModel);
+    
 
     this.dataLoading = true;
     this.service.getBookingList(obj).subscribe(
@@ -361,5 +365,52 @@ export class ManageRoomBookingListComponent {
         $('#viewBookingDetailsModal').modal('hide');
       }
     );
+  }
+
+
+  getHotelList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getHotelList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+          this.filterHotel = this.HotelList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
+  }
+
+  HotelList: any[] = [];
+  filterHotel: any[] = [];
+  filterHotelList(value: any) {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      this.filterHotel = this.HotelList.filter((option: any) =>
+        option.HotelName.toLowerCase().includes(filterValue)
+      );
+    } else {
+      this.filterHotel = this.HotelList;
+    }
+  }
+
+  afterHotelSelected(event: any) {
+    this.filterModel.HotelId = event.option.id;
+  }
+
+  clearHotel() {
+    this.filterModel.HotelId = 0;
+    this.filterModel.HotelName = '';
+    this.filterHotel = this.HotelList;
   }
 }

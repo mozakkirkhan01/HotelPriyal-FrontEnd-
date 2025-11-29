@@ -2,13 +2,22 @@
 <app-progress *ngIf="dataLoading"></app-progress>
 <header id="header" class="header fixed-top d-flex align-items-center">
 
-  <div class="d-flex align-items-center justify-content-between">
-    <a class="logo d-flex align-items-center">
+  <div  class="d-flex align-items-center justify-content-between">
+    <a *ngIf="staffLogin.RoleId==5" class="logo d-flex align-items-center">
       <img [src]="imageUrl + staffLogin.Logo" alt="" style="width: 120px;">
       <!-- <span class="d-none d-lg-block">{{Company.ShortName}}</span> -->
     </a>
+
+    <div *ngIf="staffLogin.RoleId!=5" class="logo  align-items-center">
+      <h6 class="m-0">{{staffLogin.HotelName}}</h6>
+      <p class="m-0 fs-8" >{{staffLogin.HotelFullAddress}}</p>
+    </div>
+
+
     <i class="bi bi-list toggle-sidebar-btn" (click)="hideSideBar()"></i>
   </div><!-- End Logo -->
+
+
 
   <div class="search-bar">
     <!-- <form class="search-form d-flex align-items-center" method="POST" action="#">

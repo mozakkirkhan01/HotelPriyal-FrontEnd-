@@ -26,6 +26,7 @@ export class AdminLoginComponent {
 
   ngOnInit(): void {
     // this.getCompanyList();
+    this.getCompanyList();
   }
 
   
