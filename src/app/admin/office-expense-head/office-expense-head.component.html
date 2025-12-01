@@ -5,16 +5,17 @@
         <div class="pagetitle dashboard col-sm-8">
             <h1>{{action.MenuTitle}}</h1>
             <nav>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
-                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
-                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
-              </ol>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
             </nav>
-          </div>
+        </div>
         <div class="col-sm-4 mb-3">
             <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
-                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Office Expense Head</button>
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Office Expense
+                Head</button>
         </div>
     </div>
 
@@ -29,6 +30,48 @@
                             </select>
                             <span class="ms-2">Entries per page</span>
                         </div>
+                        <div class="dataTable-dropdown d-flex w-auto">
+                            
+                            <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                class="col-sm-4 compact-field" [style]="{ 'margin-left': '10px'  , 'margin-right': '10px'}">
+                                <mat-label>Hotel Name</mat-label>
+                                <input matInput #HotelName="ngModel" name="HotelName"
+                                    (ngModelChange)="filterHotelList(filterModel.HotelName)" [(ngModel)]="filterModel.HotelName"
+                                    [matAutocomplete]="autoHotelName">
+
+                                <button mat-icon-button matSuffix *ngIf="filterModel.HotelName" (click)="clearHotel()"
+                                    tabindex="-1">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+
+                                <mat-autocomplete #autoHotelName="matAutocomplete"
+                                    (optionSelected)="afterHotelSelected($event)">
+                                    <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                        [value]="option.HotelName">
+                                        {{option.HotelName}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+                             <mat-form-field appearance="outline" class="col-sm-3" [style]="{ 'margin-left': '10px'  , 'margin-right': '10px'}" >
+                                    <mat-label>Expense Category</mat-label>
+                                    <mat-select #OECategoryName="ngModel" name="OECategoryName"
+                                        [(ngModel)]="filterModel.OECategoryId" required>
+                                        <mat-option [value]="oe.OECategoryId"
+                                            *ngFor="let oe of OfficeExpenseCategoryList">{{oe.OECategoryName}}</mat-option>
+                                    </mat-select>
+                                    <mat-error
+                                        *ngIf="(OECategoryName.dirty  || OECategoryName.touched) || (OECategoryName.invalid && isSubmitted)">
+                                        Expense Category is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                            <button style="margin-top: 5px; margin-left: 10px" (click)="getOfficeExpenseHeadList()"
+                                mat-raised-button color="primary">
+                                Search
+                            </button>
+                            </div>
+                        
                         <div class="dataTable-search">
                             <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
                                 placeholder="Search..." type="text">
@@ -39,7 +82,9 @@
                         <thead>
                             <tr>
                                 <th class="text-center">S.No</th>
-                                <th style="cursor:pointer;" (click)="sort('OfficeExpenseHeadName')">Expense Category</th>
+                                <th *ngIf="staffLogin.RoleId == 5" style="cursor:pointer;" (click)="sort('HotelName')">Hotel Name</th>
+                                <th style="cursor:pointer;" (click)="sort('OfficeExpenseHeadName')">Expense Category
+                                </th>
                                 <th style="cursor:pointer;" (click)="sort('OfficeExpenseHeadName')">Expense Head </th>
                                 <th style="cursor:pointer;" (click)="sort('OfficeExpenseHeadName')">Description</th>
                                 <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
@@ -51,16 +96,17 @@
                             <tr
                                 *ngFor="let item of   OfficeExpenseHeadList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
                                 <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td *ngIf="staffLogin.RoleId == 5">{{item.HotelName}}</td>
                                 <td>{{item.OECategoryName}}</td>
                                 <td>{{item.OEHeadName}}</td>
                                 <td>{{item.OEDescription}}</td>
-                                <td class="text-center" >
+                                <td class="text-center">
                                     <span class="p-1"
                                         [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
                                         {{AllStatusList[item.Status]}}
                                     </span>
                                 </td>
-                                <td  class="text-center" *ngIf="action.CanEdit">
+                                <td class="text-center" *ngIf="action.CanEdit">
                                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#staticBackdrop" (click)="editOfficeExpenseHead(item)">
                                         <i class="bi bi-pencil-square"></i>
@@ -102,6 +148,32 @@
                         <div class="container">
                             <div class="row">
 
+                                <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                    class="col-sm-6 compact-field">
+                                    <mat-label>Hotel Name</mat-label>
+                                    <input matInput #HotelName="ngModel" name="HotelName"
+                                        (ngModelChange)="filterHotelList(Hotel.HotelName)" [(ngModel)]="Hotel.HotelName"
+                                        [matAutocomplete]="autoHotelName" required autofocus>
+
+                                    <button mat-icon-button matSuffix *ngIf="Hotel.HotelName" (click)="clearHotel()"
+                                        tabindex="-1">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+
+                                    <mat-autocomplete #autoHotelName="matAutocomplete"
+                                        (optionSelected)="afterHotelSelected($event)">
+                                        <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                            [value]="option.HotelName">
+                                            {{option.HotelName}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+
+                                    <mat-error
+                                        *ngIf="(HotelName.dirty || HotelName.touched) || (HotelName.invalid && isSubmitted)">
+                                        Hotel name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Expense Category</mat-label>
                                     <mat-select #OECategoryName="ngModel" name="OECategoryName"
@@ -121,7 +193,19 @@
                                         [(ngModel)]="OfficeExpenseHead.OEHeadName" required autofocus>
                                     <mat-error>
                                         Expense Head name is <strong>required</strong>
-                                    </mat-error>   
+                                    </mat-error>
+                                </mat-form-field>
+
+                                 <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="OfficeExpenseHead.Status"
+                                        required>
+                                        <mat-option [value]="status.Key"
+                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Status is <strong>required</strong>
+                                    </mat-error>
                                 </mat-form-field>
 
                                 <!-- textarea description -->
@@ -135,17 +219,7 @@
                                 </mat-form-field>
 
 
-                                <mat-form-field appearance="outline" class="col-sm-6">
-                                    <mat-label>Status</mat-label>
-                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="OfficeExpenseHead.Status"
-                                        required>
-                                        <mat-option [value]="status.Key"
-                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
-                                    </mat-select>
-                                    <mat-error>
-                                        Status is <strong>required</strong>
-                                    </mat-error>
-                                </mat-form-field>
+                               
                             </div>
                         </div>
 
@@ -154,7 +228,8 @@
                 <div class="modal-footer">
                     <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
                         (click)="resetForm()">Cancel</button>
-                    <button mat-raised-button color="primary" (click)="saveOfficeExpenseHead()">{{OfficeExpenseHead.OEHeadId >
+                    <button mat-raised-button color="primary"
+                        (click)="saveOfficeExpenseHead()">{{OfficeExpenseHead.OEHeadId >
                         0 ? 'Update':'Submit'}}</button>
                 </div>
             </div>

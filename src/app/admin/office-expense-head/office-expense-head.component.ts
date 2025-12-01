@@ -32,6 +32,8 @@ dataLoading: boolean = false
   action: ActionModel = {} as ActionModel;
   staffLogin: StaffLoginModel = {} as StaffLoginModel;
   AllStatusList = Status;
+  filterModel: any = {};
+  Hotel: any ={};
   constructor(
     private service: AppService,
     private toastr: ToastrService,
@@ -45,6 +47,7 @@ dataLoading: boolean = false
     this.validiateMenu();
     this.getOfficeExpenseHeadList();
     this.getOfficeExpenseCategoryList();
+    this.getHotelList();
     this.resetForm();
   }
   
@@ -101,8 +104,16 @@ dataLoading: boolean = false
   }
 
   getOfficeExpenseHeadList() {
+
+    if(this.staffLogin.RoleId == 5){
+      this.filterModel.HotelId = this.filterModel.HotelId;
+    }
+    else{
+      this.filterModel.HotelId = this.staffLogin.HotelId;
+    }
+
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({ })).toString()
+      request: this.localService.encrypt(JSON.stringify(this.filterModel)).toString()
     }
     this.dataLoading = true
     this.service.getOfficeExpenseHeadList(obj).subscribe(r1 => {
@@ -125,6 +136,12 @@ dataLoading: boolean = false
       this.toastr.error("Fill all the required fields !!")
       return
     }
+    if(this.staffLogin.RoleId == 5){
+      this.OfficeExpenseHead.HotelId = this.Hotel.HotelId;
+    }else{
+      this.OfficeExpenseHead.HotelId = this.staffLogin.HotelId;
+    }
+    
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(this.OfficeExpenseHead)).toString()
     }
@@ -132,10 +149,10 @@ dataLoading: boolean = false
       let response = r1 as any
       if (response.Message == ConstantData.SuccessMessage) {
         if (this.OfficeExpenseHead.OECategoryId > 0) {
-          this.toastr.success("Office Expense Category detail updated successfully")
+          this.toastr.success("Office Expense head detail updated successfully")
           $('#staticBackdrop').modal('hide')
         } else {
-          this.toastr.success("Office Expense Category added successfully")
+          this.toastr.success("Office Expense head added successfully")
         }
         this.resetForm()
         this.getOfficeExpenseHeadList()
@@ -173,5 +190,53 @@ dataLoading: boolean = false
     this.resetForm()
     this.OfficeExpenseHead = obj
 
+  }
+
+  getHotelList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getHotelList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+          this.filterHotel = this.HotelList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
+  }
+
+  HotelList: any[] = [];
+  filterHotel: any[] = [];
+  filterHotelList(value: any) {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      this.filterHotel = this.HotelList.filter((option: any) =>
+        option.HotelName.toLowerCase().includes(filterValue)
+      );
+    } else {
+      this.filterHotel = this.HotelList;
+    }
+  }
+
+  afterHotelSelected(event: any) {
+    this.Hotel.HotelId = event.option.id;
+    this.filterModel.HotelId = this.Hotel.HotelId;
+  }
+
+  clearHotel() {
+    this.Hotel.HotelName = '';
+    this.Hotel.HotelId = 0;
+    this.filterHotel = this.HotelList;
+    this.filterModel = {};
   }
 }

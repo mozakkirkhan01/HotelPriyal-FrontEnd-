@@ -43,6 +43,7 @@ export class OfficeExpenseCategoryComponent {
     this.validiateMenu();
     this.getOfficeExpenseCategoryList();
     this.resetForm();
+    this.getHotelList();
   }
   
   validiateMenu() {
@@ -80,8 +81,18 @@ export class OfficeExpenseCategoryComponent {
   }
 
   getOfficeExpenseCategoryList() {
+
+
+      if(this.staffLogin.RoleId == 5){
+        this.filterModel.HotelId = this.filterModel.HotelId;
+      }
+      else{
+        this.filterModel.HotelId = this.staffLogin.HotelId;
+      }
+
+
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({ })).toString()
+      request: this.localService.encrypt(JSON.stringify(this.filterModel)).toString()
     }
     this.dataLoading = true
     this.service.getOfficeExpenseCategoryList(obj).subscribe(r1 => {
@@ -104,6 +115,15 @@ export class OfficeExpenseCategoryComponent {
       this.toastr.error("Fill all the required fields !!")
       return
     }
+
+    if(this.staffLogin.RoleId == 5){
+      this.OfficeExpenseCategory.HotelId = this.OfficeExpenseCategory.HotelId;
+    }
+    else{
+      this.OfficeExpenseCategory.HotelId = this.staffLogin.HotelId;
+    }
+
+
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(this.OfficeExpenseCategory)).toString()
     }
@@ -152,5 +172,56 @@ export class OfficeExpenseCategoryComponent {
     this.resetForm()
     this.OfficeExpenseCategory = obj
 
+  }
+
+  getHotelList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getHotelList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+          this.filterHotel = this.HotelList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
+  }
+
+  HotelList: any[] = [];
+  filterHotel: any[] = [];
+  filterModel: any = {};
+
+  filterHotelList(value: any) {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      this.filterHotel = this.HotelList.filter((option: any) =>
+        option.HotelName.toLowerCase().includes(filterValue)
+      );
+    } else {
+      this.filterHotel = this.HotelList;
+    }
+  }
+
+  afterHotelSelected(event: any) {
+    this.filterModel.HotelId = event.option.id;
+    this.OfficeExpenseCategory.HotelId = event.option.id;
+  }
+  clearHotel() {
+    this.filterModel.HotelName = '';
+    this.filterModel.HotelId = 0;
+    this.OfficeExpenseCategory.HotelName = '';
+    this.OfficeExpenseCategory.HotelId = 0;
+    this.filterHotel = this.HotelList;
+    this.filterModel = {};
   }
 }

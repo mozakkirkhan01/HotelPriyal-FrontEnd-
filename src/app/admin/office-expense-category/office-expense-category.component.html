@@ -1,20 +1,23 @@
 <app-progress *ngIf="dataLoading"></app-progress>
 <main id="main" class="main" *ngIf="action.ResponseReceived">
-
     <div class="row">
         <div class="pagetitle dashboard col-sm-8">
-            <h1>{{action.MenuTitle}}</h1>
+            <h1>{{ action.MenuTitle }}</h1>
             <nav>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
-                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
-                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
-              </ol>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a routerLink="admin/admin-dashboard">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">{{ action.ParentMenuTitle }}</li>
+                    <li class="breadcrumb-item active">{{ action.MenuTitle }}</li>
+                </ol>
             </nav>
-          </div>
+        </div>
         <div class="col-sm-4 mb-3">
             <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
-                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Office Expense Category</button>
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">
+                New Office Expense Category
+            </button>
         </div>
     </div>
 
@@ -25,13 +28,44 @@
                     <div class="dataTable-top">
                         <div class="dataTable-dropdown d-flex">
                             <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
-                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                                <option *ngFor="let option of PageSize" [value]="option">
+                                    {{ option }}
+                                </option>
                             </select>
                             <span class="ms-2">Entries per page</span>
                         </div>
+
+                        <div class="dataTable-dropdown d-flex w-auto">
+                            <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                class="col-sm-4 compact-field"
+                                [style]="{ 'margin-left': '10px', 'margin-right': '10px' }">
+                                <mat-label>Hotel Name</mat-label>
+                                <input matInput #HotelName="ngModel" name="HotelName"
+                                    (ngModelChange)="filterHotelList(filterModel.HotelName)"
+                                    [(ngModel)]="filterModel.HotelName" [matAutocomplete]="autoHotelName" />
+
+                                <button mat-icon-button matSuffix *ngIf="filterModel.HotelName" (click)="clearHotel()"
+                                    tabindex="-1">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+
+                                <mat-autocomplete #autoHotelName="matAutocomplete"
+                                    (optionSelected)="afterHotelSelected($event)">
+                                    <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                        [value]="option.HotelName">
+                                        {{ option.HotelName }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
+                            <button style="margin-top: 5px; margin-left: 10px" (click)="getOfficeExpenseCategoryList()"
+                                mat-raised-button color="primary">
+                                Search
+                            </button>
+                        </div>
                         <div class="dataTable-search">
                             <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
-                                placeholder="Search..." type="text">
+                                placeholder="Search..." type="text" />
                         </div>
                     </div>
 
@@ -39,21 +73,37 @@
                         <thead>
                             <tr>
                                 <th class="text-center">S.No</th>
-                                <th style="cursor:pointer;" (click)="sort('OfficeExpenseCategoryName')">Expense Category</th>
-                                <th class="text-center" style="cursor:pointer;" (click)="sort('Status')">Status</th>
+                                <th *ngIf="staffLogin.RoleId == 5" style="cursor: pointer" (click)="sort('HotelName')">
+                                    Hotel Name
+                                </th>
+                                <th style="cursor: pointer" (click)="sort('OfficeExpenseCategoryName')">
+                                    Expense Category
+                                </th>
+                                <th class="text-center" style="cursor: pointer" (click)="sort('Status')">
+                                    Status
+                                </th>
                                 <th class="text-center" *ngIf="action.CanEdit">Edit</th>
                                 <th class="text-center" *ngIf="action.CanDelete">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                *ngFor="let item of OfficeExpenseCategoryList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
-                                <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
-                                <td>{{item.OECategoryName}}</td>
+                            <tr *ngFor="
+                  let item of OfficeExpenseCategoryList
+                    | filter : Search
+                    | orderBy : sortKey : reverse
+                    | paginate : { itemsPerPage: itemPerPage, currentPage: p };
+                  let i = index
+                ">
+                                <td class="text-center">{{ itemPerPage * (p - 1) + i + 1 }}</td>
+                                <td *ngIf="staffLogin.RoleId == 5">{{ item.HotelName }}</td>
+                                <td>{{ item.OECategoryName }}</td>
                                 <td class="text-center">
-                                    <span class="p-1"
-                                        [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
-                                        {{AllStatusList[item.Status]}}
+                                    <span class="p-1" [ngClass]="
+                      item.Status == 1
+                        ? 'badge text-bg-success'
+                        : 'badge text-bg-danger'
+                    ">
+                                        {{ AllStatusList[item.Status] }}
                                     </span>
                                 </td>
                                 <td class="text-center" *ngIf="action.CanEdit">
@@ -71,14 +121,12 @@
                         </tbody>
                     </table>
                     <div class="dataTable-bottom">
-                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float: right"
                             class="my-pagination"></pagination-controls>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </section>
 
     <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
@@ -86,52 +134,70 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{OfficeExpenseCategory.OECategoryId > 0
-                        ?'Update':'New'}} Office Expense Category
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                        {{ OfficeExpenseCategory.OECategoryId > 0 ? "Update" : "New" }}
+                        Office Expense Category
                     </h1>
                     <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         (click)="resetForm()"></button>
                 </div>
                 <div class="modal-body">
-
                     <form #formOfficeExpenseCategory="ngForm" class="d-flex justify-content-evenly flex-wrap">
                         <div class="container">
                             <div class="row">
+                                <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                    class="col-sm-6 compact-field">
+                                    <mat-label>Hotel Name</mat-label>
+                                    <input matInput #HotelName="ngModel" name="HotelName" (ngModelChange)="
+                      filterHotelList(OfficeExpenseCategory.HotelName)
+                    " [(ngModel)]="OfficeExpenseCategory.HotelName" [matAutocomplete]="autoHotelName" />
+
+                                    <button mat-icon-button matSuffix *ngIf="OfficeExpenseCategory.HotelName"
+                                        (click)="clearHotel()" tabindex="-1">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+
+                                    <mat-autocomplete #autoHotelName="matAutocomplete"
+                                        (optionSelected)="afterHotelSelected($event)">
+                                        <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                            [value]="option.HotelName">
+                                            {{ option.HotelName }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
 
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Expense Category Name</mat-label>
                                     <input matInput #OECategoryName="ngModel" name="OECategoryName"
-                                        [(ngModel)]="OfficeExpenseCategory.OECategoryName" required autofocus>
+                                        [(ngModel)]="OfficeExpenseCategory.OECategoryName" required autofocus />
                                     <mat-error>
                                         Expense Category name is <strong>required</strong>
                                     </mat-error>
                                 </mat-form-field>
 
-
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Status</mat-label>
-                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="OfficeExpenseCategory.Status"
-                                        required>
-                                        <mat-option [value]="status.Key"
-                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                    <mat-select #Status="ngModel" name="Status"
+                                        [(ngModel)]="OfficeExpenseCategory.Status" required>
+                                        <mat-option [value]="status.Key" *ngFor="let status of StatusList">{{
+                                            status.Value }}</mat-option>
                                     </mat-select>
-                                    <mat-error>
-                                        Status is <strong>required</strong>
-                                    </mat-error>
+                                    <mat-error> Status is <strong>required</strong> </mat-error>
                                 </mat-form-field>
                             </div>
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
-                        (click)="resetForm()">Cancel</button>
-                    <button mat-raised-button color="primary" (click)="saveOfficeExpenseCategory()">{{OfficeExpenseCategory.OECategoryId >
-                        0 ? 'Update':'Submit'}}</button>
+                        (click)="resetForm()">
+                        Cancel
+                    </button>
+                    <button mat-raised-button color="primary" (click)="saveOfficeExpenseCategory()">
+                        {{ OfficeExpenseCategory.OECategoryId > 0 ? "Update" : "Submit" }}
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
 </main>
