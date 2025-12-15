@@ -51,7 +51,12 @@ export class OfficeExpenseHeadComponent {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validiateMenu();
     this.getOfficeExpenseHeadList();
-    this.getHotelList();
+    if(this.staffLogin.RoleId == 5){
+      this.getHotelList();
+    }
+    else{
+    this.getOfficeExpenseCategoryList();
+    }
     this.resetForm();
   }
 
@@ -104,6 +109,9 @@ export class OfficeExpenseHeadComponent {
   }
 
   getOfficeExpenseCategoryList() {
+    if(this.staffLogin.RoleId != 5){
+      this.FilterModel.HotelId = this.staffLogin.HotelId;
+    }
     var obj: RequestModel = {
       request: this.localService
         .encrypt(JSON.stringify({ HotelId: this.FilterModel.HotelId }))

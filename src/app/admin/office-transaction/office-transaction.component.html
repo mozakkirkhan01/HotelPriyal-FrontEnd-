@@ -34,9 +34,18 @@
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
+        <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline" class="col-sm-3">
+            <mat-label>Hotel</mat-label>
+            <mat-select name="HotelId" [(ngModel)]="Filter.HotelId" (selectionChange)="getOfficeTransactionList()">
+                <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                    {{ hotel.HotelName }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="col-sm-2">
             <mat-label>Expense Category</mat-label>
-            <mat-select #OECategoryId="ngModel" name="OECategoryId" [(ngModel)]="Filter.OECategoryId">
+            <mat-select #OECategoryId="ngModel" name="OECategoryId" [(ngModel)]="Filter.OECategoryId" (selectionChange)="getOfficeTransactionList()">
                 <mat-option [value]="0">All</mat-option>
                 <mat-option [value]="oe.OECategoryId"
                     *ngFor="let oe of OfficeExpenseCategoryListForFilter">{{oe.OECategoryName}}</mat-option>
@@ -46,17 +55,17 @@
 
         <mat-form-field appearance="outline" class="col-sm-2">
             <mat-label>Expense Head</mat-label>
-            <mat-select #OEHeadId="ngModel" name="OEHeadId" [(ngModel)]="Filter.OEHeadId">
+            <mat-select #OEHeadId="ngModel" name="OEHeadId" [(ngModel)]="Filter.OEHeadId" (selectionChange)="getOfficeTransactionList()">
                 <mat-option [value]="0">All</mat-option>
                 <mat-option [value]="oe.OEHeadId"
                     *ngFor="let oe of OfficeExpenseHeadListForFilter">{{oe.OEHeadName}}</mat-option>
             </mat-select>
         </mat-form-field>
         <div class="col-sm-4  d-flex align-items-top gap-2">
-            <button type="submit" mat-raised-button color="accent" (click)="getOfficeTransactionList()"
+            <!-- <button type="submit" mat-raised-button color="accent" (click)="getOfficeTransactionList()"
                 class="px-3 py-1 text-sm">
                 Search
-            </button>
+            </button> -->
 
 
 
@@ -93,6 +102,7 @@
                             <tr>
                                 <th class="text-center">S.No</th>
                                 <th style="cursor:pointer;" (click)="sort('OETransactionDate')">Transaction Date</th>
+                                <th *ngIf="staffLogin.RoleId == 5" style="cursor:pointer;" (click)="sort('HotelName')">Hotel</th>
                                 <th style="cursor:pointer;" (click)="sort('OECategoryName')">Expense Category</th>
                                 <th style="cursor:pointer;" (click)="sort('OEHeadName')">Expense Head</th>
                                 <th style="cursor:pointer;" (click)="sort('Particular')">Particular</th>
@@ -108,6 +118,7 @@
                                 *ngFor="let item of OfficeTransactionList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
                                 <td class="text-center">{{(itemPerPage * (p -1)) +i+ 1}}</td>
                                 <td>{{item.OETransactionDate | date:'dd/MM/yyyy'}}</td>
+                                <td *ngIf="staffLogin.RoleId == 5">{{item.HotelName}}</td>
                                 <td>{{item.OECategoryName}}</td>
                                 <td>{{item.OEHeadName}}</td>
                                 <td>{{item.Particular}}</td>
@@ -177,6 +188,32 @@
                                     <mat-datepicker-toggle matSuffix
                                         [for]="TransactionDatePicker"></mat-datepicker-toggle>
                                     <mat-datepicker #TransactionDatePicker disabled="false"></mat-datepicker>
+                                </mat-form-field>
+
+                                 <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
+                                    class="col-sm-6 compact-field">
+                                    <mat-label>Hotel Name</mat-label>
+                                    <input matInput #HotelName="ngModel" name="HotelName"
+                                        (ngModelChange)="filterHotelList(OfficeTransaction.HotelName)" [(ngModel)]="OfficeTransaction.HotelName"
+                                        [matAutocomplete]="autoHotelName" required autofocus>
+
+                                    <button mat-icon-button matSuffix *ngIf="OfficeTransaction.HotelName" (click)="clearHotel()"
+                                        tabindex="-1">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+
+                                    <mat-autocomplete #autoHotelName="matAutocomplete"
+                                        (optionSelected)="afterHotelSelected($event)">
+                                        <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
+                                            [value]="option.HotelName">
+                                            {{option.HotelName}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+
+                                    <mat-error
+                                        *ngIf="(HotelName.dirty || HotelName.touched) || (HotelName.invalid && isSubmitted)">
+                                        Hotel name is <strong>required</strong>
+                                    </mat-error>
                                 </mat-form-field>
 
                                 <mat-form-field appearance="outline" class="col-sm-6">

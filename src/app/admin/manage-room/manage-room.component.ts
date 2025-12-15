@@ -117,9 +117,10 @@ export class ManageRoomComponent {
     }))
   }
 
-  callFunction() {
-    console.log("function call");
+  callFunction(hotelId: number) {
+    console.log(hotelId);
     
+    this.Room.HotelId = hotelId;
     this.getRoomTypeList();
     this.getFloorList();
   }
@@ -215,6 +216,7 @@ export class ManageRoomComponent {
 
   editRoom(obj: any) {
     this.Room = { ...obj };
+    this.callFunction(this.Room.HotelId);
     this.isSubmitted = false;
   }
 }

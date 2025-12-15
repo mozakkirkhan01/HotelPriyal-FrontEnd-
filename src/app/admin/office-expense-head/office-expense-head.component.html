@@ -14,7 +14,7 @@
         </div>
         <div class="col-sm-4 mb-3">
             <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
-                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Office Expense
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New  Expense
                 Head</button>
         </div>
     </div>
@@ -33,7 +33,7 @@
                         <div class="dataTable-dropdown d-flex w-auto">
                             
                             
-                            <mat-form-field appearance="outline" class="col-sm-4" style="margin-left: 10px;">
+                            <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline" class="col-sm-4" style="margin-left: 10px;">
                             <mat-label>Hotel</mat-label>
                             <mat-select name="HotelId" [(ngModel)]="FilterModel.HotelId"
                                 (selectionChange)="OnFunctionClick()" >
@@ -128,7 +128,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">{{OfficeExpenseHead.OEHeadId > 0
-                        ?'Update':'New'}} OfficeExpenseHead
+                        ?'Update':'New'}} Expense Head
                     </h1>
                     <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         (click)="resetForm()"></button>
@@ -209,8 +209,6 @@
                                     </mat-error>
                                 </mat-form-field>
 
-
-                               
                             </div>
                         </div>
 

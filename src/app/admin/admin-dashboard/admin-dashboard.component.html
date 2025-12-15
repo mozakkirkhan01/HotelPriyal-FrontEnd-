@@ -1,239 +1,512 @@
 <app-progress *ngIf="dataLoading"></app-progress>
 <main id="main" class="main">
 
-    <div class="pagetitle">
-      <h1>Dashboard</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a routerLink="/admin/admin-dashboard">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
-        </ol>
-      </nav>
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/admin/admin-dashboard">Home</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ADMIN DASHBOARD (RoleId = 5) -->
+  <!-- ============================================ -->
+  <section class="section dashboard" *ngIf="isAdmin">
+
+    <!-- Statistics Cards Row -->
+    <div class="row">
+
+      <!-- Total Hotels Card -->
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card sales-card">
+          <div class="card-body">
+            <h5 class="card-title">Total Hotels</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="color: #4154f1; background: #f6f6fe;">
+                <i class="bi bi-building"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{dashboardStats.TotalHotels}}</h6>
+                <span class="text-muted small pt-2">Active Hotels</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Rooms Card -->
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card revenue-card">
+          <div class="card-body">
+            <h5 class="card-title">Total Rooms</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="color: #2eca6a; background: #e0f8e9;">
+                <i class="bi bi-door-closed"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{dashboardStats.TotalRooms}}</h6>
+                <span class="text-success small pt-1">Available: {{dashboardStats.AvailableRooms}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Guests Card -->
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card customers-card">
+          <div class="card-body">
+            <h5 class="card-title">Total Guests</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="color: #ff771d; background: #ffecdf;">
+                <i class="bi bi-people"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{dashboardStats.TotalGuests}}</h6>
+                <span class="text-muted small pt-2">Registered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Occupancy Rate Card -->
+      <div class="col-xxl-3 col-md-6">
+        <div class="card info-card">
+          <div class="card-body">
+            <h5 class="card-title">Occupancy Rate</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="color: #bb0852; background: #ffe0ec;">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{dashboardStats.OccupancyRate}}%</h6>
+                <span class="text-danger small pt-1">{{dashboardStats.OccupiedRooms}} Occupied</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    
-    <section class="section dashboard" *ngIf="this.staffLogin.RoleId == 5">
-      
-      <!-- Statistics Cards Row -->
-      <div class="row">
-        
-        <!-- Total Hotels Card -->
-        <div class="col-xxl-3 col-md-6">
-          <div class="card info-card sales-card">
-            <div class="card-body">
-              <h5 class="card-title">Total Hotels</h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
-                    style="color: #4154f1; background: #f6f6fe;">
-                  <i class="bi bi-building"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>{{dashboardStats.TotalHotels}}</h6>
-                  <span class="text-muted small pt-2">Active Hotels</span>
-                </div>
-              </div>
+    <!-- Quick Actions & Room Status Row -->
+    <div class="row">
+
+      <!-- Quick Actions Card -->
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Quick Actions</h5>
+            <div class="list-group">
+              <a routerLink="/admin/manage-hotel" class="list-group-item list-group-item-action">
+                <i class="bi bi-building text-primary"></i>
+                <span class="ms-2">Manage Hotels</span>
+              </a>
+              <a routerLink="/admin/manage-room" class="list-group-item list-group-item-action">
+                <i class="bi bi-door-closed text-success"></i>
+                <span class="ms-2">Manage Rooms</span>
+              </a>
+              <a routerLink="/admin/manage-guest" class="list-group-item list-group-item-action">
+                <i class="bi bi-person-plus text-info"></i>
+                <span class="ms-2">Add Guest</span>
+              </a>
+              <a routerLink="/admin/room-availability" class="list-group-item list-group-item-action">
+                <i class="bi bi-grid-3x3-gap text-warning"></i>
+                <span class="ms-2">Room Availability</span>
+              </a>
+              <a routerLink="/admin/department" class="list-group-item list-group-item-action">
+                <i class="bi bi-diagram-3 text-secondary"></i>
+                <span class="ms-2">Departments</span>
+              </a>
             </div>
           </div>
         </div>
-
-        <!-- Total Rooms Card -->
-        <div class="col-xxl-3 col-md-6">
-          <div class="card info-card revenue-card">
-            <div class="card-body">
-              <h5 class="card-title">Total Rooms</h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
-                    style="color: #2eca6a; background: #e0f8e9;">
-                  <i class="bi bi-door-closed"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>{{dashboardStats.TotalRooms}}</h6>
-                  <span class="text-success small pt-1">Available: {{dashboardStats.AvailableRooms}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Total Guests Card -->
-        <div class="col-xxl-3 col-md-6">
-          <div class="card info-card customers-card">
-            <div class="card-body">
-              <h5 class="card-title">Total Guests</h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
-                    style="color: #ff771d; background: #ffecdf;">
-                  <i class="bi bi-people"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>{{dashboardStats.TotalGuests}}</h6>
-                  <span class="text-muted small pt-2">Registered</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Occupancy Rate Card -->
-        <div class="col-xxl-3 col-md-6">
-          <div class="card info-card">
-            <div class="card-body">
-              <h5 class="card-title">Occupancy Rate</h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
-                    style="color: #bb0852; background: #ffe0ec;">
-                  <i class="bi bi-graph-up-arrow"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>{{dashboardStats.OccupancyRate}}%</h6>
-                  <span class="text-danger small pt-1">{{dashboardStats.OccupiedRooms}} Occupied</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Quick Actions & Room Status Row -->
-      <div class="row">
-        
-        <!-- Quick Actions Card -->
-        <div class="col-lg-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Quick Actions</h5>
-              <div class="list-group">
-                <a routerLink="/admin/manage-hotel" class="list-group-item list-group-item-action">
-                  <i class="bi bi-building text-primary"></i>
-                  <span class="ms-2">Manage Hotels</span>
-                </a>
-                <a routerLink="/admin/manage-room" class="list-group-item list-group-item-action">
-                  <i class="bi bi-door-closed text-success"></i>
-                  <span class="ms-2">Manage Rooms</span>
-                </a>
-                <a routerLink="/admin/manage-guest" class="list-group-item list-group-item-action">
-                  <i class="bi bi-person-plus text-info"></i>
-                  <span class="ms-2">Add Guest</span>
-                </a>
-                <a routerLink="/admin/room-availability" class="list-group-item list-group-item-action">
-                  <i class="bi bi-grid-3x3-gap text-warning"></i>
-                  <span class="ms-2">Room Availability</span>
-                </a>
-                <a routerLink="/admin/department" class="list-group-item list-group-item-action">
-                  <i class="bi bi-diagram-3 text-secondary"></i>
-                  <span class="ms-2">Departments</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Room Status Card -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Room Status Overview</h5>
 
-        <!-- Room Status Card -->
-        <div class="col-lg-8">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Room Status Overview</h5>
-              
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <div class="progress-card p-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="text-muted">Available Rooms</span>
-                      <span class="badge bg-success">{{dashboardStats.AvailableRooms}}</span>
-                    </div>
-                    <div class="progress" style="height: 10px;">
-                      <div class="progress-bar bg-success" role="progressbar" 
-                           [style.width.%]="dashboardStats.AvailablePercentage">
-                      </div>
-                    </div>
-                    <small class="text-muted">{{dashboardStats.AvailablePercentage}}% of total rooms</small>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div class="progress-card p-3 border rounded">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Available Rooms</span>
+                    <span class="badge bg-success">{{dashboardStats.AvailableRooms}}</span>
                   </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="progress-card p-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="text-muted">Occupied Rooms</span>
-                      <span class="badge bg-danger">{{dashboardStats.OccupiedRooms}}</span>
+                  <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar"
+                      [style.width.%]="dashboardStats.AvailablePercentage">
                     </div>
-                    <div class="progress" style="height: 10px;">
-                      <div class="progress-bar bg-danger" role="progressbar" 
-                           [style.width.%]="dashboardStats.OccupancyRate">
-                      </div>
-                    </div>
-                    <small class="text-muted">{{dashboardStats.OccupancyRate}}% occupancy</small>
                   </div>
+                  <small class="text-muted">{{dashboardStats.AvailablePercentage}}% of total rooms</small>
                 </div>
               </div>
 
-              <!-- Recent Activity -->
-              <!-- <div class="mt-3">
-                <h6 class="mb-3">Recent Activity</h6>
-                <div class="activity">
-                  <div class="activity-item d-flex mb-2" *ngFor="let activity of recentActivities">
-                    <div class="activite-label">{{activity.time}}</div>
-                    <i class="bi bi-circle-fill activity-badge" [ngClass]="activity.class"></i>
-                    <div class="activity-content">
-                      {{activity.message}}
+              <div class="col-md-6 mb-3">
+                <div class="progress-card p-3 border rounded">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Occupied Rooms</span>
+                    <span class="badge bg-danger">{{dashboardStats.OccupiedRooms}}</span>
+                  </div>
+                  <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-danger" role="progressbar"
+                      [style.width.%]="dashboardStats.OccupancyRate">
                     </div>
                   </div>
+                  <small class="text-muted">{{dashboardStats.OccupancyRate}}% occupancy</small>
                 </div>
-              </div> -->
-
+              </div>
             </div>
+
           </div>
         </div>
-
       </div>
 
-      <!-- Recent Bookings/Guests Table -->
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Recent Guests</h5>
-              
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Guest Name</th>
-                    <th>Mobile No</th>
-                    <th>Email</th>
-                    <th>Room No</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let guest of recentGuests">
-                    <td>{{guest.GuestName}}</td>
-                    <td>{{guest.MobileNo}}</td>
-                    <td>{{guest.Email}}</td>
-                    <td><span class="badge bg-primary">{{guest.RoomNo || 'Not Assigned'}}</span></td>
-                    <td>
-                      <span class="badge bg-success">Active</span>
-                    </td>
-                  </tr>
-                  <tr *ngIf="recentGuests.length === 0">
-                    <td colspan="5" class="text-center text-muted">No recent guests</td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              <div class="text-center mt-3">
-                <a routerLink="/admin/manage-guest" class="btn btn-sm btn-outline-primary">
-                  View All Guests <i class="bi bi-arrow-right"></i>
-                </a>
+    </div>
+
+    <!-- Recent Bookings/Guests Table -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Recent Guests</h5>
+
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Guest Name</th>
+                  <th>Mobile No</th>
+                  <th>Email</th>
+                  <th>Room No</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let guest of recentGuests">
+                  <td>{{guest.GuestName}}</td>
+                  <td>{{guest.MobileNo}}</td>
+                  <td>{{guest.Email}}</td>
+                  <td><span class="badge bg-primary">{{guest.RoomNo || 'Not Assigned'}}</span></td>
+                  <td>
+                    <span class="badge bg-success">Active</span>
+                  </td>
+                </tr>
+                <tr *ngIf="recentGuests.length === 0">
+                  <td colspan="5" class="text-center text-muted">No recent guests</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="text-center mt-3">
+              <a routerLink="/admin/manage-guest" class="btn btn-sm btn-outline-primary">
+                View All Guests <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================ -->
+  <!-- STAFF DASHBOARD (RoleId != 5) -->
+  <!-- ============================================ -->
+  <section class="section dashboard">
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="card info-card sales-card">
+          <div class="card-body">
+            <h5 class="card-title">Total Rooms</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-building"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{ totalCount }}</h6>
+                <span class="text-muted small">All rooms in system</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-    </section>
+      <div class="col-lg-4 col-md-6">
+        <div class="card info-card revenue-card">
+          <div class="card-body">
+            <h5 class="card-title">Available Rooms</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="background: #4caf50; color: #fff;">
+                <i class="bi bi-check-circle"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{ availableCount }}</h6>
+                <span class="text-success small">Ready for booking</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    
-    
-     
+      <div class="col-lg-4 col-md-6">
+        <div class="card info-card customers-card">
+          <div class="card-body">
+            <h5 class="card-title">Occupied Rooms</h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center"
+                style="background: #f44336; color: #fff;">
+                <i class="bi bi-x-circle"></i>
+              </div>
+              <div class="ps-3">
+                <h6>{{ occupiedCount }}</h6>
+                <span class="text-danger small">Currently booked</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS SECTION - ONLY FOR ADMIN -->
+    <!-- This entire section is hidden for Staff users -->
+    <div class="row mb-4" *ngIf="showFilters">
+      <div class="col-12">
+        <div class="card shadow-sm border-0 pb-4">
+
+          <!-- Body -->
+          <div class="card-body">
+
+            <!-- View Mode -->
+            <div class="">
+              <label class="form-label fw-semibold text-muted mb-2">
+                View Mode
+              </label>
+
+              <div class="btn-group  shadow-sm" role="group">
+                <input type="radio" class="btn-check" style="margin-left: 10px;" name="viewMode" id="viewAll" [value]="'all'"
+                  [(ngModel)]="viewMode" (change)="onViewModeChange()" autocomplete="off" />
+                <label class="btn btn-outline-primary" for="viewAll" style="width: 150px; margin-left: 10px;">
+                  <i class="bi bi-grid-3x3-gap me-1"></i> All Rooms
+                </label>
+
+                <input type="radio" class="btn-check" style="margin-left: 100px;" name="viewMode" id="viewHotel" [value]="'hotel'"
+                  [(ngModel)]="viewMode" (change)="onViewModeChange()" autocomplete="off" />
+                <label class="btn btn-outline-success py-2" for="viewHotel"  style="width: 150px; margin-left: 10px;">
+                  <i class="bi bi-building me-1"></i> Hotel-wise
+                </label>
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <!-- <div class="row g-3 align-items-end">
+
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-building text-primary me-1"></i> Hotel
+                </label>
+                <select class="form-select shadow-sm" [(ngModel)]="selectedHotel" (change)="onHotelChange()">
+                  <option [ngValue]="null">All Hotels</option>
+                  <option *ngFor="let hotel of hotels" [ngValue]="hotel.HotelId">
+                    {{ hotel.HotelName }}
+                  </option>
+                </select>
+              </div>
+
+   
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-layers text-success me-1"></i> Floor
+                </label>
+                <select class="form-select shadow-sm" [(ngModel)]="selectedFloor" (change)="onFloorChange()">
+                  <option [ngValue]="null">All Floors</option>
+                  <option *ngFor="let floor of floors" [ngValue]="floor.FloorId">
+                    {{ floor.FloorName }}
+                  </option>
+                </select>
+              </div>
+
+           
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-door-open text-warning me-1"></i> Room Type
+                </label>
+                <select class="form-select shadow-sm" [(ngModel)]="selectedRoomType" (change)="onRoomTypeChange()">
+                  <option [ngValue]="null">All Types</option>
+                  <option *ngFor="let type of roomTypes" [ngValue]="type.RoomTypeId">
+                    {{ type.RoomTypeName }}
+                  </option>
+                </select>
+              </div>
+
+            
+              <div class="col-lg-3 col-md-6">
+                <button class="btn btn-outline-secondary w-100 py-2 shadow-sm" (click)="resetFilters()">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>
+                  Reset Filters
+                </button>
+              </div>
+
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- INFO MESSAGE FOR STAFF - Showing all rooms by default -->
+    <!-- <div class="row mb-3" *ngIf="isStaff">
+      <div class="col-12">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          <div>
+            <strong>Staff View:</strong> Displaying all rooms. Status is clearly indicated for each room.
+            <span class="ms-2">
+              <span class="badge bg-success me-1"><i class="bi bi-square-fill"></i> Available ({{ availableCount }})</span>
+              <span class="badge bg-danger"><i class="bi bi-square-fill"></i> Occupied ({{ occupiedCount }})</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Room Grid by Floor (All Rooms View) -->
+    <div class="row" *ngIf="showAllRoomsView">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              Room Status
+              <span class="badge bg-secondary ms-2 text-white">{{ totalCount }} Total</span>
+            </h5>
+
+            <div class="legend mb-3">
+              <span class="badge bg-success me-2">
+                <i class="bi bi-square-fill"></i> Available ({{ availableCount }})
+              </span>
+              <span class="badge bg-danger">
+                <i class="bi bi-square-fill"></i> Occupied ({{ occupiedCount }})
+              </span>
+            </div>
+
+            <div *ngIf="floorGroups.length === 0" class="text-center py-5">
+              <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+              <p class="mt-3 text-muted">No rooms found</p>
+            </div>
+
+            <div *ngFor="let group of floorGroups" class="floor-section mb-4">
+              <h6 class="floor-title">
+                <i class="bi bi-building"></i> {{ group.floor.FloorName }}
+                <span class="badge bg-secondary ms-2">{{ group.rooms.length }} rooms</span>
+              </h6>
+
+              <div class="room-grid">
+                <div *ngFor="let room of group.rooms" class="room-box {{ getRoomClass(room) }}"
+                  (click)="onRoomClick(room)"
+                  [title]="room.RoomName + ' - ' + room.RoomTypeName + ' - ₹' + room.RoomChargeAmount">
+                  <div class="room-number">{{ room.RoomName }}</div>
+                  <div class="room-type">{{ room.RoomTypeName }}</div>
+                  <div class="room-price">₹{{ room.RoomChargeAmount }}</div>
+                  <div class="room-status">
+                    <i class="bi" [ngClass]="room.IsAvailable ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    <span class="ms-1">{{ getRoomStatusText(room) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hotel-wise Room View (Admin Only) -->
+    <div class="row" *ngIf="showHotelWiseView">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-building"></i> Hotel-wise Room Availability
+              <span class="badge bg-secondary ms-2 text-white">{{ hotelGroups.length }} Hotels</span>
+            </h5>
+
+            <div class="legend">
+              <span class="badge bg-success">
+                <i class="bi bi-square-fill"></i> Available
+              </span>
+              <span class="badge bg-danger">
+                <i class="bi bi-square-fill"></i> Occupied
+              </span>
+            </div>
+
+            <div *ngIf="hotelGroups.length === 0" class="text-center py-5">
+              <i class="bi bi-building-x" style="font-size: 3rem; color: #ccc;"></i>
+              <p class="mt-3 text-muted">No hotels found with rooms</p>
+            </div>
+
+            <!-- Hotel Groups -->
+            <div *ngFor="let hotelGroup of hotelGroups" class="hotel-section mb-5">
+              <!-- Hotel Header -->
+              <div class="hotel-header">
+                <h5 class="hotel-name">
+                  <i class="bi bi-building-fill text-primary"></i> {{ hotelGroup.hotel.HotelName }}
+                </h5>
+                <div class="hotel-stats">
+                  <span class="badge bg-info me-2">
+                    <i class="bi bi-door-closed"></i> Total: {{ hotelGroup.totalRooms }}
+                  </span>
+                  <span class="badge bg-success me-2">
+                    <i class="bi bi-check-circle"></i> Available: {{ hotelGroup.availableRooms }}
+                  </span>
+                  <span class="badge bg-danger">
+                    <i class="bi bi-x-circle"></i> Occupied: {{ hotelGroup.occupiedRooms }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Hotel's Floors and Rooms -->
+              <div *ngFor="let floorGroup of hotelGroup.floors" class="floor-section mb-3">
+                <h6 class="floor-title">
+                  <i class="bi bi-layers"></i> {{ floorGroup.floor.FloorName }}
+                  <span class="badge bg-secondary ms-2">{{ floorGroup.rooms.length }} rooms</span>
+                </h6>
+
+                <div class="room-grid">
+                  <div *ngFor="let room of floorGroup.rooms" class="room-box {{ getRoomClass(room) }}"
+                    (click)="onRoomClick(room)"
+                    [title]="room.RoomName + ' - ' + room.RoomTypeName + ' - ₹' + room.RoomChargeAmount">
+                    <div class="room-number">{{ room.RoomName }}</div>
+                    <div class="room-type">{{ room.RoomTypeName }}</div>
+                    <div class="room-price">₹{{ room.RoomChargeAmount }}</div>
+                    <div class="room-status">
+                      <i class="bi" [ngClass]="room.IsAvailable ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                      <span class="ms-1">{{ getRoomStatusText(room) }}</span>
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
 </main>
-

@@ -118,7 +118,7 @@
                                     <mat-label>Hotel</mat-label>
 
                                     <mat-select name="HotelId" [(ngModel)]="Room.HotelId"
-                                        (selectionChange)="callFunction()" 
+                                        (selectionChange)="callFunction($event.value)" 
                                         required>
 
                                         <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">

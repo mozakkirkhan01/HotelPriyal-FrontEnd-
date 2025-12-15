@@ -1,56 +1,276 @@
-.floor-wrapper {
-  margin-bottom: 40px;
-  padding: 10px;
-}
-
-.floor-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  border-left: 5px solid #4a90e2;
-  padding-left: 10px;
-}
-
+/* Room Grid Styles */
 .room-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 15px;
+  margin-top: 15px;
 }
 
 .room-box {
-  width: 120px;
-  padding: 15px;
-  border-radius: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 2px;
   text-align: center;
-  color: white;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.28s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  background: #fff;
+  position: relative;
 }
 
 .room-box:hover {
-  transform: scale(1.07);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Status Colors */
-.available {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
+/* Available Room Styling */
+.room-box.available {
+  border-color: #28a745;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
 }
 
-.not-available {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
+.room-box.available:hover {
+  border-color: #218838;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
+.room-box.available .room-status i {
+  color: #28a745;
+}
+
+/* Occupied Room Styling */
+.room-box.occupied {
+  border-color: #dc3545;
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+}
+
+.room-box.occupied:hover {
+  border-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.room-box.occupied .room-status i {
+  color: #dc3545;
+}
+
+/* Room Content */
 .room-number {
-  font-size: 20px;
-  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
   margin-bottom: 5px;
 }
 
 .room-type {
   font-size: 12px;
-  opacity: 0.9;
+  color: #666;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.room-price {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
 
+.room-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.room-status i {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* Floor Section */
+.floor-section {
+  margin-bottom: 30px;
+}
+
+.floor-title {
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Hotel Section Styles */
+.hotel-section {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f8f9fa;
+  margin-bottom: 30px;
+}
+
+.hotel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.hotel-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.hotel-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hotel-stats .badge {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hotel-section .floor-section {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.hotel-section .floor-title {
+  background: #e9ecef;
+  border-left-color: #28a745;
+}
+
+/* View Mode Toggle */
+.btn-group .btn-check:checked + .btn-outline-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-group .btn-check:checked + .btn-outline-success {
+  background-color: #198754;
+  color: white;
+}
+
+/* Legend Styles */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.legend .badge {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Info Alert for Staff */
+.alert-info {
+  border-left: 4px solid #0dcaf0;
+}
+
+/* Card Enhancements */
+.info-card .card-icon {
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+}
+
+.progress-card {
+  background: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .room-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  
+  .room-box {
+    padding: 10px;
+  }
+  
+  .room-number {
+    font-size: 16px;
+  }
+  
+  .room-type {
+    font-size: 11px;
+  }
+
+  .hotel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .hotel-name {
+    font-size: 1.25rem;
+  }
+
+  .hotel-stats {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .room-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+  
+  .room-box {
+    padding: 8px;
+  }
+  
+  .room-number {
+    font-size: 14px;
+  }
+  
+  .room-type,
+  .room-price {
+    font-size: 10px;
+  }
+  
+  .room-status {
+    font-size: 10px;
+  }
+  
+  .room-status i {
+    font-size: 12px;
+  }
+
+  .hotel-section {
+    padding: 15px;
+  }
+
+  .hotel-name {
+    font-size: 1.1rem;
+  }
+
+  .hotel-stats .badge {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
