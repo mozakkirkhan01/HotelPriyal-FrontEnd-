@@ -27,6 +27,17 @@
                             <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
                         </select>
                         <span class="ms-2">Entries per page</span>
+
+                        <mat-form-field appearance="outline" class="col-sm-6" style="margin-left: 10px;">
+                            <mat-label>Hotel</mat-label>
+                            <mat-select name="HotelId" [(ngModel)]="FilterModel.HotelId"
+                                (selectionChange)="getRoomTypeList()" >
+                                <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                                    {{ hotel.HotelName }}
+                                </mat-option>
+                            </mat-select>
+                         
+                        </mat-form-field>
                     </div>
                     <div class="dataTable-search">
                         <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
@@ -56,7 +67,7 @@
                                         [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
                                         {{AllStatusList[item.Status]}}
                                     </span>
-                                </td >
+                                </td>
                                 <td class="text-center" *ngIf="action.CanEdit" class="text-center">
                                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#staticBackdrop" (click)="editRoomType(item)">
@@ -99,8 +110,8 @@
                             <div class="row">
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Room Type Name</mat-label>
-                                    <input matInput #RoomTypeName="ngModel" name="RoomTypeName" [(ngModel)]="RoomType.RoomTypeName"
-                                        required autofocus>
+                                    <input matInput #RoomTypeName="ngModel" name="RoomTypeName"
+                                        [(ngModel)]="RoomType.RoomTypeName" required autofocus>
                                     <mat-error
                                         *ngIf="(RoomTypeName.dirty  || RoomTypeName.touched) || (RoomTypeName.invalid && isSubmitted)">
                                         Room Type name is <strong>required</strong>
@@ -110,8 +121,9 @@
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Hotel Name</mat-label>
                                     <input matInput #HotelName="ngModel" name="HotelName"
-                                        (ngModelChange)="filterHotelList(RoomType.HotelName)" [(ngModel)]="RoomType.HotelName"
-                                        [matAutocomplete]="autoHotelName" required autofocus>
+                                        (ngModelChange)="filterHotelList(RoomType.HotelName)"
+                                        [(ngModel)]="RoomType.HotelName" [matAutocomplete]="autoHotelName" required
+                                        autofocus>
                                     <mat-autocomplete #autoHotelName="matAutocomplete"
                                         (optionSelected)="afterHotelSelected($event)">
                                         <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"

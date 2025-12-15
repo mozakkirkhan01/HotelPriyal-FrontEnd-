@@ -51,8 +51,7 @@ export class ManageRoomComponent {
     this.validiateMenu();
     this.getRoomList();
     this.getHotelList();
-    this.getRoomTypeList();
-    this.getFloorList();
+    
     this.resetForm();
   }
   
@@ -106,7 +105,7 @@ export class ManageRoomComponent {
 
   getRoomTypeList() {
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({})).toString()
+      request: this.localService.encrypt(JSON.stringify({HotelId: this.Room.HotelId})).toString()
     }
     this.service.getRoomTypeList(obj).subscribe(r1 => {
       let response = r1 as any
@@ -118,9 +117,16 @@ export class ManageRoomComponent {
     }))
   }
 
+  callFunction() {
+    console.log("function call");
+    
+    this.getRoomTypeList();
+    this.getFloorList();
+  }
+
   getFloorList() {
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({})).toString()
+      request: this.localService.encrypt(JSON.stringify({HotelId: this.Room.HotelId})).toString()
     }
     this.service.getFloorList(obj).subscribe(r1 => {
       let response = r1 as any

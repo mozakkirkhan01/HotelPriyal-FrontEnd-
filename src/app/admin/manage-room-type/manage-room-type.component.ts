@@ -33,6 +33,7 @@ export class ManageRoomTypeComponent {
     action: ActionModel = {} as ActionModel;
     staffLogin: StaffLoginModel = {} as StaffLoginModel;
     AllStatusList = Status;
+    FilterModel: any = {};
     sort(key: any) {
       this.sortKey = key;
       this.reverse = !this.reverse;
@@ -117,7 +118,7 @@ export class ManageRoomTypeComponent {
   
     getRoomTypeList() {
       var obj: RequestModel = {
-        request: this.localService.encrypt(JSON.stringify({ })).toString()
+        request: this.localService.encrypt(JSON.stringify({HotelId:this.FilterModel.HotelId })).toString()
       }
       this.dataLoading = true
       this.service.getRoomTypeList(obj).subscribe(r1 => {

@@ -32,32 +32,23 @@
                         </div>
                         <div class="dataTable-dropdown d-flex w-auto">
                             
-                            <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
-                                class="col-sm-4 compact-field" [style]="{ 'margin-left': '10px'  , 'margin-right': '10px'}">
-                                <mat-label>Hotel Name</mat-label>
-                                <input matInput #HotelName="ngModel" name="HotelName"
-                                    (ngModelChange)="filterHotelList(filterModel.HotelName)" [(ngModel)]="filterModel.HotelName"
-                                    [matAutocomplete]="autoHotelName">
-
-                                <button mat-icon-button matSuffix *ngIf="filterModel.HotelName" (click)="clearHotel()"
-                                    tabindex="-1">
-                                    <mat-icon>close</mat-icon>
-                                </button>
-
-                                <mat-autocomplete #autoHotelName="matAutocomplete"
-                                    (optionSelected)="afterHotelSelected($event)">
-                                    <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
-                                        [value]="option.HotelName">
-                                        {{option.HotelName}}
-                                    </mat-option>
-                                </mat-autocomplete>
-                            </mat-form-field>
+                            
+                            <mat-form-field appearance="outline" class="col-sm-4" style="margin-left: 10px;">
+                            <mat-label>Hotel</mat-label>
+                            <mat-select name="HotelId" [(ngModel)]="FilterModel.HotelId"
+                                (selectionChange)="OnFunctionClick()" >
+                                <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                                    {{ hotel.HotelName }}
+                                </mat-option>
+                            </mat-select>
+                         
+                        </mat-form-field>
 
                              <mat-form-field appearance="outline" class="col-sm-3" [style]="{ 'margin-left': '10px'  , 'margin-right': '10px'}" >
                                     <mat-label>Expense Category</mat-label>
                                     <mat-select #OECategoryName="ngModel" name="OECategoryName"
-                                        [(ngModel)]="filterModel.OECategoryId" required>
-                                        <mat-option [value]="oe.OECategoryId"
+                                        [(ngModel)]="FilterModel.OECategoryId" (selectionChange)="getOfficeExpenseHeadList()" >
+                                        <mat-option [value]="oe.OECategoryId"  
                                             *ngFor="let oe of OfficeExpenseCategoryList">{{oe.OECategoryName}}</mat-option>
                                     </mat-select>
                                     <mat-error
@@ -66,10 +57,10 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                            <button style="margin-top: 5px; margin-left: 10px" (click)="getOfficeExpenseHeadList()"
+                            <!-- <button style="margin-top: 5px; margin-left: 10px" (click)="getOfficeExpenseHeadList()"
                                 mat-raised-button color="primary">
                                 Search
-                            </button>
+                            </button> -->
                             </div>
                         
                         <div class="dataTable-search">

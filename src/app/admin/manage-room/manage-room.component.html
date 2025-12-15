@@ -5,13 +5,13 @@
         <div class="pagetitle dashboard col-sm-8">
             <h1>{{action.MenuTitle}}</h1>
             <nav>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
-                <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
-                <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
-              </ol>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
             </nav>
-          </div>
+        </div>
         <div class="col-sm-4 mb-3">
             <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
                 data-bs-toggle="modal" data-bs-target="#roomModal" (click)="resetForm()">New Room</button>
@@ -40,7 +40,8 @@
                             <tr>
                                 <th class="text-center">S.No</th>
                                 <th style="cursor:pointer;" (click)="sort('HotelId')">Hotel Name</th>
-                                <th class="text-center" style="cursor:pointer;" (click)="sort('RoomName')">Room Name</th>
+                                <th class="text-center" style="cursor:pointer;" (click)="sort('RoomName')">Room Name
+                                </th>
                                 <th style="cursor:pointer;" (click)="sort('RoomTypeId')">Room Type</th>
                                 <th style="cursor:pointer;" (click)="sort('FloorId')">Floor</th>
                                 <th style="cursor:pointer;" (click)="sort('RoomChargeAmount')">Charge Amount</th>
@@ -110,100 +111,106 @@
                 </div>
                 <div class="modal-body">
 
-                   <form #formRoom="ngForm">
-                    <div class="container">
-                        <div class="row">
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Hotel</mat-label>
-                                <mat-select #HotelId="ngModel" name="HotelId" [(ngModel)]="Room.HotelId" required>
-                                    <mat-option [value]="hotel.HotelId" *ngFor="let hotel of HotelList">
-                                        {{hotel.HotelName}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error>
-                                    Hotel is required!
-                                </mat-error>
-                            </mat-form-field>
+                    <form #formRoom="ngForm">
+                        <div class="container">
+                            <div class="row">
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Hotel</mat-label>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Room Name</mat-label>
-                                <input type="text" matInput #RoomName="ngModel" name="RoomName"
-                                    [(ngModel)]="Room.RoomName" required>
-                                <mat-error>
-                                    Room Name is required!
-                                </mat-error>
-                            </mat-form-field>
+                                    <mat-select name="HotelId" [(ngModel)]="Room.HotelId"
+                                        (selectionChange)="callFunction()" 
+                                        required>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Room Type</mat-label>
-                                <mat-select #RoomTypeId="ngModel" name="RoomTypeId" [(ngModel)]="Room.RoomTypeId" required>
-                                    <mat-option [value]="type.RoomTypeId" *ngFor="let type of RoomTypeList">
-                                        {{type.RoomTypeName}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error>
-                                    Room Type is required!
-                                </mat-error>
-                            </mat-form-field>
+                                        <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                                            {{ hotel.HotelName }}
+                                        </mat-option>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Floor</mat-label>
-                                <mat-select #FloorId="ngModel" name="FloorId" [(ngModel)]="Room.FloorId" required>
-                                    <mat-option [value]="floor.FloorId" *ngFor="let floor of FloorList">
-                                        {{floor.FloorName}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error>
-                                    Floor is required!
-                                </mat-error>
-                            </mat-form-field>
+                                    </mat-select>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Room Charge Amount</mat-label>
-                                <input type="number" matInput #RoomChargeAmount="ngModel" name="RoomChargeAmount"
-                                    [(ngModel)]="Room.RoomChargeAmount" required step="0.01" min="0">
-                                <mat-error>
-                                    Room Charge Amount is required!
-                                </mat-error>
-                            </mat-form-field>
+                                    <mat-error>Hotel is required!</mat-error>
+                                </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>HSN Code</mat-label>
-                                <input matInput #HSNCode="ngModel" name="HSNCode"
-                                    [(ngModel)]="Room.HSNCode">
-                                <!-- <mat-hint>Harmonized System of Nomenclature Code</mat-hint> -->
-                            </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Availability</mat-label>
-                                <mat-select #IsAvailable="ngModel" name="IsAvailable" [(ngModel)]="Room.IsAvailable" required>
-                                    <mat-option [value]="true">Available</mat-option>
-                                    <mat-option [value]="false">Occupied</mat-option>
-                                </mat-select>
-                                <mat-error>
-                                    Availability is required!
-                                </mat-error>
-                            </mat-form-field>
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Room Name</mat-label>
+                                    <input type="text" matInput #RoomName="ngModel" name="RoomName"
+                                        [(ngModel)]="Room.RoomName" required>
+                                    <mat-error>
+                                        Room Name is required!
+                                    </mat-error>
+                                </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="col-sm-6">
-                                <mat-label>Status</mat-label>
-                                <mat-select #Status="ngModel" name="Status" [(ngModel)]="Room.Status" required>
-                                    <mat-option [value]="status.Key" *ngFor="let status of StatusList">
-                                        {{status.Value}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error>
-                                    Status is required!
-                                </mat-error>
-                            </mat-form-field>
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Room Type</mat-label>
+                                    <mat-select #RoomTypeId="ngModel" name="RoomTypeId" [(ngModel)]="Room.RoomTypeId"
+                                        required>
+                                        <mat-option [value]="type.RoomTypeId" *ngFor="let type of RoomTypeList">
+                                            {{type.RoomTypeName}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Room Type is required!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Floor</mat-label>
+                                    <mat-select #FloorId="ngModel" name="FloorId" [(ngModel)]="Room.FloorId" required>
+                                        <mat-option [value]="floor.FloorId" *ngFor="let floor of FloorList">
+                                            {{floor.FloorName}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Floor is required!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Room Charge Amount</mat-label>
+                                    <input type="number" matInput #RoomChargeAmount="ngModel" name="RoomChargeAmount"
+                                        [(ngModel)]="Room.RoomChargeAmount" required step="0.01" min="0">
+                                    <mat-error>
+                                        Room Charge Amount is required!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>HSN Code</mat-label>
+                                    <input matInput #HSNCode="ngModel" name="HSNCode" [(ngModel)]="Room.HSNCode">
+                                    <!-- <mat-hint>Harmonized System of Nomenclature Code</mat-hint> -->
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Availability</mat-label>
+                                    <mat-select #IsAvailable="ngModel" name="IsAvailable" [(ngModel)]="Room.IsAvailable"
+                                        required>
+                                        <mat-option [value]="true">Available</mat-option>
+                                        <mat-option [value]="false">Occupied</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Availability is required!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="Room.Status" required>
+                                        <mat-option [value]="status.Key" *ngFor="let status of StatusList">
+                                            {{status.Value}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Status is required!
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
                         (click)="resetForm()">Cancel</button>
-                    <button mat-raised-button color="primary" [disabled]="!formRoom.form.valid" 
+                    <button mat-raised-button color="primary" [disabled]="!formRoom.form.valid"
                         (click)="saveRoom()">{{Room.RoomId > 0 ? 'Update':'Submit'}}</button>
                 </div>
             </div>

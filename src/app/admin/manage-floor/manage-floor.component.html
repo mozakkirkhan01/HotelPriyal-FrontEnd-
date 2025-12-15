@@ -27,6 +27,17 @@
                             <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
                         </select>
                         <span class="ms-2">Entries per page</span>
+
+                        <mat-form-field appearance="outline" class="col-sm-6" style="margin-left: 10px;">
+                            <mat-label>Hotel</mat-label>
+                            <mat-select name="HotelId" [(ngModel)]="FilterModel.HotelId"
+                                (selectionChange)="getFloorList()" >
+                                <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                                    {{ hotel.HotelName }}
+                                </mat-option>
+                            </mat-select>
+                         
+                        </mat-form-field>
                     </div>
                     <div class="dataTable-search">
                         <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"

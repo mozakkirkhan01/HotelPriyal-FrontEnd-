@@ -32,6 +32,7 @@ dataLoading: boolean = false
     action: ActionModel = {} as ActionModel;
     staffLogin: StaffLoginModel = {} as StaffLoginModel;
     AllStatusList = Status;
+    FilterModel: any = {} as any;
     sort(key: any) {
       this.sortKey = key;
       this.reverse = !this.reverse;
@@ -116,7 +117,7 @@ dataLoading: boolean = false
   
     getFloorList() {
       var obj: RequestModel = {
-        request: this.localService.encrypt(JSON.stringify({ })).toString()
+        request: this.localService.encrypt(JSON.stringify({ HotelId:this.FilterModel.HotelId })).toString()
       }
       this.dataLoading = true
       this.service.getFloorList(obj).subscribe(r1 => {

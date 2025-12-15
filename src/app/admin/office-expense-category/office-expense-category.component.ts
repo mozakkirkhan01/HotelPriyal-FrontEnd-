@@ -30,6 +30,7 @@ export class OfficeExpenseCategoryComponent {
   action: ActionModel = {} as ActionModel;
   staffLogin: StaffLoginModel = {} as StaffLoginModel;
   AllStatusList = Status;
+  FilterModel: any = {};
   constructor(
     private service: AppService,
     private toastr: ToastrService,
@@ -82,17 +83,15 @@ export class OfficeExpenseCategoryComponent {
 
   getOfficeExpenseCategoryList() {
 
-
       if(this.staffLogin.RoleId == 5){
-        this.filterModel.HotelId = this.filterModel.HotelId;
+        this.FilterModel.HotelId = this.FilterModel.HotelId;
       }
       else{
-        this.filterModel.HotelId = this.staffLogin.HotelId;
+        this.FilterModel.HotelId = this.staffLogin.HotelId;
       }
 
-
     var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify(this.filterModel)).toString()
+      request: this.localService.encrypt(JSON.stringify(this.FilterModel)).toString()
     }
     this.dataLoading = true
     this.service.getOfficeExpenseCategoryList(obj).subscribe(r1 => {
