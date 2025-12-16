@@ -39,7 +39,6 @@
                                     tabindex="-1">
                                     <mat-icon>close</mat-icon>
                                 </button>
-
                                 <mat-autocomplete #autoHotelName="matAutocomplete"
                                     (optionSelected)="afterHotelSelected($event)">
                                     <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
@@ -56,7 +55,10 @@
                                 <mat-datepicker #startPicker></mat-datepicker>
                             </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="col-lg-2" [style]="{ 'margin-left': '10px' }">
+                        
+
+
+                            <mat-form-field appearance="outline" class="col-lg-1" [style]="{ 'margin-left': '10px' }">
                                 <mat-label>End Date</mat-label>
                                 <input matInput [matDatepicker]="endPicker" name="EndFrom" #EndFrom="ngModel"
                                     [(ngModel)]="filterModel.EndFrom">

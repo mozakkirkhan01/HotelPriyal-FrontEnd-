@@ -31,7 +31,9 @@ import { ManageCancelRoomBookingListComponent } from './admin/manage-cancel-room
 import { OfficeExpenseCategoryComponent } from './admin/office-expense-category/office-expense-category.component';
 import { OfficeExpenseHeadComponent } from './admin/office-expense-head/office-expense-head.component';
 import { OfficeTransactionComponent } from './admin/office-transaction/office-transaction.component';
-
+import { ManageBillingComponent } from './admin/manage-billing/manage-billing.component';
+import { BillingListComponent } from './admin/billing-list/billing-list.component';
+import { BillingListTodayComponent } from './admin/billing-list-today/billing-list-today.component';
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
   { path: 'admin-login', component: AdminLoginComponent },
@@ -67,6 +69,9 @@ const routes: Routes = [
       { path: 'office-expense-category', component: OfficeExpenseCategoryComponent },
       { path: 'office-expense-head', component: OfficeExpenseHeadComponent },
       { path: 'office-transaction', component: OfficeTransactionComponent },
+      { path: 'manage-billing', component: ManageBillingComponent },
+      { path: 'billing-list', component: BillingListComponent },
+      { path: 'billing-list-today', component: BillingListTodayComponent },
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },

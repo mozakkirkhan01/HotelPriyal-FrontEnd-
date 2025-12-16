@@ -198,8 +198,8 @@
                 <!-- Charge Amount -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Charge Amount</mat-label>
-                  <input matInput type="number" name="ChargeAmount" [(ngModel)]="RoomBookingDetails.ChargeAmount"
-                    class="no-spinner" readonly />
+                  <input matInput type="number" name="ChargeAmount"  [(ngModel)]="RoomBookingDetails.ChargeAmount" (ngModelChange)="calculateRoomCharges()"
+                    class="no-spinner"  />
                 </mat-form-field>
 
                 <!-- Check In Date -->
@@ -445,8 +445,11 @@
                 <!-- Booking source type  -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Booking Source</mat-label>
-                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId" required  >
+
+                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId" required>
+
                     <mat-option value="">--Select--</mat-option>
+
                     <mat-option *ngFor="let x of BookingSourceTypeList" [value]="x.BookingSourceTypeId">
                       {{ x.BookingSourceName }}
                     </mat-option>

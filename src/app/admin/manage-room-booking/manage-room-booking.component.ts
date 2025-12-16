@@ -95,6 +95,7 @@ export class ManageRoomBookingComponent {
   ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.resetForm();
+    this.Payment.PaymentType = PaymentType.Full;
 
     this.route.queryParams.subscribe((params: any) => {
       this.Guest.RoomBookingId = params.id;
@@ -347,28 +348,40 @@ export class ManageRoomBookingComponent {
     );
   }
 
-  getBookingSourceTypeList() {
-    this.dataLoading = true;
-    var obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify({})).toString(),
-    };
-    this.service.getBookingSourceTypeList(obj).subscribe(
-      (r1) => {
-        let response = r1 as any;
-        if (response.Message == ConstantData.SuccessMessage) {
-          this.BookingSourceTypeList = response.BookingSourceTypeList;
-          console.log('Booking Source Type List:', this.BookingSourceTypeList);
-        } else {
-          this.toastr.error(response.Message);
+getBookingSourceTypeList() {
+  this.dataLoading = true;
+
+  const obj: RequestModel = {
+    request: this.localService.encrypt(JSON.stringify({})).toString(),
+  };
+
+  this.service.getBookingSourceTypeList(obj).subscribe(
+    (r1) => {
+      const response = r1 as any;
+
+      if (response.Message === ConstantData.SuccessMessage) {
+        this.BookingSourceTypeList = response.BookingSourceTypeList;
+
+        const selfSource = this.BookingSourceTypeList.find(
+          (x: any) => x.BookingSourceName?.toLowerCase() === 'self'
+        );
+
+        if (selfSource) {
+          this.Guest.BookingSourcetypeId = selfSource.BookingSourceTypeId;
         }
-        this.dataLoading = false;
-      },
-      (err) => {
-        this.toastr.error('Error while fetching records');
-        this.dataLoading = false;
+      } else {
+        this.toastr.error(response.Message);
       }
-    );
-  }
+
+      this.dataLoading = false;
+    },
+    () => {
+      this.toastr.error('Error while fetching records');
+      this.dataLoading = false;
+    }
+  );
+}
+
 
   resetForm() {
     this.Guest = {

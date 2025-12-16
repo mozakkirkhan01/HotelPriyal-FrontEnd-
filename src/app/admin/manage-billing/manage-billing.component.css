@@ -1,0 +1,250 @@
+/* Compact spacing for forms */
+.compact-section {
+  margin-bottom: 1rem;
+}
+
+.compact-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.compact-body {
+  padding: 1.25rem;
+}
+
+.compact-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.compact-row {
+  margin-bottom: 0;
+}
+
+.compact-field {
+  margin-bottom: 0.5rem;
+}
+
+/* Remove spinner from number inputs */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+/* Table styles */
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+mat-form-field {
+  width: 100%;
+}
+
+.card-body {
+  background-color: #fff;
+}
+
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Status badges */
+.badge {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Text alignment utilities */
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+/* Button styles */
+.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+.mybutton {
+  min-width: 80px;
+  height: 45px;
+}
+
+.mdc-button-final {
+  min-width: 200px;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Card enhancements */
+.card {
+  border: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Table info section */
+.table-borderless td {
+  padding: 0.4rem 0.75rem;
+  border: none;
+}
+
+.table-borderless td:first-child {
+  width: 150px;
+  color: #666;
+}
+
+/* Billing summary */
+.fw-bold {
+  font-weight: 700 !important;
+}
+
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Form field sizing */
+mat-form-field {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .compact-field {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+
+  .mdc-button-final {
+    min-width: 150px;
+    padding: 10px 20px;
+  }
+}
+
+/* Action buttons container */
+.d-flex.gap-3 {
+  gap: 1rem;
+}
+
+/* Loading state */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Print styles */
+@media print {
+  .btn,
+  .breadcrumb,
+  mat-form-field,
+  .card-title,
+  .no-print {
+    display: none !important;
+  }
+
+  .card {
+    border: none;
+    box-shadow: none;
+  }
+
+  .table {
+    font-size: 0.9rem;
+  }
+}
+
+/* Scrollbar styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* New guest badge */
+.badge-new-guest {
+  background-color: #28a745;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-left: 10px;
+  font-weight: 600;
+}
+
+/* Animation for section transitions */
+.section {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Highlight important amounts */
+.highlight-amount {
+  background-color: #fff3cd;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}

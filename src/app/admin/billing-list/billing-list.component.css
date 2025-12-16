@@ -1,0 +1,383 @@
+/* Statistics Cards */
+.stats-card {
+  border-left: 4px solid #0d6efd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card .card-body {
+  padding: 1.25rem;
+}
+
+.stats-card h6 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.stats-card h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Card styling */
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Table styling */
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 0.875rem 0.75rem;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Sort header */
+.sort-header {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sort-header:hover {
+  color: #0d6efd;
+}
+
+.sort-header i {
+  font-size: 0.75rem;
+}
+
+/* Text alignment utilities */
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+/* Status badges */
+.badge {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Button groups */
+.btn-group .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-group .btn i {
+  font-size: 0.875rem;
+}
+
+/* Items per page field */
+.items-per-page {
+  width: 150px;
+  margin-bottom: 0;
+}
+
+/* Amount cards in detail view */
+.amount-card {
+  background: #f8f9fa;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.amount-card h6 {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.amount-card h4 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Table borderless for detail view */
+.table-borderless td {
+  padding: 0.4rem 0.75rem;
+  border: none;
+}
+
+.table-borderless td:first-child {
+  width: 180px;
+  color: #666;
+}
+
+/* Button spacing */
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+/* Color utilities */
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-info {
+  color: #0dcaf0 !important;
+}
+
+/* Form fields */
+mat-form-field {
+  width: 100%;
+}
+
+/* Section spacing */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+/* Empty state */
+.table tbody tr td i.bi-inbox {
+  color: #adb5bd;
+}
+
+/* Responsive table */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Breadcrumb styling */
+.breadcrumb a {
+  text-decoration: none;
+  color: #0d6efd;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Button styles */
+.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stats-card h3 {
+    font-size: 1.5rem;
+  }
+
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+
+  .btn-group .btn {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .items-per-page {
+    width: 120px;
+  }
+
+  .amount-card h4 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .btn,
+  .breadcrumb,
+  mat-form-field,
+  .card-title,
+  .stats-card,
+  .section:first-child {
+    display: none !important;
+  }
+
+  .card {
+    border: none;
+    box-shadow: none;
+  }
+
+  .table {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation */
+.section {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Highlight row on hover */
+.table-hover tbody tr {
+  transition: background-color 0.2s;
+}
+
+/* Strong text in table */
+.table strong {
+  font-weight: 600;
+}
+
+/* Badge variations */
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+  color: #000;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #000;
+}
+
+.badge.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+/* Pagination styling */
+.pagination-controls {
+  margin-top: 1rem;
+}
+
+/* Detail view enhancements */
+hr {
+  margin: 1.5rem 0;
+  border-top: 2px solid #e0e0e0;
+}
+
+/* Text end utility */
+.text-end {
+  text-align: right !important;
+}
+
+/* Margin top utilities */
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+/* Padding utilities */
+.py-4 {
+  padding-top: 1.5rem !important;
+  padding-bottom: 1.5rem !important;
+}
+
+/* Button hover effects */
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
+}
+
+/* Card hover effect */
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s;
+}

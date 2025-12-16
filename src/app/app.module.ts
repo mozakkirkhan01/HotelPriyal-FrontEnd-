@@ -63,6 +63,9 @@ import { ManageCancelRoomBookingListComponent } from './admin/manage-cancel-room
 import { OfficeExpenseCategoryComponent } from './admin/office-expense-category/office-expense-category.component';
 import { OfficeExpenseHeadComponent } from './admin/office-expense-head/office-expense-head.component';
 import { OfficeTransactionComponent } from './admin/office-transaction/office-transaction.component';
+import { ManageBillingComponent } from './admin/manage-billing/manage-billing.component';
+import { BillingListComponent } from './admin/billing-list/billing-list.component';
+import { BillingListTodayComponent } from './admin/billing-list-today/billing-list-today.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +106,9 @@ import { OfficeTransactionComponent } from './admin/office-transaction/office-tr
     OfficeExpenseCategoryComponent,
     OfficeExpenseHeadComponent,
     OfficeTransactionComponent,
+    ManageBillingComponent,
+    BillingListComponent,
+    BillingListTodayComponent,
   ],
   imports: [
     BrowserModule,
