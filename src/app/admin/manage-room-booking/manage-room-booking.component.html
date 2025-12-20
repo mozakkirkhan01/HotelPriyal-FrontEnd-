@@ -71,17 +71,37 @@
                 <!-- Contact No -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Contact No *</mat-label>
+
                   <input matInput type="tel" name="ContactNo" [(ngModel)]="Guest.ContactNo"
-                    [readonly]="isFieldReadonly()" required />
-                  <mat-error>Required!</mat-error>
+                    [readonly]="isFieldReadonly()" required pattern="^[0-9]{10}$" maxlength="10" minlength="10"
+                    inputmode="numeric" />
+
+                  <mat-error *ngIf="Guest.ContactNo?.errors?.required">
+                    Required!
+                  </mat-error>
+
+                  <mat-error *ngIf="Guest.ContactNo?.errors?.pattern">
+                    Enter a valid 10-digit number
+                  </mat-error>
                 </mat-form-field>
+
 
                 <!-- Aadhar No -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Aadhar No</mat-label>
-                  <input matInput type="tel" name="AadharNo" [(ngModel)]="Guest.AadharNo"
-                    [readonly]="isFieldReadonly()" />
+
+                  <input matInput type="tel" name="AadharNo" [(ngModel)]="Guest.AadharNo" [readonly]="isFieldReadonly()"
+                    required pattern="^[0-9]{12}$" maxlength="12" minlength="12" inputmode="numeric" />
+
+                  <mat-error *ngIf="Guest.AadharNo?.errors?.pattern">
+                    Enter a valid 12-digit Aadhar number
+                  </mat-error>
+
+                  <mat-error *ngIf="Guest.AadharNo?.errors?.required">
+                    Required!
+                  </mat-error>
                 </mat-form-field>
+
 
                 <!-- Booking Date -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
@@ -110,8 +130,15 @@
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Alt. Mobile</mat-label>
                   <input matInput type="tel" name="AlternativeMobileNo" [(ngModel)]="Guest.AlternativeMobileNo"
-                    [readonly]="isFieldReadonly()" />
+                    [readonly]="isFieldReadonly()" maxlength="10" pattern="[0-9]{10}" placeholder="Optional" />
+
+                  <!-- <mat-hint align="end">10 digits</mat-hint> -->
+
+                  <mat-error *ngIf="Guest.AlternativeMobileNo?.invalid">
+                    Enter valid 10-digit mobile number
+                  </mat-error>
                 </mat-form-field>
+
 
                 <!-- Pincode -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
@@ -134,6 +161,82 @@
               </div>
             </form>
           </div>
+          <div class="section compact-section">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card compact-card">
+                  <div class="card-body compact-body">
+
+                    <h6 class="card-title compact-title">
+                      Sub Guest Details
+                      <small class="text-muted">(Optional)</small>
+                    </h6>
+
+                    <!-- Sub Guest Form -->
+                    <div class="row compact-row">
+
+                      <mat-form-field appearance="outline" class="col-lg-4 compact-field">
+                        <mat-label>Guest Name</mat-label>
+                        <input matInput [(ngModel)]="SubGuestModel.GuestName" />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                        <mat-label>Contact No</mat-label>
+                        <input matInput type="tel" name="SubContactNo" [(ngModel)]="SubGuestModel.ContactNo" required
+                          pattern="^[0-9]{10}$" maxlength="10" minlength="10" inputmode="numeric" />
+                        <mat-error>Enter valid 10-digit Contact No</mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                        <mat-label>Aadhar No</mat-label>
+                        <input matInput type="tel" name="SubAadharNo" [(ngModel)]="SubGuestModel.AadharNo" required
+                          pattern="^[0-9]{12}$" maxlength="12" minlength="12" inputmode="numeric" />
+                        <mat-error>Enter valid 12-digit Aadhar No</mat-error>
+                      </mat-form-field>
+
+
+                      <div class="col-lg-2 d-flex align-items-center">
+                        <button mat-flat-button color="primary" class="mybutton" (click)="addSubGuest()">
+                          {{ editingSubGuestIndex >= 0 ? 'Update' : 'Add' }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Sub Guest Table -->
+                    <table *ngIf="SubGuestList.length > 0" class="table table-bordered table-sm mt-2">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Guest Name</th>
+                          <th>Contact No</th>
+                          <th>Aadhar No</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let g of SubGuestList; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ g.GuestName }}</td>
+                          <td>{{ g.ContactNo }}</td>
+                          <td>{{ g.AadharNo || 'N/A' }}</td>
+                          <td>
+                            <button class="btn btn-sm btn-primary" (click)="editSubGuest(i)">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="removeSubGuest(i)">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -198,8 +301,8 @@
                 <!-- Charge Amount -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Charge Amount</mat-label>
-                  <input matInput type="number" name="ChargeAmount"  [(ngModel)]="RoomBookingDetails.ChargeAmount" (ngModelChange)="calculateRoomCharges()"
-                    class="no-spinner"  />
+                  <input matInput type="number" name="ChargeAmount" [(ngModel)]="RoomBookingDetails.ChargeAmount"
+                    (ngModelChange)="calculateRoomCharges()" class="no-spinner" />
                 </mat-form-field>
 
                 <!-- Check In Date -->

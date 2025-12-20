@@ -32,8 +32,8 @@
                                 class="col-sm-2 compact-field" [style]="{ 'margin-left': '10px' }">
                                 <mat-label>Hotel Name</mat-label>
                                 <input matInput #HotelName="ngModel" name="HotelName"
-                                    (ngModelChange)="filterHotelList(filterModel.HotelName)" [(ngModel)]="filterModel.HotelName"
-                                    [matAutocomplete]="autoHotelName">
+                                    (ngModelChange)="filterHotelList(filterModel.HotelName)"
+                                    [(ngModel)]="filterModel.HotelName" [matAutocomplete]="autoHotelName">
 
                                 <button mat-icon-button matSuffix *ngIf="filterModel.HotelName" (click)="clearHotel()"
                                     tabindex="-1">
@@ -55,7 +55,7 @@
                                 <mat-datepicker #startPicker></mat-datepicker>
                             </mat-form-field>
 
-                        
+
 
 
                             <mat-form-field appearance="outline" class="col-lg-1" [style]="{ 'margin-left': '10px' }">
@@ -394,6 +394,37 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="mb-3" *ngIf="subGuestDetails">
+                            <h6 class="border-bottom pb-1 mb-2 text-uppercase fw-bold text-secondary fs-6">
+                                <i class="bi bi-people-fill me-1"></i> Sub Guest Details
+                            </h6>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Guest Name</th>
+                                            <th>Contact No</th>
+                                            <th>Aadhar No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let g of subGuestDetails; let i = index">
+                                            <td>{{ i + 1 }}</td>
+                                            <td>{{ g.GuestName }}</td>
+                                            <td>{{ g.ContactNo }}</td>
+                                            <td>{{ g.AadharNo || 'N/A' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" *ngIf="subGuestDetails && subGuestDetails.length === 0">
+                            No sub guests added.
+                        </div>
+
 
                         <div class="mb-3">
                             <h6 class="border-bottom pb-1 mb-2 text-uppercase fw-bold text-secondary fs-6">

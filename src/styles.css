@@ -738,3 +738,14 @@
     letter-spacing: var(--mat-form-field-subscript-text-tracking);
     font-weight: var(--mat-form-field-subscript-text-weight);
 }
+
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}

@@ -168,7 +168,7 @@ export class ManageRoomBookingListComponent {
       );
     }
 
-    if(this.staffLogin.RoleId!=5){
+    if (this.staffLogin.RoleId != 5) {
       this.filterModel.HotelId = this.staffLogin.HotelId;
     }
 
@@ -178,7 +178,6 @@ export class ManageRoomBookingListComponent {
         .toString(),
     };
     console.log(this.filterModel);
-    
 
     this.dataLoading = true;
     this.service.getBookingList(obj).subscribe(
@@ -249,19 +248,19 @@ export class ManageRoomBookingListComponent {
     this.selectedBillForCancel.PaidAmount = item.TotalPaidAmount;
     this.selectedBillForCancel.RefundAmount = 0;
     this.selectedBillForCancel.CancelReason = '';
-    
+
     $('#CancelModal').modal('show');
   }
 
   CancelBooking() {
     this.isSubmitted = true;
-    
+
     // Validation
     if (!this.selectedBillForCancel.CancelReason) {
       this.toastr.error('Cancel reason is required');
       return;
     }
-    
+
     this.selectedBillForCancel.CreatedBy = this.staffLogin.StaffLoginId;
     var request: RequestModel = {
       request: this.localService
@@ -273,7 +272,10 @@ export class ManageRoomBookingListComponent {
     this.service.cancelBooking(request).subscribe(
       (r1) => {
         let response = r1 as any;
-        if (response.Message == ConstantData.SuccessMessage || response.Success) {
+        if (
+          response.Message == ConstantData.SuccessMessage ||
+          response.Success
+        ) {
           this.toastr.success('The booking has been cancelled successfully.');
           $('#CancelModal').modal('hide');
           this.getBookingList();
@@ -302,7 +304,8 @@ export class ManageRoomBookingListComponent {
           this.BookingSourceTypeList = {};
           if (Array.isArray(response.BookingSourceTypeList)) {
             response.BookingSourceTypeList.forEach((item: any) => {
-              this.BookingSourceTypeList[item.BookingSourceTypeId] = item.BookingSourceName;
+              this.BookingSourceTypeList[item.BookingSourceTypeId] =
+                item.BookingSourceName;
             });
           }
           console.log('Booking Source Type List:', this.BookingSourceTypeList);
@@ -317,25 +320,25 @@ export class ManageRoomBookingListComponent {
     );
   }
 
-  // ✅ Open View Modal
+  subGuestDetails: any[] = [];
+
   openViewModal(item: any) {
-    // Reset data
     this.selectedBooking = null;
     this.guestDetails = null;
+    this.subGuestDetails = []; // ✅
     this.roomDetails = [];
     this.paymentDetails = [];
 
-    // Show modal
     $('#viewBookingDetailsModal').modal('show');
-
-    // Fetch complete booking details
     this.getBookingDetails(item.RoomBookingId);
   }
 
   // ✅ Fetch Booking Details by ID
   getBookingDetails(roomBookingId: number) {
     const obj: RequestModel = {
-      request: this.localService.encrypt(JSON.stringify(roomBookingId)).toString(),
+      request: this.localService
+        .encrypt(JSON.stringify(roomBookingId))
+        .toString(),
     };
 
     this.service.getBookingListById(obj).subscribe(
@@ -347,13 +350,9 @@ export class ManageRoomBookingListComponent {
         ) {
           this.selectedBooking = response.GetRoomBooking;
           this.guestDetails = response.GetGuest;
+          this.subGuestDetails = response.GetSubGuests || [];
           this.roomDetails = response.GetRoomDetails || [];
           this.paymentDetails = response.GetPaymentDetails || [];
-
-          console.log('Selected Booking:', this.selectedBooking);
-          console.log('Guest Details:', this.guestDetails);
-          console.log('Room Details:', this.roomDetails);
-          console.log('Payment Details:', this.paymentDetails);
         } else {
           this.toastr.error(response.Message);
           $('#viewBookingDetailsModal').modal('hide');
@@ -366,7 +365,6 @@ export class ManageRoomBookingListComponent {
       }
     );
   }
-
 
   getHotelList() {
     var obj: RequestModel = {

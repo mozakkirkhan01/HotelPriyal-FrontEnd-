@@ -72,6 +72,13 @@ export class ManageRoomBookingComponent {
   editingRoomIndex: number = -1;
   SelectedPaymentCollectionList: any[] = [];
   SelectedRoomDetailList: any = [];
+  SubGuestList: any[] = [];
+  SubGuestModel: any = {
+    GuestName: '',
+    ContactNo: '',
+    AadharNo: '',
+  };
+  editingSubGuestIndex: number = -1;
 
   sort(key: any) {
     this.sortKey = key;
@@ -241,7 +248,6 @@ export class ManageRoomBookingComponent {
           this.getGSTList();
           this.getBookingSourceTypeList();
 
-          
           this.Guest = response.GetGuest;
           this.selectedGuestId = this.Guest.GuestId;
           this.isNewGuest = false;
@@ -348,40 +354,39 @@ export class ManageRoomBookingComponent {
     );
   }
 
-getBookingSourceTypeList() {
-  this.dataLoading = true;
+  getBookingSourceTypeList() {
+    this.dataLoading = true;
 
-  const obj: RequestModel = {
-    request: this.localService.encrypt(JSON.stringify({})).toString(),
-  };
+    const obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
 
-  this.service.getBookingSourceTypeList(obj).subscribe(
-    (r1) => {
-      const response = r1 as any;
+    this.service.getBookingSourceTypeList(obj).subscribe(
+      (r1) => {
+        const response = r1 as any;
 
-      if (response.Message === ConstantData.SuccessMessage) {
-        this.BookingSourceTypeList = response.BookingSourceTypeList;
+        if (response.Message === ConstantData.SuccessMessage) {
+          this.BookingSourceTypeList = response.BookingSourceTypeList;
 
-        const selfSource = this.BookingSourceTypeList.find(
-          (x: any) => x.BookingSourceName?.toLowerCase() === 'self'
-        );
+          const selfSource = this.BookingSourceTypeList.find(
+            (x: any) => x.BookingSourceName?.toLowerCase() === 'self'
+          );
 
-        if (selfSource) {
-          this.Guest.BookingSourcetypeId = selfSource.BookingSourceTypeId;
+          if (selfSource) {
+            this.Guest.BookingSourcetypeId = selfSource.BookingSourceTypeId;
+          }
+        } else {
+          this.toastr.error(response.Message);
         }
-      } else {
-        this.toastr.error(response.Message);
+
+        this.dataLoading = false;
+      },
+      () => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
       }
-
-      this.dataLoading = false;
-    },
-    () => {
-      this.toastr.error('Error while fetching records');
-      this.dataLoading = false;
-    }
-  );
-}
-
+    );
+  }
 
   resetForm() {
     this.Guest = {
@@ -463,6 +468,7 @@ getBookingSourceTypeList() {
     this.isNewGuest = false;
     this.selectedGuestId = null;
     this.Guest.BookingDate = this.loadData.loadDateYMD(new Date());
+    this.SubGuestList = [];
   }
 
   isFieldReadonly(): boolean {
@@ -855,7 +861,7 @@ getBookingSourceTypeList() {
     this.Guest.GuestId = this.selectedGuestId || 0;
     console.log('Guest data:', this.Guest.RoomBookingStatus);
 
-    if(!this.Guest.RoomBookingId){
+    if (!this.Guest.RoomBookingId) {
       this.Guest.RoomBookingStatus = RoomBookingStatus.Checkin;
     }
     console.log('Guest data:', this.Guest.RoomBookingStatus);
@@ -875,6 +881,12 @@ getBookingSourceTypeList() {
         AadharNo: this.Guest.AadharNo,
         CompanyName: this.Guest.CompanyName,
       },
+
+      GetSubGuests: this.SubGuestList.map((g) => ({
+        GuestName: g.GuestName,
+        ContactNo: g.ContactNo,
+        AadharNo: g.AadharNo,
+      })),
       GetRoomBooking: {
         RoomBookingId: this.Guest.RoomBookingId || 0, // ✅ CRITICAL for edit
         HotelId: hotelId, // ✅ Added HotelId
@@ -1037,5 +1049,48 @@ getBookingSourceTypeList() {
     this.filteredGuestList = [];
     this.Guest.HotelId = null;
     this.filterHotel = this.HotelList;
+  }
+
+  addSubGuest() {
+
+    if(this.Guest.GuestName == null){
+      this.toastr.error('Please select guest');
+      return;
+    }
+    if (!this.SubGuestModel.GuestName) {
+      this.toastr.error('Sub guest name is required');
+      return;
+    }
+
+    const data = { ...this.SubGuestModel };
+
+    if (this.editingSubGuestIndex >= 0) {
+      this.SubGuestList[this.editingSubGuestIndex] = data;
+      this.editingSubGuestIndex = -1;
+      this.toastr.success('Sub guest updated');
+    } else {
+      this.SubGuestList.push(data);
+      this.toastr.success('Sub guest added');
+    }
+
+    this.clearSubGuest();
+  }
+
+  editSubGuest(index: number) {
+    this.SubGuestModel = { ...this.SubGuestList[index] };
+    this.editingSubGuestIndex = index;
+  }
+
+  removeSubGuest(index: number) {
+    this.SubGuestList.splice(index, 1);
+    this.toastr.success('Sub guest removed');
+  }
+
+  clearSubGuest() {
+    this.SubGuestModel = {
+      GuestName: '',
+      ContactNo: '',
+      AadharNo: '',
+    };
   }
 }

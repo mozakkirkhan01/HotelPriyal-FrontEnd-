@@ -199,7 +199,9 @@
                                         <th class="text-right">Paid</th>
                                         <th class="text-right">Due</th>
                                         <th class="text-center">Status</th>
-                                        <th class="text-center">Actions</th>
+                                        <th class="text-center">Print</th>
+                                        <th class="text-center">View</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -224,7 +226,7 @@
                                             {{ billing.CheckOutDate | date: 'dd-MM-yyyy' }}
                                         </td>
                                         <td class="text-center">{{ billing.TotalNoOfRooms }}</td>
-                                        <td class="text-center">{{ billing.TotalNoOfDays }}</td>
+                                        <td class="text-center">{{ billing.TotalNoOfDays }} Days</td>
                                         <td class="text-right">
                                             <strong>₹{{ billing.GrandTotal | number: '1.2-2' }}</strong>
                                         </td>
@@ -243,29 +245,23 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <button class="btn btn-sm btn-info "
-                                                    (click)="viewBillingDetail(billing)" matTooltip="View Details">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <!-- <button class="btn btn-sm btn-primary"
-                                                    (click)="printBill(billing.BillingId)" matTooltip="Print Bill">
-                                                    <i class="bi bi-printer"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-success"
-                                                    (click)="downloadBill(billing.BillingId)" matTooltip="Download PDF">
-                                                    <i class="bi bi-download"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-warning" (click)="emailBill(billing)"
-                                                    matTooltip="Email Bill">
-                                                    <i class="bi bi-envelope"></i>
-                                                </button> -->
+                                            <button class="btn btn-sm btn-success">
+                                                <i class="bi bi-printer"></i>
+                                            </button>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn btn-primary" (click)="viewBillingDetail(billing)">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+
+                                        <td class="text-center">
                                                 <button class="btn btn-sm btn-danger"
                                                     (click)="deleteBilling(billing.BillingId)" matTooltip="Delete Bill"
                                                     *ngIf="action.CanDelete">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
-                                            </div>
                                         </td>
                                     </tr>
                                     <tr *ngIf="FilteredBillingList.length === 0">
@@ -323,7 +319,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h6 class="text-primary mb-3">Guest Information</h6>
-                                <table class="table table-sm table-borderless">
+                                <table class="table table-sm table-bordered align-middle">
                                     <tr>
                                         <td><strong>Guest Name:</strong></td>
                                         <td>{{ selectedBilling.GuestName }}</td>
@@ -341,10 +337,14 @@
 
                             <div class="col-md-6">
                                 <h6 class="text-primary mb-3">Billing Information</h6>
-                                <table class="table table-sm table-borderless">
+                                <table class="table table-sm table-bordered align-middle">
                                     <tr>
                                         <td><strong>Invoice No:</strong></td>
-                                        <td><span class="badge bg-primary">{{ selectedBilling.InvoiceNo }}</span></td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ selectedBilling.InvoiceNo }}
+                                            </span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><strong>Billing Date:</strong></td>
@@ -369,6 +369,7 @@
                                 </table>
                             </div>
                         </div>
+
 
                         <hr />
 
@@ -396,7 +397,8 @@
                             <div class="col-md-4">
                                 <div class="amount-card">
                                     <h6 class="text-muted">Total Due</h6>
-                                    <h4 class="text-danger mb-0">
+                                    <h4 class=" mb-0"
+                                        [ngStyle]="{ color: selectedBilling.TotalDuesAmount > 0 ? 'red' : 'black' }">
                                         ₹{{ selectedBilling.TotalDuesAmount | number: '1.2-2' }}
                                     </h4>
                                 </div>
@@ -404,20 +406,20 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="row mt-4">
+                        <div class="row mt-4 mb-4">
                             <div class="col-md-12 text-center">
                                 <button mat-raised-button color="primary" (click)="printBill(selectedBilling.BillingId)"
                                     class="mx-2">
                                     <i class="bi bi-printer"></i> Print Bill
                                 </button>
-                                <button mat-raised-button color="accent"
+                                <!-- <button mat-raised-button color="accent"
                                     (click)="downloadBill(selectedBilling.BillingId)" class="mx-2">
                                     <i class="bi bi-download"></i> Download PDF
                                 </button>
                                 <button mat-raised-button color="warn" (click)="emailBill(selectedBilling)"
                                     class="mx-2">
                                     <i class="bi bi-envelope"></i> Email Bill
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                     </div>
