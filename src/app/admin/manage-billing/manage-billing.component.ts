@@ -89,6 +89,7 @@ export class ManageBillingComponent implements OnInit {
   ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validateMenu();
+    this.getHotelList();
     this.loadBookingList();
   }
 
@@ -122,9 +123,42 @@ export class ManageBillingComponent implements OnInit {
     );
   }
 
+  Filter: any = {};
+
+    getHotelList() {
+    var obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify({})).toString(),
+    };
+    this.dataLoading = true;
+    this.service.getHotelList(obj).subscribe(
+      (r1) => {
+        let response = r1 as any;
+        if (response.Message == ConstantData.SuccessMessage) {
+          this.HotelList = response.HotelList;
+        } else {
+          this.toastr.error(response.Message);
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        this.toastr.error('Error while fetching records');
+        this.dataLoading = false;
+      }
+    );
+  }
+
+  HotelList: any[] = [];
+
   loadBookingList() {
+    if(this.staffLogin.RoleId == 5){
+      this.Filter.HotelId = this.Filter.HotelId;
+    }
+    else{
+      this.Filter.HotelId = this.staffLogin.HotelId;
+    }
+
     const data = {
-      HotelId: this.staffLogin.HotelId,
+      HotelId: this.Filter.HotelId,
       RoomBookingStatus: 1,
       // Load only checked-in bookings that haven't been fully billed
     };
@@ -385,6 +419,7 @@ export class ManageBillingComponent implements OnInit {
         RoomBookingId: this.selectedBooking.RoomBookingId,
         PaymentDate: payment.PaymentDate,
         PaidAmount: payment.PaidAmount,
+        PaymentId: payment.PaymentId || null,
         PaymentType: payment.PaymentType,
         PaymentMode: payment.PaymentMode,
         TransactionNo: payment.TransactionNo || '',

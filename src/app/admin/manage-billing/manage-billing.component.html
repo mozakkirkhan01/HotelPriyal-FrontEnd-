@@ -24,9 +24,21 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Room Bookings - Generate Bills</h5>
-
-                        <!-- Search & Filter -->
                         <div class="row mb-3">
+                            <!-- Search & Filter -->
+                            <div class="col-lg-4" *ngIf="staffLogin.RoleId == 5">
+                                <mat-form-field appearance="outline" class="col-lg-2"
+                                    style="margin-left: 10px;">
+                                    <mat-label>Hotel</mat-label>
+                                    <mat-select name="HotelId" [(ngModel)]="Filter.HotelId"
+                                        (selectionChange)="loadBookingList()">
+                                        <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
+                                            {{ hotel.HotelName }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
                             <div class="col-lg-4">
                                 <mat-form-field appearance="outline" class="w-100">
                                     <mat-label>Search by Booking Code / Guest Name / Mobile</mat-label>
@@ -58,6 +70,7 @@
                                     <tr>
                                         <th class="text-center">#</th>
                                         <th>Booking Code</th>
+                                        <th>Hotel Name</th>
                                         <th>Guest Name</th>
                                         <th>Mobile</th>
                                         <th class="text-center">Check-In Date</th>
@@ -82,6 +95,7 @@
                                         <td>
                                             <strong>{{ booking.BookingCode }}</strong>
                                         </td>
+                                        <td>{{ booking.HotelName }}</td>
                                         <td>{{ booking.GuestName }}</td>
                                         <td>{{ booking.GuestContactNo || booking.GuestContactNo }}</td>
                                         <td class="text-center">
@@ -138,78 +152,78 @@
     <div class="section" *ngIf="showBillingSection">
         <!-- Guest & Booking Info -->
         <div class="row">
-  <div class="col-lg-12">
-    <div class="card">
-      <div class="card-body">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
 
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0">Guest & Booking Information</h5>
-          <button class="btn btn-secondary btn-sm" (click)="closeBillingSection()">
-            <i class="bi bi-arrow-left"></i> Back to List
-          </button>
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Guest & Booking Information</h5>
+                            <button class="btn btn-secondary btn-sm" (click)="closeBillingSection()">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm align-middle">
+
+                                <!-- Guest Details -->
+                                <thead class="table-light">
+                                    <tr>
+                                        <th colspan="4" class="text-primary">Guest Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th width="20%">Name</th>
+                                        <td width="30%">{{ selectedGuest?.GuestName }}</td>
+                                        <th width="20%">Mobile</th>
+                                        <td width="30%">{{ selectedGuest?.ContactNo }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>{{ selectedGuest?.Email || 'N/A' }}</td>
+                                        <th>GST No</th>
+                                        <td>{{ selectedGuest?.GSTNo || 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td colspan="3">{{ selectedGuest?.Address || 'N/A' }}</td>
+                                    </tr>
+                                </tbody>
+
+                                <!-- Booking Details -->
+                                <thead class="table-light">
+                                    <tr>
+                                        <th colspan="4" class="text-primary">Booking Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Booking Code</th>
+                                        <td>{{ selectedBooking?.BookingCode }}</td>
+                                        <th>Booking Date</th>
+                                        <td>{{ selectedBooking?.BookingDate | date:'dd-MM-yyyy' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                {{ AllRoomBookingStatusList[selectedBooking?.RoomBookingStatus] }}
+                                            </span>
+                                        </td>
+                                        <th>Booked By</th>
+                                        <td>{{ selectedBooking?.StaffName || 'N/A' }}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="table-responsive">
-          <table class="table table-bordered table-sm align-middle">
-
-            <!-- Guest Details -->
-            <thead class="table-light">
-              <tr>
-                <th colspan="4" class="text-primary">Guest Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th width="20%">Name</th>
-                <td width="30%">{{ selectedGuest?.GuestName }}</td>
-                <th width="20%">Mobile</th>
-                <td width="30%">{{ selectedGuest?.ContactNo }}</td>
-              </tr>
-              <tr>
-                <th>Email</th>
-                <td>{{ selectedGuest?.Email || 'N/A' }}</td>
-                <th>GST No</th>
-                <td>{{ selectedGuest?.GSTNo || 'N/A' }}</td>
-              </tr>
-              <tr>
-                <th>Address</th>
-                <td colspan="3">{{ selectedGuest?.Address || 'N/A' }}</td>
-              </tr>
-            </tbody>
-
-            <!-- Booking Details -->
-            <thead class="table-light">
-              <tr>
-                <th colspan="4" class="text-primary">Booking Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th>Booking Code</th>
-                <td>{{ selectedBooking?.BookingCode }}</td>
-                <th>Booking Date</th>
-                <td>{{ selectedBooking?.BookingDate | date:'dd-MM-yyyy' }}</td>
-              </tr>
-              <tr>
-                <th>Status</th>
-                <td>
-                  <span class="badge bg-success">
-                    {{ AllRoomBookingStatusList[selectedBooking?.RoomBookingStatus] }}
-                  </span>
-                </td>
-                <th>Booked By</th>
-                <td>{{ selectedBooking?.StaffName || 'N/A' }}</td>
-              </tr>
-            </tbody>
-
-          </table>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
 
 
         <!-- Room Details -->
@@ -262,115 +276,95 @@
 
         <!-- Billing Form -->
         <form #formBilling="ngForm">
-  <div class="card shadow-sm">
-    <div class="card-body bg-white">
+            <div class="card shadow-sm">
+                <div class="card-body bg-white">
 
-      <h5 class="card-title mb-3">Billing Details</h5>
+                    <h5 class="card-title mb-3">Billing Details</h5>
 
-      <!-- ONE LINE ROW -->
-      <div class="row g-2 align-items-end">
+                    <!-- ONE LINE ROW -->
+                    <div class="row g-2 align-items-end">
 
-        <!-- Billing Date -->
-        <div class="col-lg-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Billing Date</mat-label>
-            <input
-              matInput
-              [matDatepicker]="billDate"
-              [(ngModel)]="Billing.BillingDate"
-              name="BillingDate">
-            <mat-datepicker-toggle matSuffix [for]="billDate"></mat-datepicker-toggle>
-            <mat-datepicker #billDate></mat-datepicker>
-          </mat-form-field>
-        </div>
+                        <!-- Billing Date -->
+                        <div class="col-lg-2">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Billing Date</mat-label>
+                                <input matInput [matDatepicker]="billDate" [(ngModel)]="Billing.BillingDate"
+                                    name="BillingDate">
+                                <mat-datepicker-toggle matSuffix [for]="billDate"></mat-datepicker-toggle>
+                                <mat-datepicker #billDate></mat-datepicker>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Check-Out Date -->
-        <div class="col-lg-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Check-Out Date</mat-label>
-            <input
-              matInput
-              [matDatepicker]="coDate"
-              [(ngModel)]="Billing.CheckOutDate"
-              name="CheckOutDate">
-            <mat-datepicker-toggle matSuffix [for]="coDate"></mat-datepicker-toggle>
-            <mat-datepicker #coDate></mat-datepicker>
-          </mat-form-field>
-        </div>
+                        <!-- Check-Out Date -->
+                        <div class="col-lg-2">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Check-Out Date</mat-label>
+                                <input matInput [matDatepicker]="coDate" [(ngModel)]="Billing.CheckOutDate"
+                                    name="CheckOutDate">
+                                <mat-datepicker-toggle matSuffix [for]="coDate"></mat-datepicker-toggle>
+                                <mat-datepicker #coDate></mat-datepicker>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Check-Out Time -->
-        <div class="col-lg-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Time</mat-label>
-            <input
-              matInput
-              [ngxTimepicker]="checkOutTime"
-              [(ngModel)]="Billing.CheckOutTime"
-              name="CheckOutTime">
-            <ngx-material-timepicker #checkOutTime></ngx-material-timepicker>
-          </mat-form-field>
-        </div>
+                        <!-- Check-Out Time -->
+                        <div class="col-lg-2">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Time</mat-label>
+                                <input matInput [ngxTimepicker]="checkOutTime" [(ngModel)]="Billing.CheckOutTime"
+                                    name="CheckOutTime">
+                                <ngx-material-timepicker #checkOutTime></ngx-material-timepicker>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Rooms -->
-        <div class="col-lg-1">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Rooms</mat-label>
-            <input matInput type="number"
-                   [(ngModel)]="Billing.TotalNoOfRooms"
-                   name="TotalNoOfRooms"
-                   readonly>
-          </mat-form-field>
-        </div>
+                        <!-- Rooms -->
+                        <div class="col-lg-1">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Rooms</mat-label>
+                                <input matInput type="number" [(ngModel)]="Billing.TotalNoOfRooms" name="TotalNoOfRooms"
+                                    readonly>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Days -->
-        <div class="col-lg-1">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Days</mat-label>
-            <input matInput type="number"
-                   [(ngModel)]="Billing.TotalNoOfDays"
-                   name="TotalNoOfDays"
-                   readonly>
-          </mat-form-field>
-        </div>
+                        <!-- Days -->
+                        <div class="col-lg-1">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Days</mat-label>
+                                <input matInput type="number" [(ngModel)]="Billing.TotalNoOfDays" name="TotalNoOfDays"
+                                    readonly>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Persons -->
-        <div class="col-lg-1">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Persons</mat-label>
-            <input matInput type="number"
-                   [(ngModel)]="Billing.TotalPerson"
-                   name="TotalPerson"
-                   readonly>
-          </mat-form-field>
-        </div>
+                        <!-- Persons -->
+                        <div class="col-lg-1">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Persons</mat-label>
+                                <input matInput type="number" [(ngModel)]="Billing.TotalPerson" name="TotalPerson"
+                                    readonly>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Taxable -->
-        <div class="col-lg-1">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Taxable</mat-label>
-            <input matInput type="number"
-                   [(ngModel)]="Billing.TaxableAmount"
-                   name="TaxableAmount"
-                   readonly>
-          </mat-form-field>
-        </div>
+                        <!-- Taxable -->
+                        <div class="col-lg-1">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Taxable</mat-label>
+                                <input matInput type="number" [(ngModel)]="Billing.TaxableAmount" name="TaxableAmount"
+                                    readonly>
+                            </mat-form-field>
+                        </div>
 
-        <!-- Grand Total -->
-        <div class="col-lg-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Grand Total</mat-label>
-            <input matInput type="number"
-                   [(ngModel)]="Billing.GrandTotal"
-                   name="GrandTotal"
-                   readonly
-                   class="fw-bold text-primary">
-          </mat-form-field>
-        </div>
+                        <!-- Grand Total -->
+                        <div class="col-lg-2">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Grand Total</mat-label>
+                                <input matInput type="number" [(ngModel)]="Billing.GrandTotal" name="GrandTotal"
+                                    readonly class="fw-bold text-primary">
+                            </mat-form-field>
+                        </div>
 
-      </div>
-    </div>
-  </div>
-</form>
+                    </div>
+                </div>
+            </div>
+        </form>
 
 
 
@@ -434,8 +428,8 @@
                         <h5 class="card-title">Add Additional Payment</h5>
 
                         <form>
-                            <div class="row">
-                                <!-- Payment Date -->
+                            <div class="row" style="margin-bottom: 20px;">
+                               <div class="col-lg-2">
                                 <mat-form-field appearance="outline" class="col-lg-2">
                                     <mat-label>Payment Date</mat-label>
                                     <input matInput [matDatepicker]="payDate" [(ngModel)]="NewPayment.PaymentDate"
@@ -443,14 +437,18 @@
                                     <mat-datepicker-toggle matSuffix [for]="payDate"></mat-datepicker-toggle>
                                     <mat-datepicker #payDate></mat-datepicker>
                                 </mat-form-field>
+                                </div>
 
+                                <div class="col-lg-2">
                                 <!-- Amount -->
                                 <mat-form-field appearance="outline" class="col-lg-2">
                                     <mat-label>Amount</mat-label>
                                     <input matInput type="number" [(ngModel)]="NewPayment.PaidAmount" name="PaidAmount"
                                         class="no-spinner" />
                                 </mat-form-field>
+                                </div>
 
+                                <div class="col-lg-2">
                                 <!-- Payment Type -->
                                 <mat-form-field appearance="outline" class="col-lg-2">
                                     <mat-label>Payment Type</mat-label>
@@ -460,7 +458,9 @@
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                                </div>
 
+                                <div class="col-lg-2">
                                 <!-- Payment Mode -->
                                 <mat-form-field appearance="outline" class="col-lg-2">
                                     <mat-label>Payment Mode</mat-label>
@@ -470,14 +470,16 @@
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                                </div>
 
+                                <div class="col-lg-3">
                                 <!-- Transaction No -->
                                 <mat-form-field appearance="outline" class="col-lg-3">
                                     <mat-label>Transaction No</mat-label>
                                     <input matInput [(ngModel)]="NewPayment.TransactionNo" name="TransactionNo" />
                                 </mat-form-field>
+                                </div>
 
-                                <!-- Add Button -->
                                 <div class="col-lg-1 d-flex align-items-center">
                                     <button mat-flat-button color="accent" (click)="addAdditionalPayment()"
                                         class="w-100">

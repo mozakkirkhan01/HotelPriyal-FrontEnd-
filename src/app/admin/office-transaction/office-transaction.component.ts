@@ -51,17 +51,18 @@ export class OfficeTransactionComponent implements OnInit {
 
   setFileName() {
     const dateStr = this.loadData.loadDateYMD(this.exportDate); // Format date as yyyy-mm-dd
-    this.fileName = `Office_Expense_Report_${dateStr}.xlsx`;
+    this.fileName = `Expense_Report_${dateStr}.xlsx`;
   }
 
   ExportTOExcel1() {
     console.log('yes');
 
     const data = [
-      [{ t: 's', s: { bold: true, fontSize: 24 }, v: 'OFFICE EXPENSE REPORT' }],
+      [{ t: 's', s: { bold: true, fontSize: 24 }, v: 'EXPENSE REPORT' }],
       [],
       [
         'Transaction Date',
+        'Hotel Name',
         'Category Name',
         'Head Name',
         'Particular',
@@ -71,6 +72,7 @@ export class OfficeTransactionComponent implements OnInit {
       ...this.OfficeTransactionList.map(
         (item: {
           OETransactionDate: any;
+          HotelName: any;
           OEHeadName: any;
           Amount: any;
           OECategoryName: any;
@@ -78,6 +80,7 @@ export class OfficeTransactionComponent implements OnInit {
           Remarks: any;
         }) => [
           this.loadData.loadDateYMD(item.OETransactionDate),
+          item.HotelName,
           item.OECategoryName,
           item.OEHeadName,
           item.Particular,
@@ -87,11 +90,12 @@ export class OfficeTransactionComponent implements OnInit {
       ),
       [],
       [
+        '',
+        '',
+        '',
+        '',
+        '',
         'Total',
-        '',
-        '',
-        '',
-        '',
         this.OfficeTransactionList.reduce(
           (acc: any, item: { Amount: any }) => acc + item.Amount,
           0
@@ -130,8 +134,9 @@ export class OfficeTransactionComponent implements OnInit {
   ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validiateMenu();
-    // this.getOfficeTransactionList();
-    // this.getOfficeExpenseCategoryList();
+    this.getOfficeTransactionList();
+    this.getOfficeExpenseCategoryList();
+    this.getOfficeExpenseHeadList();
     this.resetForm();
 
     if (this.staffLogin.RoleId == 5) {
@@ -232,14 +237,19 @@ export class OfficeTransactionComponent implements OnInit {
   }
 
   getOfficeExpenseHeadList() {
+    if (this.staffLogin.RoleId == 5) {
+
+      this.OfficeTransaction.HotelId = this.OfficeTransaction.HotelId;
+    }
+    else{
+      this.OfficeTransaction.HotelId = this.staffLogin.HotelId;
+    }
     var data = {
       HotelId: this.OfficeTransaction.HotelId,
-      OECategoryId: this.OfficeTransaction.OECategoryId
-    }
+      OECategoryId: this.OfficeTransaction.OECategoryId,
+    };
     var obj: RequestModel = {
-      request: this.localService
-        .encrypt(JSON.stringify(data))
-        .toString(),
+      request: this.localService.encrypt(JSON.stringify(data)).toString(),
     };
     this.dataLoading = true;
     this.service.getOfficeExpenseHeadList(obj).subscribe(
@@ -259,6 +269,12 @@ export class OfficeTransactionComponent implements OnInit {
   }
 
   getOfficeExpenseHeadListForFilter() {
+    if(this.staffLogin.RoleId ==5){
+      this.Filter.HotelId = this.Filter.HotelId;
+    }
+    else{
+      this.Filter.HotelId = this.staffLogin.HotelId;
+    }
     var obj: RequestModel = {
       request: this.localService
         .encrypt(JSON.stringify({ HotelId: this.Filter.HotelId }))
@@ -281,7 +297,13 @@ export class OfficeTransactionComponent implements OnInit {
     );
   }
 
-  getOfficeExpenseCategoryList() {
+  getOfficeExpenseCategoryList(){
+    if(this.staffLogin.RoleId == 5){
+      this.OfficeTransaction.HotelId = this.OfficeTransaction.HotelId;
+    }
+    else{
+      this.OfficeTransaction.HotelId = this.staffLogin.HotelId;
+    }
     var obj: RequestModel = {
       request: this.localService
         .encrypt(JSON.stringify({ HotelId: this.OfficeTransaction.HotelId }))
@@ -305,6 +327,13 @@ export class OfficeTransactionComponent implements OnInit {
   }
 
   getOfficeExpenseCategoryListForFilter() {
+
+    if(this.staffLogin.RoleId ==5){
+      this.Filter.HotelId = this.Filter.HotelId;
+    }
+    else{
+      this.Filter.HotelId = this.staffLogin.HotelId;
+    }
     var obj: RequestModel = {
       request: this.localService
         .encrypt(JSON.stringify({ HotelId: this.Filter.HotelId }))
@@ -449,8 +478,6 @@ export class OfficeTransactionComponent implements OnInit {
     this.getOfficeExpenseCategoryList();
     this.getOfficeExpenseHeadList();
   }
-
-
 
   clearHotel() {
     this.OfficeTransaction.HotelName = '';

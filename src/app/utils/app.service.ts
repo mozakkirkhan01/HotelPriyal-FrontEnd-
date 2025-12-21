@@ -405,4 +405,9 @@ export class AppService {
   deleteCity(obj: any) {
     return this.http.post(this.apiUrl + "City/deleteCity", obj, { headers: this.headers })
   }
+
+
+  PrintBill(ids : any) {
+    window.open(this.baseUrl + "report/PrintBill/" + ids);
+}
 }

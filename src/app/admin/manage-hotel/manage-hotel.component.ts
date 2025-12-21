@@ -76,7 +76,7 @@ export class ManageHotelComponent {
       this.HeaderImagePhoto = this.imageUrl + this.Hotel.HeaderImage;
       return;
     }
-    if (file.size < 512000) {
+    if (file.size < 5120000) {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.addEventListener('load', (e1: any) => {
@@ -101,7 +101,7 @@ export class ManageHotelComponent {
       this.LogoPhoto = this.imageUrl + this.Hotel.Logo;
       return;
     }
-    if (file.size < 512000) {
+    if (file.size < 5120000) {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.addEventListener('load', (e1: any) => {
@@ -114,7 +114,7 @@ export class ManageHotelComponent {
     } else {
       this.Hotel.Logo = '';
       this.LogoPhoto = this.imageUrl + this.Hotel.Logo;
-      this.toastr.error("File size should be less than 500 KB.");
+      this.toastr.error("File size should be less than 5000 KB.");
     }
   }
 

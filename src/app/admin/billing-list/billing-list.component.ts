@@ -108,6 +108,10 @@ export class BillingListComponent implements OnInit {
     );
   }
 
+   getPrint(data: any) {
+       this.service.PrintBill(data.BillingId);
+     }
+
   getHotelList() {
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify({})).toString(),
@@ -159,6 +163,8 @@ afterHotelSelected(event: any) {
   loadBillingList() {
     const data = {
       HotelId: this.Hotel.HotelId || this.staffLogin.HotelId || 0,
+      FromDate: this.FromDate,
+      ToDate: this.ToDate,
     };
 
     
@@ -252,15 +258,7 @@ afterHotelSelected(event: any) {
 
   // Print bill
   printBill(billingId: number) {
-    // Navigate to print page or open print dialog
-    // You can implement this based on your requirements
-    this.toastr.info('Print functionality - to be implemented');
-    
-    // Option 1: Navigate to a print-friendly page
-    // this.router.navigate(['/admin/print-bill'], { queryParams: { id: billingId } });
-    
-    // Option 2: Open in new window
-    // window.open(`/admin/print-bill?id=${billingId}`, '_blank');
+   this.service.PrintBill(billingId);
   }
 
   // Download bill as PDF

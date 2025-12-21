@@ -189,6 +189,7 @@
                                             </a>
                                         </th>
                                         <th>Booking Code</th>
+                                        <th>Hotel Name</th>
                                         <th>Guest Name</th>
                                         <th>Mobile</th>
                                         <th class="text-center">Check-In</th>
@@ -217,6 +218,7 @@
                                         </td>
                                         <td>{{ billing.BillingDate | date: 'dd-MM-yyyy' }}</td>
                                         <td>{{ billing.BookingCode }}</td>
+                                        <td>{{ billing.HotelName }}</td>
                                         <td>{{ billing.GuestName }}</td>
                                         <td>{{ billing.ContactNo }}</td>
                                         <td class="text-center">
@@ -245,7 +247,7 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <button class="btn btn-sm btn-success">
+                                            <button class="btn btn-sm btn-success" (click)="getPrint(billing)">
                                                 <i class="bi bi-printer"></i>
                                             </button>
                                         </td>
