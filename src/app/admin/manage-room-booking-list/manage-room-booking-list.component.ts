@@ -40,6 +40,7 @@ export class ManageRoomBookingListComponent {
   StatusList = this.loadData.GetEnumList(Status);
   RoomBookingStatusList = this.loadData.GetEnumList(RoomBookingStatus);
   PaymentModeList = this.loadData.GetEnumList(PaymentMode);
+  AllPayemnt = PaymentMode;
   PaymentTypeList = this.loadData.GetEnumList(PaymentType);
   PageSize = ConstantData.PageSizes;
   p: number = 1;

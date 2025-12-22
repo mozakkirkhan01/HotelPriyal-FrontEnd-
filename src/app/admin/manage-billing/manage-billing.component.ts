@@ -446,7 +446,7 @@ export class ManageBillingComponent implements OnInit {
 
           this.closeBillingSection();
           this.loadBookingList();
-
+          this.service.PrintBill(response.BillingId);
           this.router.navigate(['/admin/billing-list']);
         } else {
           this.toastr.error(response.Message);

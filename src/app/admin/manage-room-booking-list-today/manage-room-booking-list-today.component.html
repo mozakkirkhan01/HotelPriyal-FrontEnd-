@@ -126,10 +126,10 @@
                                 <th class="text-end" style="cursor: pointer" (click)="sort('TotalDuesAmount')">
                                     Due Amt.
                                 </th>
-                                <!-- <th class="text-center" style="cursor: pointer; text-align: center"
+                                <th class="text-center" style="cursor: pointer; text-align: center"
                                     (click)="sort('DeliveryStatus')">
-                                    Delivery Status
-                                </th> -->
+                                    Mode
+                                </th>
                                 <th class="text-center" style="cursor: pointer; text-align: center"
                                     (click)="sort('RoomBookingStatus')">
                                     Status
@@ -178,10 +178,13 @@
                                 <td class="text-end">{{ item.TotalGST | currency:'INR' }}</td>
                                 <td class="text-end">{{ item.TotalDiscount | currency:'INR' }}</td>
                                 <td class="text-end">{{ item.TotalLineAmount | currency:'INR' }}</td>
-                                <td class="text-end" style="color:green">{{ item.TotalPaidAmount | currency:'INR' }}</td>
+                                <td class="text-end" style="color:green">{{ item.TotalPaidAmount | currency:'INR' }}
+                                </td>
                                 <td class="text-end" style="color: red; font-weight: 600">
                                     {{ item.TotalDuesAmount | currency:'INR' }}
                                 </td>
+                                <td>{{AllPayemnt[item.PaymentMode]}}</td>
+
 
                                 <!-- <td style="text-align: center">
                                     <span class="p-1" [ngClass]="
@@ -277,7 +280,8 @@
                                     currency:'INR' }}</th>
                                 <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalAmount |
                                     currency:'INR' }}</th>
-                                <th style="font-weight: 600; color:green;" class="text-right">{{ BookingTotal.TotalPaidAmount |
+                                <th style="font-weight: 600; color:green;" class="text-right">{{
+                                    BookingTotal.TotalPaidAmount |
                                     currency:'INR' }}</th>
                                 <th style="font-weight: 600;" class="text-right" style="color: red;">{{
                                     BookingTotal.TotalDuesAmount | currency:'INR' }}</th>
@@ -285,7 +289,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                                <!-- <th></th> -->
+                                <th></th>
                                 <th></th>
                             </tr>
                         </tfoot>

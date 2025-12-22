@@ -22,15 +22,13 @@ import {
 import { Router } from '@angular/router';
 declare var $: any;
 
-
-
 @Component({
   selector: 'app-manage-room-booking-list-today',
   templateUrl: './manage-room-booking-list-today.component.html',
-  styleUrls: ['./manage-room-booking-list-today.component.css']
+  styleUrls: ['./manage-room-booking-list-today.component.css'],
 })
 export class ManageRoomBookingListTodayComponent {
-BookingSourceTypeList: any = {};
+  BookingSourceTypeList: any = {};
   DueDate: any;
   DuePayment: any;
   Deliverystatus: any = {};
@@ -42,6 +40,8 @@ BookingSourceTypeList: any = {};
   StatusList = this.loadData.GetEnumList(Status);
   RoomBookingStatusList = this.loadData.GetEnumList(RoomBookingStatus);
   PaymentModeList = this.loadData.GetEnumList(PaymentMode);
+  AllPayemnt = PaymentMode;
+
   PaymentTypeList = this.loadData.GetEnumList(PaymentType);
   PageSize = ConstantData.PageSizes;
   p: number = 1;
@@ -90,20 +90,20 @@ BookingSourceTypeList: any = {};
     this.staffLogin = this.localService.getEmployeeDetail();
     this.validiateMenu();
     this.resetForm();
-    this.getBookingList();
     this.getBookingSourceTypeList();
     this.getHotelList();
-
+    
     // Initialize pagination defaults
     this.p = 1;
     this.itemPerPage = 10;
-
+    
     // Initialize filter model
     this.filterModel = {
       StartFrom: new Date(),
       EndFrom: new Date(),
       RoomBookingStatus: 0,
     };
+    this.getBookingList();
   }
 
   validiateMenu() {

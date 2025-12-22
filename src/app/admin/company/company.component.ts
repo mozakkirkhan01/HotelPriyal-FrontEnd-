@@ -111,7 +111,7 @@ export class CompanyComponent {
       this.LogoPNGPhoto =this.imageUrl+ this.Company.LogoPNG;
       return;
     }
-    if (file.size < 512000) {
+    if (file.size < 5120000) {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.addEventListener('load', (e1: any) => {
@@ -139,7 +139,7 @@ export class CompanyComponent {
       this.LogoPhoto =this.imageUrl+ this.Company.Logo;
       return;
     }
-    if (file.size < 512000) {
+    if (file.size < 5120000) {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.addEventListener('load', (e1: any) => {

@@ -126,10 +126,10 @@
                                 <th class="text-end" style="cursor: pointer" (click)="sort('TotalDuesAmount')">
                                     Due Amt.
                                 </th>
-                                <!-- <th class="text-center" style="cursor: pointer; text-align: center"
+                                <th class="text-center" style="cursor: pointer; text-align: center"
                                     (click)="sort('DeliveryStatus')">
-                                    Delivery Status
-                                </th> -->
+                                    Mode
+                                </th>
                                 <th class="text-center" style="cursor: pointer; text-align: center"
                                     (click)="sort('RoomBookingStatus')">
                                     Status
@@ -182,23 +182,8 @@
                                 <td class="text-end" style="color: red; font-weight: 600">
                                     {{ item.TotalDuesAmount | currency:'INR' }}
                                 </td>
+                                <td>{{AllPayemnt[item.PaymentMode]}}</td>
 
-                                <!-- <td style="text-align: center">
-                                    <span class="p-1" [ngClass]="
-                      item.DeliveryStatus === 1
-                        ? 'badge text-bg-success'
-                        : 'badge text-bg-danger'
-                    ">
-                                        {{ getDeliveryStatus(item?.DeliveryStatus) }}
-                                    </span>
-
-                                    <ng-container *ngIf="item.DeliveryStatus === 2">
-                                        <button style="margin-left: 14px" class="btn btn-primary btn-sm"
-                                            (click)="DeliveryModal(item)">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                    </ng-container>
-                                </td> -->
 
                                 <td class="text-center">
                                     <span class="p-1" style="border-radius: 10%; font-size: 10px;" [ngClass]="{
@@ -284,7 +269,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                                <!-- <th></th> -->
+                                <th></th>
                                 <th></th>
                                 <th></th>
                             </tr>
