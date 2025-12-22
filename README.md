@@ -115,7 +115,7 @@ php artisan serve
 http://localhost:3000
 ```
 
-## 🗄️ Database Schema
+<!-- ## 🗄️ Database Schema
 
 ### Main Tables
 - `hotels` - Hotel information
@@ -124,19 +124,19 @@ http://localhost:3000
 - `bookings` - Booking records
 - `billing` - Bills and invoices
 - `expenses` - Expense records
-- `guests` - Guest information
+- `guests` - Guest information -->
 
-## 🔐 Default Login Credentials
+<!-- ## 🔐 Default Login Credentials
 
 **Admin Account**
 - Email: admin
-- Password: admin123
+- Password: admin@123 -->
 
 
 
 
 
-## 🎯 Usage
+<!-- ## 🎯 Usage -->
 
 ### For Admins
 1. Login to the admin panel
@@ -187,8 +187,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Priyal**
-- GitHub: [@Priyal](https://github.com/Priyal)
+**Akash Kumar**
+- GitHub: [@Akashkumar9508](https://github.com/Akashkumar9508)
 <!-- - Email: priyal@pathlogics.com -->
 <!-- 
 ## 🙏 Acknowledgments
@@ -205,4 +205,4 @@ For support, email support@yourhotel.com or join our Slack channel.
 
 ⭐ Star this repo if you find it helpful!
 
-**Made with ❤️ for Hotel Management**
+**Made with ❤️ Akash Kumar**
