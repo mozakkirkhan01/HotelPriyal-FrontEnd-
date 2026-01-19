@@ -34,6 +34,7 @@ import { OfficeTransactionComponent } from './admin/office-transaction/office-tr
 import { ManageBillingComponent } from './admin/manage-billing/manage-billing.component';
 import { BillingListComponent } from './admin/billing-list/billing-list.component';
 import { BillingListTodayComponent } from './admin/billing-list-today/billing-list-today.component';
+import { BookingReportComponent } from './admin/booking-report/booking-report.component';
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
   { path: 'admin-login', component: AdminLoginComponent },
@@ -72,6 +73,7 @@ const routes: Routes = [
       { path: 'manage-billing', component: ManageBillingComponent },
       { path: 'billing-list', component: BillingListComponent },
       { path: 'billing-list-today', component: BillingListTodayComponent },
+      { path: 'booking-report', component: BookingReportComponent },
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },

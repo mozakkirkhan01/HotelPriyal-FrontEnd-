@@ -47,6 +47,8 @@
                                 <th style="cursor:pointer;" (click)="sort('State')">State</th>
                                 <th style="cursor:pointer;" (click)="sort('City')">City</th>
                                 <th style="cursor:pointer;" (click)="sort('Pincode')">Pincode</th>
+                                <th style="cursor:pointer;" (click)="sort('HotelInvoiceInitial')">Hotel Invoice Initial</th>
+                                <th style="cursor:pointer;" (click)="sort('HotelInvoiceNo')">Hotel Invoice No</th>
                                 <th style="cursor:pointer;" (click)="sort('CreatedBy')">Created By</th>
                                 <th style="cursor:pointer;" (click)="sort('CreatedDate')">Created Date</th>
                                 <th style="cursor:pointer;" (click)="sort('UpdatedBy')">Updated By</th>
@@ -69,6 +71,8 @@
                                 <td>{{item.StateName}}</td>
                                 <td>{{item.CityName}}</td>
                                 <td>{{item.Pincode}}</td>
+                                <td>{{item.HotelInvoiceInitial}}</td>
+                                <td>{{item.HotelInvoiceNo}}</td>
                                 <td>{{item.CreatedByName}}</td>
                                 <td>{{item.CreatedDate | date:'dd/MM/yyyy'}}</td>
                                 <td>{{item.UpdatedByName}}</td>
@@ -235,8 +239,24 @@
                                             </mat-error>
                                         </mat-form-field>
 
-                                        
+                                         <mat-form-field appearance="outline" class="col-sm-3">
+                                            <mat-label>Hotel Invoice Initial</mat-label>
+                                            <input matInput #HotelInvoiceInitial="ngModel" name="HotelInvoiceInitial" [(ngModel)]="Hotel.HotelInvoiceInitial">
+                                            <mat-error>
+                                                Hotel Invoice Initial is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
                                         <mat-form-field appearance="outline" class="col-sm-3">
+                                            <mat-label>Hotel Invoice No</mat-label>
+                                            <input matInput #HotelInvoiceNo="ngModel" name="HotelInvoiceNo" [(ngModel)]="Hotel.HotelInvoiceNo">
+                                            <mat-error>
+                                                Hotel Invoice No is required!
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        
+                                        <mat-form-field appearance="outline" class="col-sm-4">
                                             <mat-label>Status</mat-label>
                                             <mat-select #Status="ngModel" name="Status" [(ngModel)]="Hotel.Status"
                                                 required>

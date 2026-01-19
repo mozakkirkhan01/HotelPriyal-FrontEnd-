@@ -40,7 +40,6 @@ export class DepartmentComponent {
 
   ngOnInit(): void {
     this.staffLogin = this.localService.getEmployeeDetail();
-    console.log(this.staffLogin);
     
     this.validiateMenu();
     this.getDepartmentList();

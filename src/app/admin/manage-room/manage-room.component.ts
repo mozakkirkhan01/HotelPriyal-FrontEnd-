@@ -118,7 +118,6 @@ export class ManageRoomComponent {
   }
 
   callFunction(hotelId: number) {
-    console.log(hotelId);
     
     this.Room.HotelId = hotelId;
     this.getRoomTypeList();

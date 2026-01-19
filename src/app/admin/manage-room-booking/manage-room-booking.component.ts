@@ -318,7 +318,6 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.GSTList = response.GSTList;
-          console.log('GST List:', this.GSTList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -341,7 +340,6 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.GuestList = response.GuestList;
-          console.log('Guest List:', this.GuestList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -496,7 +494,6 @@ export class ManageRoomBookingComponent {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
           this.RoomList = response.RoomList;
-          console.log('Room List:', this.RoomList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -851,20 +848,16 @@ export class ManageRoomBookingComponent {
     let hotelId: number;
     if (this.staffLogin.RoleId == 5) {
       hotelId = this.Hotel.HotelId;
-      console.log('Admin hotel ID:', hotelId);
     } else {
       hotelId = this.staffLogin.HotelId;
-      console.log("Setting hotel ID to staff's hotel:", hotelId);
     }
 
     this.Guest.HotelId = hotelId;
     this.Guest.GuestId = this.selectedGuestId || 0;
-    console.log('Guest data:', this.Guest.RoomBookingStatus);
 
     if (!this.Guest.RoomBookingId) {
       this.Guest.RoomBookingStatus = RoomBookingStatus.Checkin;
     }
-    console.log('Guest data:', this.Guest.RoomBookingStatus);
 
     const data = {
       GetGuest: {
@@ -956,7 +949,6 @@ export class ManageRoomBookingComponent {
       })),
     };
 
-    console.log('Sending data:', data);
 
     const obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(data)).toString(),

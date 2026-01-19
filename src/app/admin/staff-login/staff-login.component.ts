@@ -236,8 +236,6 @@ export class StaffLoginComponent {
       })).toString()
     }
 
-    console.log("Sending Data:", JSON.parse(this.localService.decrypt(obj.request))); // Debug log
-
     this.dataLoading = true;
     this.service.saveStaffLogin(obj).subscribe(r1 => {
       let response = r1 as any;

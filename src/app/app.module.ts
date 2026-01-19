@@ -66,6 +66,7 @@ import { OfficeTransactionComponent } from './admin/office-transaction/office-tr
 import { ManageBillingComponent } from './admin/manage-billing/manage-billing.component';
 import { BillingListComponent } from './admin/billing-list/billing-list.component';
 import { BillingListTodayComponent } from './admin/billing-list-today/billing-list-today.component';
+import { BookingReportComponent } from './admin/booking-report/booking-report.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,7 @@ import { BillingListTodayComponent } from './admin/billing-list-today/billing-li
     ManageBillingComponent,
     BillingListComponent,
     BillingListTodayComponent,
+    BookingReportComponent,
   ],
   imports: [
     BrowserModule,

@@ -132,7 +132,7 @@
 
                                     <input matInput #HotelName="ngModel" name="HotelName"
                                         (ngModelChange)="filterHotelList(Staff.HotelName)" [(ngModel)]="Staff.HotelName"
-                                        [matAutocomplete]="autoHotelName" required autofocus>
+                                        [matAutocomplete]="autoHotelName" >
 
                                     <!-- Clear Button -->
                                     <button mat-icon-button matSuffix *ngIf="Staff.HotelName" (click)="clearHotel()"

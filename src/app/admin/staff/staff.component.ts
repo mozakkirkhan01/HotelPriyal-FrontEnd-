@@ -256,7 +256,7 @@ export class StaffComponent {
 
     clearHotel() {
   this.Staff.HotelName = '';
-  this.Staff.HotelId = 0;  // Optional: reset hotel selection
+  this.Staff.HotelId = null;  // Optional: reset hotel selection
   this.filterHotel = this.HotelList; // reset filtered list
 }
 

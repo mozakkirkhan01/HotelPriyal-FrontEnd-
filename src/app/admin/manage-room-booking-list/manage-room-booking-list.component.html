@@ -43,7 +43,7 @@
                                     (optionSelected)="afterHotelSelected($event)">
                                     <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
                                         [value]="option.HotelName">
-                                        {{option.HotelName}}
+                                        {{ option.HotelName }} - {{ option.Slogon }}
                                     </mat-option>
                                 </mat-autocomplete>
                             </mat-form-field>
@@ -105,6 +105,8 @@
                                 <th style="cursor: pointer" (click)="sort('GuestName')">
                                     Guest Name
                                 </th>
+
+
                                 <!-- <th class="text-center" style="cursor: pointer" (click)="sort('BookingSourceName')">
                                     Source
                                 </th> -->
@@ -147,6 +149,8 @@
                                 </th>
 
                                 <th class="text-center" *ngIf="action.CanEdit">Edit</th>
+                                <th class="text-center">Checkout</th>
+
                                 <th class="text-center" *ngIf="action.CanDelete">Delete</th>
                                 <th class="text-center" *ngIf="action.CanDelete">Cancel</th>
                             </tr>
@@ -173,12 +177,14 @@
                                 </td>
                                 <td>{{ item.HotelName }}</td>
                                 <td>{{ item.GuestName }}</td>
+
                                 <!-- <td class="text-center">{{ item.BookingSourceName }}</td> -->
                                 <td class="text-end">{{ item.TaxableAmount | currency:'INR' }}</td>
                                 <td class="text-end">{{ item.TotalGST | currency:'INR' }}</td>
                                 <td class="text-end">{{ item.TotalDiscount | currency:'INR' }}</td>
                                 <td class="text-end">{{ item.TotalLineAmount | currency:'INR' }}</td>
-                                <td class="text-end" style ="color:green;">{{ item.TotalPaidAmount | currency:'INR' }}</td>
+                                <td class="text-end" style="color:green;">{{ item.TotalPaidAmount | currency:'INR' }}
+                                </td>
                                 <td class="text-end" style="color: red; font-weight: 600">
                                     {{ item.TotalDuesAmount | currency:'INR' }}
                                 </td>
@@ -218,6 +224,8 @@
                                         <i class="bi bi-printer"></i>
                                     </button>
                                 </td> -->
+                                <!-- Checkout Button -->
+
                                 <td class="text-center">
                                     <button *ngIf="item.RoomBookingStatus != AllStatusList.Cancelled"
                                         class="btn btn-sm btn btn-primary" (click)="openViewModal(item)">
@@ -229,6 +237,12 @@
                                         class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#staticBackdrop" (click)="editBooking(item)">
                                         <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button *ngIf="item.RoomBookingStatus == AllStatusList.Checkin"
+                                        class="btn btn-sm btn-info" (click)="openCheckoutModal(item)" title="Checkout">
+                                        <i class="bi bi-box-arrow-right"></i>
                                     </button>
                                 </td>
                                 <td class="text-center" *ngIf="action.CanDelete">
@@ -262,7 +276,8 @@
                                     currency:'INR' }}</th>
                                 <th style="font-weight: 600;" class="text-right">{{ BookingTotal.TotalAmount |
                                     currency:'INR' }}</th>
-                                <th style="font-weight: 600;color:green;" class="text-right">{{ BookingTotal.TotalPaidAmount |
+                                <th style="font-weight: 600;color:green;" class="text-right">{{
+                                    BookingTotal.TotalPaidAmount |
                                     currency:'INR' }}</th>
                                 <th style="font-weight: 600;" class="text-right" style="color: red;">{{
                                     BookingTotal.TotalDuesAmount | currency:'INR' }}</th>
@@ -422,6 +437,7 @@
                                             <th>#</th>
                                             <th>Room Name</th>
                                             <th>Check In</th>
+                                            <th>Check Out</th>
                                             <th>Guests (A/C/Total)</th>
                                             <th>Days</th>
                                             <th class="text-end">Charge</th>
@@ -438,6 +454,10 @@
                                             <td>
                                                 {{ room.CheckInDate | date : "dd-MM-yyyy" }}<br>
                                                 <small class="text-muted">{{ room.CheckInTime }}</small>
+                                            </td>
+                                            <td>
+                                                {{ room.CheckOutDate | date : "dd-MM-yyyy" }}<br>
+                                                <small class="text-muted">{{ room.CheckOutTime }}</small>
                                             </td>
                                             <td>
                                                 A: {{ room.NoOfAdult }} | C: {{ room.NoOfChild }} | Total: {{
@@ -706,6 +726,116 @@
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-arrow-right me-2"></i>Checkout Booking
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
 
+                <div class="modal-body">
+                    <div *ngIf="selectedBookingForCheckout" class="container-fluid">
+
+                        <!-- Booking Summary -->
+                        <!-- Booking Summary -->
+                        <div class="alert alert-info mb-3">
+                            <h6 class="mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Booking Summary
+                            </h6>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm mb-0 bg-white">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-50">Booking Code</th>
+                                            <td>{{ selectedBookingForCheckout.BookingCode }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Guest Name</th>
+                                            <td>{{ selectedBookingForCheckout.GuestName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Hotel Name</th>
+                                            <td>{{ selectedBookingForCheckout.HotelName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Amount</th>
+                                            <td>
+                                                {{ selectedBookingForCheckout.TotalLineAmount | currency:'INR' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Paid Amount</th>
+                                            <td class="text-success fw-semibold">
+                                                {{ selectedBookingForCheckout.TotalPaidAmount | currency:'INR' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Due Amount</th>
+                                            <td class="text-danger fw-semibold">
+                                                {{ selectedBookingForCheckout.TotalDuesAmount | currency:'INR' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <!-- Checkout Details Form -->
+                        <div class="row g-3">
+                            <div class="col-lg-6">
+                                <mat-form-field appearance="outline" class="w-100">
+                                    <mat-label>Checkout Date</mat-label>
+                                    <input matInput [matDatepicker]="checkoutDatePicker"
+                                        [(ngModel)]="checkoutDetails.CheckoutDate" required>
+                                    <mat-datepicker-toggle matSuffix [for]="checkoutDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #checkoutDatePicker></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <mat-form-field appearance="outline" class="w-100">
+                                    <mat-label>Checkout Time</mat-label>
+                                    <input matInput type="time" [(ngModel)]="checkoutDetails.CheckoutTime" required>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <mat-form-field appearance="outline" class="w-100">
+                                    <mat-label>Remarks (Optional)</mat-label>
+                                    <textarea matInput [(ngModel)]="checkoutDetails.Remarks" rows="3"
+                                        placeholder="Enter any checkout remarks..."></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <!-- Warning for Due Amount -->
+                        <div *ngIf="selectedBookingForCheckout.TotalDuesAmount > 0" class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Note:</strong> This booking has a pending due amount of <strong>{{
+                                selectedBookingForCheckout.TotalDuesAmount | currency:'INR' }}</strong>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" (click)="confirmCheckout()"
+                        [disabled]="!checkoutDetails.CheckoutDate || !checkoutDetails.CheckoutTime">
+                        <i class="bi bi-check-circle me-1"></i>Confirm Checkout
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 </main>

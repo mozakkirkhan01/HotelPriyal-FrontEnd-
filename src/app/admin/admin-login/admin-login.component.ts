@@ -75,7 +75,6 @@ export class AdminLoginComponent {
         this.toastr.success("Login Successful.")
         this.submitted = false;
         this.localService.setEmployeeDetail(response.UserDetail);
-        console.log(response.UserDetail);
         
         this.router.navigate(['/admin/admin-dashboard']);
       } else {

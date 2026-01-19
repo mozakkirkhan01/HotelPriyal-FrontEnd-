@@ -416,7 +416,6 @@ export class AdminDashboardComponent implements OnInit {
 
   onRoomClick(room: Room): void {
     const status = this.getRoomStatusText(room);
-    console.log('Room clicked:', room);
     this.toastr.info(`${room.RoomName} - ${status}`);
   }
 

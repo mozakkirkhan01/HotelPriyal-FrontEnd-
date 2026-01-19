@@ -77,6 +77,10 @@ export class AppService {
     return this.http.post(this.apiUrl + "Booking/cancelBooking", obj, { headers: this.headers })
   }
 
+  CheckoutBooking(obj: any) {
+    return this.http.post(this.apiUrl + "Booking/CheckoutBooking", obj, { headers: this.headers })
+  }
+
   //billing
 
   getBillingList(obj: any) {

@@ -178,7 +178,6 @@ export class ManageRoomBookingListComponent {
         .encrypt(JSON.stringify(this.filterModel))
         .toString(),
     };
-    console.log(this.filterModel);
 
     this.dataLoading = true;
     this.service.getBookingList(obj).subscribe(
@@ -309,7 +308,6 @@ export class ManageRoomBookingListComponent {
                 item.BookingSourceName;
             });
           }
-          console.log('Booking Source Type List:', this.BookingSourceTypeList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -412,4 +410,108 @@ export class ManageRoomBookingListComponent {
     this.filterModel.HotelName = '';
     this.filterHotel = this.HotelList;
   }
+
+
+  // Add these properties at the top with other declarations
+selectedBookingForCheckout: any = null;
+checkoutDetails: any = {
+  CheckoutDate: null,
+  CheckoutTime: null,
+  Remarks: ''
+};
+
+// Add this method to open the checkout modal
+openCheckoutModal(item: any) {
+  this.selectedBookingForCheckout = { ...item };
+  
+  // Set default checkout date and time to current
+  const now = new Date();
+  this.checkoutDetails = {
+    CheckoutDate: this.loadData.loadDateYMD(now),
+    CheckoutTime: now.toTimeString().slice(0, 5), // Format: HH:MM
+    Remarks: ''
+  };
+
+  $('#checkoutModal').modal('show');
+}
+
+
+formatTimeTo12Hour(time: string): string {
+  if (!time) return '';
+
+  const [hourStr, minute] = time.split(':');
+  let hour = parseInt(hourStr, 10);
+
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12; // converts 0 -> 12
+
+  return `${hour}:${minute} ${ampm}`;
+}
+
+// Add this method to confirm checkout
+confirmCheckout() {
+
+  if (this.selectedBookingForCheckout.TotalDuesAmount > 0) {
+    this.toastr.error('Please pay the due amount before checking out');
+    return;
+  }
+
+  if (!this.checkoutDetails.CheckoutDate || !this.checkoutDetails.CheckoutTime) {
+    this.toastr.error('Please enter checkout date and time');
+    return;
+  }
+
+  const formattedCheckoutTime = this.formatTimeTo12Hour(
+    this.checkoutDetails.CheckoutTime
+  );
+
+  const checkoutRequest = {
+    RoomBookingId: this.selectedBookingForCheckout.RoomBookingId,
+    CheckoutDate: this.checkoutDetails.CheckoutDate,
+    CheckoutTime: formattedCheckoutTime, // ✅ 3:24 PM
+    Remarks: this.checkoutDetails.Remarks,
+    RoomBookingStatus: RoomBookingStatus.Checkout,
+    UpdatedBy: this.staffLogin.StaffLoginId
+  };
+
+
+  const request: RequestModel = {
+    request: this.localService
+      .encrypt(JSON.stringify(checkoutRequest))
+      .toString(),
+  };
+
+  this.dataLoading = true;
+
+  this.service.CheckoutBooking(request).subscribe(
+    (r1) => {
+      let response = r1 as any;
+      if (response.Message === ConstantData.SuccessMessage || response.Success) {
+        this.toastr.success('Booking checked out successfully');
+        $('#checkoutModal').modal('hide');
+        this.getBookingList();
+        this.resetCheckoutForm();
+      } else {
+        this.toastr.error(response.Message || 'Error while checking out booking');
+      }
+      this.dataLoading = false;
+    },
+    (err) => {
+      this.toastr.error('An error occurred while checking out the booking');
+      console.error(err);
+      this.dataLoading = false;
+    }
+  );
+}
+
+
+// Add this helper method to reset the form
+resetCheckoutForm() {
+  this.selectedBookingForCheckout = null;
+  this.checkoutDetails = {
+    CheckoutDate: null,
+    CheckoutTime: null,
+    Remarks: ''
+  };
+}
 }

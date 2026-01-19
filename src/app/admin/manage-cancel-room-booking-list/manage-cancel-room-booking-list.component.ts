@@ -178,7 +178,6 @@ BookingSourceTypeList: any = {};
         .encrypt(JSON.stringify(this.filterModel))
         .toString(),
     };
-    console.log(this.filterModel);
     
 
     this.dataLoading = true;
@@ -306,7 +305,6 @@ BookingSourceTypeList: any = {};
               this.BookingSourceTypeList[item.BookingSourceTypeId] = item.BookingSourceName;
             });
           }
-          console.log('Booking Source Type List:', this.BookingSourceTypeList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -351,10 +349,7 @@ BookingSourceTypeList: any = {};
           this.roomDetails = response.GetRoomDetails || [];
           this.paymentDetails = response.GetPaymentDetails || [];
 
-          console.log('Selected Booking:', this.selectedBooking);
-          console.log('Guest Details:', this.guestDetails);
-          console.log('Room Details:', this.roomDetails);
-          console.log('Payment Details:', this.paymentDetails);
+          
         } else {
           this.toastr.error(response.Message);
           $('#viewBookingDetailsModal').modal('hide');

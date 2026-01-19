@@ -1,0 +1,176 @@
+
+/* Stat Cards */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.card-body h6 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.card-body h3 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Filter Section */
+.section {
+    margin-bottom: 20px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.items-per-page {
+    width: 120px;
+    margin-bottom: 0;
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.sort-header {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.sort-header:hover {
+    color: #0d6efd;
+}
+
+.sort-header i {
+    font-size: 12px;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+/* Badges */
+.badge {
+    font-size: 12px;
+    padding: 5px 10px;
+    font-weight: 500;
+}
+
+/* Button Styles */
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* Amount Card for Detail View */
+.amount-card {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.amount-card h6 {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.amount-card h4 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body h3 {
+        font-size: 20px;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .items-per-page {
+        width: 100px;
+    }
+}
+
+/* Empty State */
+.text-muted i {
+    color: #6c757d;
+}
+
+/* Pagination */
+::ng-deep .ngx-pagination {
+    padding: 0;
+    margin: 0;
+}
+
+::ng-deep .ngx-pagination .current {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Material Form Field Adjustments */
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #0d6efd;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-label {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+    color: #0d6efd;
+}
+
+/* Detail View Tables */
+.table-sm td, .table-sm th {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.table-sm td:first-child {
+    width: 40%;
+    font-weight: 500;
+}
+
+/* Card Title */
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}

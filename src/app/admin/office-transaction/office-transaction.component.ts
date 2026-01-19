@@ -55,7 +55,6 @@ export class OfficeTransactionComponent implements OnInit {
   }
 
   ExportTOExcel1() {
-    console.log('yes');
 
     const data = [
       [{ t: 's', s: { bold: true, fontSize: 24 }, v: 'EXPENSE REPORT' }],
@@ -358,7 +357,6 @@ export class OfficeTransactionComponent implements OnInit {
   }
 
   getOfficeTransactionList() {
-    console.log(this.Filter.HotelId);
 
     this.getOfficeExpenseHeadListForFilter();
     this.getOfficeExpenseCategoryListForFilter();

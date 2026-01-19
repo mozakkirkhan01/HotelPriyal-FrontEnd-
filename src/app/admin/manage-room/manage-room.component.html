@@ -121,8 +121,8 @@
                                         (selectionChange)="callFunction($event.value)" 
                                         required>
 
-                                        <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
-                                            {{ hotel.HotelName }}
+                                        <mat-option *ngFor="let option of HotelList" [value]="option.HotelId">
+                                            {{ option.HotelName }} - {{ option.Slogon }}
                                         </mat-option>
 
                                     </mat-select>

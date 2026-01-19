@@ -77,7 +77,7 @@
                                     <mat-autocomplete #autoHotelName="matAutocomplete"
                                         (optionSelected)="afterHotelSelected($event)">
                                         <mat-option *ngFor="let option of filterHotel" [value]="option">
-                                            {{ option.HotelName }}
+                                           {{ option.HotelName }} - {{ option.Slogon }}
                                         </mat-option>
                                     </mat-autocomplete>
                                 </mat-form-field>

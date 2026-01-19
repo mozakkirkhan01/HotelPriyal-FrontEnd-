@@ -21,3 +21,34 @@
 .no-spinner {
   -moz-appearance: textfield;
 }
+
+/* Checkout Modal Styling */
+#checkoutModal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#checkoutModal .alert-info {
+  background-color: #e7f3ff;
+  border-left: 4px solid #2196F3;
+}
+
+#checkoutModal .alert-warning {
+  background-color: #fff8e1;
+  border-left: 4px solid #ff9800;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #138496;
+  border-color: #117a8b;
+}
+
+ngx-material-timepicker-content,
+ngx-material-timepicker {
+  z-index: 1060 !important;
+}

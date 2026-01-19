@@ -174,7 +174,6 @@ export class ManageBillingComponent implements OnInit {
         if (response.Message == ConstantData.SuccessMessage) {
           this.BookingList = response.BookingList || [];
           this.FilteredBookingList = [...this.BookingList];
-          console.log('Booking List:', this.BookingList);
         } else {
           this.toastr.error(response.Message);
         }
@@ -427,7 +426,6 @@ export class ManageBillingComponent implements OnInit {
       })),
     };
 
-    console.log('Billing Data:', billingData);
 
     const obj: RequestModel = {
       request: this.localService

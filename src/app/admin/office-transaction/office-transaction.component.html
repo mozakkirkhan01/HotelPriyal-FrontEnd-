@@ -37,8 +37,8 @@
         <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline" class="col-sm-3">
             <mat-label>Hotel</mat-label>
             <mat-select name="HotelId" [(ngModel)]="Filter.HotelId" (selectionChange)="getOfficeTransactionList()">
-                <mat-option *ngFor="let hotel of HotelList" [value]="hotel.HotelId">
-                    {{ hotel.HotelName }}
+                <mat-option *ngFor="let option of HotelList" [value]="option.HotelId">
+                    {{ option.HotelName }} - {{ option.Slogon }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -207,7 +207,7 @@
                                         (optionSelected)="afterHotelSelected($event)">
                                         <mat-option *ngFor="let option of filterHotel" [id]="option.HotelId"
                                             [value]="option.HotelName">
-                                            {{option.HotelName}}
+                                            {{ option.HotelName }} - {{ option.Slogon }}
                                         </mat-option>
                                     </mat-autocomplete>
 
