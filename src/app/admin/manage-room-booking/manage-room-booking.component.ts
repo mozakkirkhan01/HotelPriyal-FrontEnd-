@@ -100,7 +100,7 @@ export class ManageRoomBookingComponent {
     private localService: LocalService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
   redUrl: string = '';
 
   ngOnInit(): void {
@@ -254,7 +254,7 @@ export class ManageRoomBookingComponent {
 
           this.Guest = response.GetGuest;
           this.selectedGuestId = this.Guest.GuestId;
-          
+
           this.isNewGuest = false;
 
           // --- Room Booking ---
@@ -500,8 +500,14 @@ export class ManageRoomBookingComponent {
       (r1) => {
         let response = r1 as any;
         if (response.Message == ConstantData.SuccessMessage) {
-          this.RoomList = response.RoomList;
-        } else {
+          //  Sort rooms numerically
+          this.RoomList = this.sortRoomsByNumber(response.RoomList);
+
+          // Optional: also assign to filtered list
+          this.filteredRoomList = [...this.RoomList];
+        }
+
+        else {
           this.toastr.error(response.Message);
         }
         this.dataLoading = false;
@@ -1054,7 +1060,7 @@ export class ManageRoomBookingComponent {
 
   addSubGuest() {
 
-    if(this.Guest.GuestName == null){
+    if (this.Guest.GuestName == null) {
       this.toastr.error('Please select guest');
       return;
     }
@@ -1095,4 +1101,18 @@ export class ManageRoomBookingComponent {
       AadharNo: '',
     };
   }
+
+
+  sortRoomsByNumber(rooms: any[]): any[] {
+    return rooms.sort((a, b) => {
+      const numA = parseInt(a.RoomName.replace(/\D/g, ''), 10);
+      const numB = parseInt(b.RoomName.replace(/\D/g, ''), 10);
+      return numA - numB;
+    });
+  }
+
+
+
+
+
 }
