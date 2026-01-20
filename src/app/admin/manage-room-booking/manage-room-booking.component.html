@@ -85,16 +85,26 @@
                   </mat-error>
                 </mat-form-field>
 
+                <!-- Id Type -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Id Type </mat-label>
+                  <mat-select [(ngModel)]="Guest.IdType" name="IdType" required>
+                    <mat-option *ngFor="let p of IdTypeList" [value]="p.Key">
+                      {{ p.Value }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
 
                 <!-- Aadhar No -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
-                  <mat-label>Aadhar No</mat-label>
+                  <mat-label>Id No</mat-label>
 
-                  <input matInput type="tel" name="AadharNo" [(ngModel)]="Guest.AadharNo" [readonly]="isFieldReadonly()"
-                    required pattern="^[0-9]{12}$" maxlength="12" minlength="12" inputmode="numeric" />
+                  <input matInput name="AadharNo" [(ngModel)]="Guest.AadharNo" [readonly]="isFieldReadonly()"
+                    required />
 
                   <mat-error *ngIf="Guest.AadharNo?.errors?.pattern">
-                    Enter a valid 12-digit Aadhar number
+                    Enter a valid Id number
                   </mat-error>
 
                   <mat-error *ngIf="Guest.AadharNo?.errors?.required">
@@ -119,7 +129,13 @@
                   <input matInput name="Address" [(ngModel)]="Guest.Address" [readonly]="isFieldReadonly()" required />
                   <mat-error>Required!</mat-error>
                 </mat-form-field>
-
+                
+                <!-- Pincode -->
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                  <mat-label>Pincode</mat-label>
+                  <input matInput type="number" name="Pincode" [(ngModel)]="Guest.Pincode"
+                    [readonly]="isFieldReadonly()" class="no-spinner" />
+                </mat-form-field>
                 <!-- Email -->
                 <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Email</mat-label>
@@ -140,12 +156,6 @@
                 </mat-form-field>
 
 
-                <!-- Pincode -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
-                  <mat-label>Pincode</mat-label>
-                  <input matInput type="number" name="Pincode" [(ngModel)]="Guest.Pincode"
-                    [readonly]="isFieldReadonly()" class="no-spinner" />
-                </mat-form-field>
 
                 <!-- Company Name -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
@@ -175,23 +185,33 @@
                     <!-- Sub Guest Form -->
                     <div class="row compact-row">
 
-                      <mat-form-field appearance="outline" class="col-lg-4 compact-field">
+                      <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                         <mat-label>Guest Name</mat-label>
                         <input matInput [(ngModel)]="SubGuestModel.GuestName" />
                       </mat-form-field>
 
-                      <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                      <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                         <mat-label>Contact No</mat-label>
                         <input matInput type="tel" name="SubContactNo" [(ngModel)]="SubGuestModel.ContactNo" required
                           pattern="^[0-9]{10}$" maxlength="10" minlength="10" inputmode="numeric" />
                         <mat-error>Enter valid 10-digit Contact No</mat-error>
                       </mat-form-field>
 
+                      <!-- Id Type -->
+                      <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                        <mat-label>Id Type </mat-label>
+                        <mat-select [(ngModel)]="SubGuestModel.IdType" name="IdType" required>
+                          <mat-option *ngFor="let p of IdTypeList" [value]="p.Key">
+                            {{ p.Value }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
                       <mat-form-field appearance="outline" class="col-lg-3 compact-field">
-                        <mat-label>Aadhar No</mat-label>
-                        <input matInput type="tel" name="SubAadharNo" [(ngModel)]="SubGuestModel.AadharNo" required
-                          pattern="^[0-9]{12}$" maxlength="12" minlength="12" inputmode="numeric" />
-                        <mat-error>Enter valid 12-digit Aadhar No</mat-error>
+                        <mat-label>Id No</mat-label>
+                        <input matInput name="SubAadharNo" [(ngModel)]="SubGuestModel.AadharNo" required
+                         />
+                        <mat-error>Enter valid Id No</mat-error>
                       </mat-form-field>
 
 
@@ -209,7 +229,8 @@
                           <th>#</th>
                           <th>Guest Name</th>
                           <th>Contact No</th>
-                          <th>Aadhar No</th>
+                          <th>Id Type</th>
+                          <th>Id No</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -218,6 +239,7 @@
                           <td>{{ i + 1 }}</td>
                           <td>{{ g.GuestName }}</td>
                           <td>{{ g.ContactNo }}</td>
+                          <td>{{ IdTypeAll[g.IdType] }}</td>
                           <td>{{ g.AadharNo || 'N/A' }}</td>
                           <td>
                             <button class="btn btn-sm btn-primary" (click)="editSubGuest(i)">

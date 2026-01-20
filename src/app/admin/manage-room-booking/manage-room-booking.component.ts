@@ -11,6 +11,7 @@ import {
   PaymentType,
   RoomBookingStatus,
   BookingStatus,
+  IdType,
 } from '../../utils/enum';
 import { LoadDataService } from '../../utils/load-data.service';
 import {
@@ -51,11 +52,13 @@ export class ManageRoomBookingComponent {
   StatusList = this.loadData.GetEnumList(Status);
   GenderList = this.loadData.GetEnumList(Gender);
   PaymentModeList = this.loadData.GetEnumList(PaymentMode);
+  IdTypeList = this.loadData.GetEnumList(IdType);
   PaymentTypeList = this.loadData.GetEnumList(PaymentType);
   action: ActionModel = {} as ActionModel;
   staffLogin: StaffLoginModel = {} as StaffLoginModel;
   AllStatusList = Status;
   AllGenderList = Gender;
+  IdTypeAll = IdType;
   AllCategoryList = Category;
   AllPaymentModeList = PaymentMode;
   AllPaymentTypeList = PaymentType;
@@ -76,6 +79,7 @@ export class ManageRoomBookingComponent {
   SubGuestModel: any = {
     GuestName: '',
     ContactNo: '',
+    IdType: '',
     AadharNo: '',
   };
   editingSubGuestIndex: number = -1;
@@ -250,6 +254,7 @@ export class ManageRoomBookingComponent {
 
           this.Guest = response.GetGuest;
           this.selectedGuestId = this.Guest.GuestId;
+          
           this.isNewGuest = false;
 
           // --- Room Booking ---
@@ -437,6 +442,7 @@ export class ManageRoomBookingComponent {
       this.Guest.GuestName = selected.GuestName;
       this.Guest.ContactNo =
         selected.MobileNo || selected.ContactNo || selected.GuestMobile;
+      this.Guest.IdType = selected.IdType;
       this.Guest.AadharNo = selected.AadharNo;
       this.Guest.Address = selected.Address;
       this.Guest.Email = selected.Email;
@@ -454,6 +460,7 @@ export class ManageRoomBookingComponent {
     this.Guest.GuestId = null;
     this.Guest.GuestName = '';
     this.Guest.ContactNo = '';
+    this.Guest.IdType = '';
     this.Guest.AadharNo = '';
     this.Guest.Address = '';
     this.Guest.Email = '';
@@ -871,6 +878,7 @@ export class ManageRoomBookingComponent {
         Pincode: this.Guest.Pincode,
         StateId: this.Guest.StateId,
         GSTNo: this.Guest.GSTNo,
+        IdType: this.Guest.IdType,
         AadharNo: this.Guest.AadharNo,
         CompanyName: this.Guest.CompanyName,
       },
@@ -878,6 +886,7 @@ export class ManageRoomBookingComponent {
       GetSubGuests: this.SubGuestList.map((g) => ({
         GuestName: g.GuestName,
         ContactNo: g.ContactNo,
+        IdType: g.IdType,
         AadharNo: g.AadharNo,
       })),
       GetRoomBooking: {
@@ -923,7 +932,7 @@ export class ManageRoomBookingComponent {
           NoOfPerson: room.NoOfPerson || 0,
           NoOfChild: room.NoOfChild || 0,
           NoOfAdult: room.NoOfAdult || 0,
-          CheckInDate: room.CheckInDate,
+          CheckInDate: this.loadData.loadDateTime(room.CheckInDate),
           CheckInTime: room.CheckInTime,
           ChargeAmount: room.ChargeAmount || 0,
           NoOfDays: room.NoOfDays || 1,
@@ -1082,6 +1091,7 @@ export class ManageRoomBookingComponent {
     this.SubGuestModel = {
       GuestName: '',
       ContactNo: '',
+      IdType: '',
       AadharNo: '',
     };
   }
