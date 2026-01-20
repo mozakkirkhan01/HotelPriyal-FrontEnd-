@@ -13,6 +13,7 @@ import {
   PaymentMode,
   RoomBookingStatus,
   PaymentType,
+  IdType,
 } from '../../utils/enum';
 import {
   ActionModel,
@@ -46,6 +47,7 @@ export class ManageRoomBookingListComponent {
   p: number = 1;
   PaymentModeAll = PaymentMode;
   PaymentTypeAll = PaymentType;
+  IdTypeAll = IdType;
   Search: string = '';
   reverse: boolean = true;
   sortKey: string = '';

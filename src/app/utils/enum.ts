@@ -111,3 +111,11 @@ export enum DocType {
   Excel = 3,
   Print = 4,
 }
+export enum IdType 
+    {
+        Aadhar = 1,
+        Voter = 2,
+        DrivingLicense = 3,
+        Passport = 4,
+        Others = 5
+    }

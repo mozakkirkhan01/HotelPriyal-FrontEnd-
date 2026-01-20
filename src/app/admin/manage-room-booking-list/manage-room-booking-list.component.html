@@ -381,8 +381,14 @@
                                             <td>{{ guestDetails?.GSTNo || 'N/A' }}</td>
                                         </tr>
                                         <tr *ngIf="guestDetails?.AadharNo">
-                                            <td class="fw-bold">Aadhar No:</td>
-                                            <td>{{ guestDetails?.AadharNo }}</td>
+                                            <td class="fw-bold">Id No (Type):</td>
+                                            <td>
+                                                {{ guestDetails?.AadharNo || 'N/A' }}
+                                                <span *ngIf="guestDetails?.IdType">
+                                                    ({{ IdTypeAll[guestDetails?.IdType] }})
+                                                </span>
+                                            </td>
+
                                             <td class="fw-bold">Pincode:</td>
                                             <td>{{ guestDetails?.Pincode || 'N/A' }}</td>
                                         </tr>
@@ -406,7 +412,7 @@
                                             <th>#</th>
                                             <th>Guest Name</th>
                                             <th>Contact No</th>
-                                            <th>Aadhar No</th>
+                                            <th>Id No (Type)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -414,7 +420,11 @@
                                             <td>{{ i + 1 }}</td>
                                             <td>{{ g.GuestName }}</td>
                                             <td>{{ g.ContactNo }}</td>
-                                            <td>{{ g.AadharNo || 'N/A' }}</td>
+                                            <td>
+                                                {{ g.AadharNo || 'N/A' }}
+                                                <span *ngIf="g.IdType"> ({{ IdTypeAll[g.IdType] }})</span>
+                                            </td>
+
                                         </tr>
                                     </tbody>
                                 </table>
