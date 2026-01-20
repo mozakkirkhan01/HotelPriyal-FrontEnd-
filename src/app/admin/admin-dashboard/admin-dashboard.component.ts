@@ -243,63 +243,125 @@ export class AdminDashboardComponent implements OnInit {
   // DATA PROCESSING
   // ============================================
 
-  processData() {
-    // Enrich rooms with floor and room type names
-    this.rooms.forEach(room => {
-      const floor = this.floors.find(f => f.FloorId === room.FloorId);
-      const roomType = this.roomTypes.find(rt => rt.RoomTypeId === room.RoomTypeId);
-      const hotel = this.hotels.find(h => h.HotelId === room.HotelId);
+  // processData() {
+  //   // Enrich rooms with floor and room type names
+  //   this.rooms.forEach(room => {
+  //     const floor = this.floors.find(f => f.FloorId === room.FloorId);
+  //     const roomType = this.roomTypes.find(rt => rt.RoomTypeId === room.RoomTypeId);
+  //     const hotel = this.hotels.find(h => h.HotelId === room.HotelId);
       
-      room.FloorName = floor?.FloorName || 'Unknown Floor';
-      room.RoomTypeName = roomType?.RoomTypeName || 'Unknown Type';
-      room.HotelName = hotel?.HotelName || 'Unknown Hotel';
-    });
+  //     room.FloorName = floor?.FloorName || 'Unknown Floor';
+  //     room.RoomTypeName = roomType?.RoomTypeName || 'Unknown Type';
+  //     room.HotelName = hotel?.HotelName || 'Unknown Hotel';
+  //   });
 
-    // Group rooms based on view mode
-    if (this.viewMode === 'hotel') {
-      this.groupRoomsByHotel();
-    } else {
-      this.groupRoomsByFloor();
-    }
+  //   // Group rooms based on view mode
+  //   if (this.viewMode === 'hotel') {
+  //     this.groupRoomsByHotel();
+  //   } else {
+  //     this.groupRoomsByFloor();
+  //   }
     
-    // Calculate statistics
-    this.calculateStatistics();
+  //   // Calculate statistics
+  //   this.calculateStatistics();
+  // }
+
+  processData() {
+
+  // enrich room data
+  this.rooms.forEach(room => {
+    const floor = this.floors.find(f => f.FloorId === room.FloorId);
+    const roomType = this.roomTypes.find(rt => rt.RoomTypeId === room.RoomTypeId);
+    const hotel = this.hotels.find(h => h.HotelId === room.HotelId);
+
+    room.FloorName = floor?.FloorName || 'Unknown Floor';
+    room.RoomTypeName = roomType?.RoomTypeName || 'Unknown Type';
+    room.HotelName = hotel?.HotelName || 'Unknown Hotel';
+  });
+
+  // ✅ SORT ROOMS CORRECTLY
+  this.rooms = this.sortRoomsByNumber(this.rooms);
+
+  if (this.viewMode === 'hotel') {
+    this.groupRoomsByHotel();
+  } else {
+    this.groupRoomsByFloor();
   }
 
-  groupRoomsByFloor(): void {
-    this.floorGroups = this.floors.map(floor => ({
-      floor: floor,
-      rooms: this.getFilteredRooms().filter(room => room.FloorId === floor.FloorId)
-    })).filter(group => group.rooms.length > 0);
-  }
+  this.calculateStatistics();
+}
 
-  groupRoomsByHotel(): void {
-    const filteredRooms = this.getFilteredRooms();
+  // groupRoomsByFloor(): void {
+  //   this.floorGroups = this.floors.map(floor => ({
+  //     floor: floor,
+  //     rooms: this.getFilteredRooms().filter(room => room.FloorId === floor.FloorId)
+  //   })).filter(group => group.rooms.length > 0);
+  // }
+
+groupRoomsByFloor(): void {
+  this.floorGroups = this.floors.map(floor => ({
+    floor: floor,
+    rooms: this.sortRoomsByNumber(
+      this.getFilteredRooms().filter(r => r.FloorId === floor.FloorId)
+    )
+  })).filter(group => group.rooms.length > 0);
+}
+
+
+  // groupRoomsByHotel(): void {
+  //   const filteredRooms = this.getFilteredRooms();
     
-    this.hotelGroups = this.hotels
-      .filter(hotel => hotel.Status) // Only active hotels
-      .map(hotel => {
-        const hotelRooms = filteredRooms.filter(room => room.HotelId === hotel.HotelId);
+  //   this.hotelGroups = this.hotels
+  //     .filter(hotel => hotel.Status) // Only active hotels
+  //     .map(hotel => {
+  //       const hotelRooms = filteredRooms.filter(room => room.HotelId === hotel.HotelId);
         
-        // Group hotel rooms by floor
-        const hotelFloors = this.floors
-          .filter(floor => floor.HotelId === hotel.HotelId && floor.Status)
-          .map(floor => ({
-            floor: floor,
-            rooms: hotelRooms.filter(room => room.FloorId === floor.FloorId)
-          }))
-          .filter(group => group.rooms.length > 0);
+  //       // Group hotel rooms by floor
+  //       const hotelFloors = this.floors
+  //         .filter(floor => floor.HotelId === hotel.HotelId && floor.Status)
+  //         .map(floor => ({
+  //           floor: floor,
+  //           rooms: hotelRooms.filter(room => room.FloorId === floor.FloorId)
+  //         }))
+  //         .filter(group => group.rooms.length > 0);
 
-        return {
-          hotel: hotel,
-          availableRooms: hotelRooms.filter(r => r.IsAvailable).length,
-          occupiedRooms: hotelRooms.filter(r => !r.IsAvailable).length,
-          totalRooms: hotelRooms.length,
-          floors: hotelFloors
-        };
-      })
-      .filter(group => group.totalRooms > 0);
-  }
+  //       return {
+  //         hotel: hotel,
+  //         availableRooms: hotelRooms.filter(r => r.IsAvailable).length,
+  //         occupiedRooms: hotelRooms.filter(r => !r.IsAvailable).length,
+  //         totalRooms: hotelRooms.length,
+  //         floors: hotelFloors
+  //       };
+  //     })
+  //     .filter(group => group.totalRooms > 0);
+  // }
+
+groupRoomsByHotel(): void {
+  const filteredRooms = this.getFilteredRooms();
+
+  this.hotelGroups = this.hotels.map(hotel => {
+    const hotelRooms = this.sortRoomsByNumber(
+      filteredRooms.filter(room => room.HotelId === hotel.HotelId)
+    );
+
+    return {
+      hotel: hotel,
+      availableRooms: hotelRooms.filter(r => r.IsAvailable).length,
+      occupiedRooms: hotelRooms.filter(r => !r.IsAvailable).length,
+      totalRooms: hotelRooms.length,
+      floors: this.floors
+        .filter(f => f.HotelId === hotel.HotelId)
+        .map(floor => ({
+          floor,
+          rooms: this.sortRoomsByNumber(
+            hotelRooms.filter(r => r.FloorId === floor.FloorId)
+          )
+        }))
+        .filter(f => f.rooms.length > 0)
+    };
+  });
+}
+
 
   /**
    * Get filtered rooms based on role and selected filters
@@ -655,4 +717,23 @@ export class AdminDashboardComponent implements OnInit {
       this.toastr.error("Error while fetching records");
     }));
   }
+
+
+
+sortRoomsByNumber(rooms: Room[]): Room[] {
+  return rooms.sort((a, b) => {
+    const numA = parseInt(a.RoomName.replace(/\D/g, ''), 10);
+    const numB = parseInt(b.RoomName.replace(/\D/g, ''), 10);
+    return numA - numB;
+  });
+}
+
+
+
+
+
+
+
+
+
 }
