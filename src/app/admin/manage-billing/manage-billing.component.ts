@@ -221,7 +221,7 @@ export class ManageBillingComponent implements OnInit {
               ...item,
               CheckInDate: this.loadData.loadDateYMD(item.CheckInDate),
               CheckOutDate: item.CheckOutDate
-                ? this.loadData.loadDateYMD(item.CheckOutDate)
+                ? this.loadData.loadDateTime(item.CheckOutDate)
                 : null,
             })
           );
@@ -390,8 +390,8 @@ export class ManageBillingComponent implements OnInit {
         HotelId: this.selectedBooking.HotelId,
         CheckInDate: this.Billing.CheckInDate,
         CheckInTime: this.Billing.CheckInTime,
-        CheckOutDate: this.Billing.CheckOutDate,
-        CheckOutTime: this.Billing.CheckOutTime,
+        CheckOutDate: this.loadData.loadDateTime(this.Billing.CheckOutDate),
+        CheckOutTime: this.Billing.CheckOutTime,  
         TotalNoOfRooms: this.Billing.TotalNoOfRooms,
         TotalNoOfDays: this.Billing.TotalNoOfDays,
         TotalPerson: this.Billing.TotalPerson,
