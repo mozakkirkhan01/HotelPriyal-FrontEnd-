@@ -855,7 +855,7 @@ export class ManageRoomBookingComponent {
 
     this.Guest.CreatedBy = this.staffLogin.StaffLoginId;
     this.Guest.UpdatedBy = this.staffLogin.StaffLoginId;
-    this.Guest.BookingDate = this.loadData.loadDateYMD(this.Guest.BookingDate);
+    this.Guest.BookingDate = this.loadData.loadDateTime(this.Guest.BookingDate);
 
     // Set HotelId
     let hotelId: number;
@@ -899,7 +899,7 @@ export class ManageRoomBookingComponent {
         RoomBookingId: this.Guest.RoomBookingId || 0, // ✅ CRITICAL for edit
         HotelId: hotelId, // ✅ Added HotelId
         BookingSourceTypeId: this.Guest.BookingSourcetypeId,
-        BookingDate: this.Guest.BookingDate,
+        BookingDate: this.loadData.loadDateTime(this.Guest.BookingDate),
         TotalLineAmount: this.Guest.TotalLineAmount || 0,
         TotalDiscount: this.Guest.TotalDiscount || 0,
         TaxableAmount: this.Guest.TaxableAmount || 0,
