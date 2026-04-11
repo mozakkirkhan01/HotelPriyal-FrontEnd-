@@ -384,11 +384,11 @@ export class ManageBillingComponent implements OnInit {
     // Prepare billing data
     const billingData = {
       Billing: {
-        BillingDate: this.Billing.BillingDate,
+        BillingDate: this.loadData.loadDateTime(this.Billing.BillingDate),
         RoomBookingId: this.selectedBooking.RoomBookingId,
         GuestId: this.selectedGuest.GuestId,
         HotelId: this.selectedBooking.HotelId,
-        CheckInDate: this.Billing.CheckInDate,
+        CheckInDate: this.loadData.loadDateTime(this.Billing.CheckInDate),
         CheckInTime: this.Billing.CheckInTime,
         CheckOutDate: this.loadData.loadDateTime(this.Billing.CheckOutDate),
         CheckOutTime: this.Billing.CheckOutTime,  
@@ -411,7 +411,7 @@ export class ManageBillingComponent implements OnInit {
       },
       RoomBookingDetails: this.selectedRoomDetails.map((room: any) => ({
         RoomBookingDetailId: room.RoomBookingDetailId,
-        CheckOutDate: this.Billing.CheckOutDate,
+        CheckOutDate: this.loadData.loadDateTime(this.Billing.CheckOutDate),
         CheckOutTime: this.Billing.CheckOutTime,
       })),
       PaymentDetails: this.selectedPaymentDetails.map((payment: any) => ({
