@@ -671,7 +671,7 @@
                     <td class="text-center">{{ i + 1 }}</td>
 
                     <!-- Payment Date -->
-                    <td class="text-center">{{ model.PaymentDate }}</td>
+                    <td class="text-center">{{ model.PaymentDate | date:'dd/MM/yyyy' }}</td>
 
                     <!-- Amount -->
                     <td class="text-right">{{ model.PaidAmount }}</td>
@@ -706,7 +706,7 @@
 
   <div class="d-flex justify-content-center items-center">
     <button type="submit" mat-raised-button class="mdc-button-final" color="primary" (click)="saveRoomBooking()">
-      Submit
+      {{ Guest.RoomBookingId > 0 ? 'Update Booking' : 'Submit' }}
     </button>
   </div>
 </main>
