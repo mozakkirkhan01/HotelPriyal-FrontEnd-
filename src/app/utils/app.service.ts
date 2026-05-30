@@ -86,6 +86,11 @@ export class AppService {
   getBillingList(obj: any) {
     return this.http.post(this.apiUrl + "Billing/getBillingList", obj, { headers: this.headers })
   }
+
+  getBillingById(obj: any) {
+    return this.http.post(this.apiUrl + "Billing/getBillingById", obj, { headers: this.headers })
+  }
+
   saveBilling(obj: any) {
     return this.http.post(this.apiUrl + "Billing/saveBilling", obj, { headers: this.headers })
   }
