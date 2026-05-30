@@ -531,7 +531,7 @@
                                     <tbody>
                                         <tr *ngFor="let payment of paymentDetails; let i = index">
                                             <td>{{ i + 1 }}</td>
-                                            <td>{{ payment.PaymentDate | date : "dd-MM-yyyy hh:mm a" }}</td>
+                                            <td>{{ payment.PaymentDate | date : "dd-MM-yyyy" }}</td>
                                             <td>{{ PaymentModeAll[payment.PaymentMode] }}</td>
                                             <td>{{ PaymentTypeAll[payment.PaymentType] }}</td>
                                             <td>{{ payment.TransactionNo || 'N/A' }}</td>
@@ -1212,11 +1212,17 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="d-flex justify-content-center gap-3 mb-4">
-                    <button mat-raised-button color="primary" (click)="generateBill()" [disabled]="isGeneratingBill"
+                    <!-- <button mat-raised-button color="primary" (click)="generateBill()" [disabled]="isGeneratingBill"
                         class="px-5">
                         <i class="bi bi-check-circle"></i>
                         {{ isGeneratingBill ? 'Generating...' : 'Generate Bill' }}
-                    </button>
+                    </button> -->
+                    <button
+  mat-raised-button
+  color="primary"
+  (click)="generateBill()">
+  {{ Billing.BillingId ? 'Update Bill' : 'Generate Bill' }}
+</button>
 
                     <button mat-raised-button color="warn" (click)="closeBillingSection()" class="px-5">
                         <i class="bi bi-x-circle"></i> Cancel
