@@ -956,7 +956,7 @@ export class ManageRoomBookingComponent {
         })
       ),
       GetPaymentDetails: this.SelectedPaymentCollectionList.map((payment) => ({
-        PaymentDate: payment.PaymentDate,
+        PaymentDate: this.loadData.loadDateTime(payment.PaymentDate),
         PaidAmount: payment.PaidAmount || 0,
         PaymentType: payment.PaymentType,
         PaymentMode: payment.PaymentMode,
