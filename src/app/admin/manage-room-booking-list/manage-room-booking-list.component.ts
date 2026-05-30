@@ -20,7 +20,7 @@ import {
   RequestModel,
   StaffLoginModel,
 } from '../../utils/interface';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 declare var $: any;
 
 @Component({
@@ -48,6 +48,7 @@ export class ManageRoomBookingListComponent {
   PaymentModeAll = PaymentMode;
   PaymentTypeAll = PaymentType;
   IdTypeAll = IdType;
+  existingBillingId: number | null = null;
   Search: string = '';
   reverse: boolean = true;
   sortKey: string = '';
@@ -84,7 +85,8 @@ export class ManageRoomBookingListComponent {
     private toastr: ToastrService,
     private loadData: LoadDataService,
     private localService: LocalService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -105,14 +107,31 @@ export class ManageRoomBookingListComponent {
       EndFrom: null,
       RoomBookingStatus: 0,
     };
+    // Handle redirect from billing list for editing
+    this.route.queryParams.subscribe(params => {
+      
+      if (params['bookingId'] && params['edit'] === 'true') {
+        this.dataLoading  = true;
+        const bookingId = +params['bookingId'];
+        // ✅ Read billingId directly from query params, not from booking response
+        this.existingBillingId = params['billingId'] ? +params['billingId'] : null;
+
+        
+        // this.dataLoading  = false;
+        setTimeout(() => {
+          this.loadBookingForBilling(bookingId);
+        }, 800);
+      }
+    });
   }
 
   validiateMenu() {
+    const cleanUrl = this.router.url.split('?')[0];
     var obj: RequestModel = {
       request: this.localService
         .encrypt(
           JSON.stringify({
-            Url: this.router.url,
+            Url: cleanUrl,
             StaffLoginId: this.staffLogin.StaffLoginId,
           })
         )
@@ -471,7 +490,7 @@ confirmCheckout() {
 
   const checkoutRequest = {
     RoomBookingId: this.selectedBookingForCheckout.RoomBookingId,
-    CheckoutDate: this.checkoutDetails.CheckoutDate,
+    CheckoutDate:  this.loadData.loadDateTime(this.checkoutDetails.CheckoutDate),
     CheckoutTime: formattedCheckoutTime, // ✅ 3:24 PM
     Remarks: this.checkoutDetails.Remarks,
     RoomBookingStatus: RoomBookingStatus.Checkout,
@@ -530,6 +549,7 @@ resetCheckoutForm() {
   selectedGuest: any = null;
   selectedRoomDetails: any[] = [];
   selectedPaymentDetails: any[] = [];
+  existingBilling: any = null;
 
 // Load booking details for billing
 
@@ -560,21 +580,56 @@ resetCheckoutForm() {
             })
           );
 
-          // Initialize billing data
-          this.initializeBillingData();
-
-          this.showBillingSection = true;
-          this.toastr.success('Booking details loaded');
+          // If editing existing billing, load its details to get the saved checkout date
+          if (this.existingBillingId) {
+            this.loadExistingBilling();
+          } else {
+            // Initialize billing data
+            this.initializeBillingData();
+            this.showBillingSection = true;
+            this.toastr.success('Booking details loaded');
+            this.dataLoading = false;
+          }
         } else {
           this.toastr.error(response.Message);
+          this.dataLoading = false;
         }
-        this.dataLoading = false;
       },
       (err) => {
         this.toastr.error('Error while loading booking details');
         this.dataLoading = false;
       }
     );    
+  }
+
+  // Load existing billing details when editing
+  loadExistingBilling() {
+    const obj: RequestModel = {
+      request: this.localService.encrypt(JSON.stringify(this.existingBillingId)).toString(),
+    };
+
+    this.service.getBillingById(obj).subscribe(
+      (response: any) => {
+        if (response.Message === 'Success') {
+          this.existingBilling = response.GetBilling;
+          // Initialize billing data with existing billing's checkout date
+          this.initializeBillingData();
+          this.showBillingSection = true;
+          this.toastr.success('Billing details loaded');
+        } else {
+          // If existing billing not found, just initialize normally
+          this.initializeBillingData();
+          this.showBillingSection = true;
+        }
+        this.dataLoading = false;
+      },
+      (err) => {
+        // If error loading existing billing, continue without it
+        this.initializeBillingData();
+        this.showBillingSection = true;
+        this.dataLoading = false;
+      }
+    );
   }
 
     // Billing Data
@@ -593,12 +648,32 @@ resetCheckoutForm() {
       Math.min(...checkInDates.map((d) => d.getTime()))
     );
 
+    // Get checkout date - prioritize existing billing's checkout date when editing
+    let checkOutDate = new Date();
+    let checkOutTime = this.loadData.getCurrentTime();
+    
+    if (this.existingBilling && this.existingBilling.CheckOutDate) {
+      // Use the saved checkout date from existing billing
+      checkOutDate = new Date(this.existingBilling.CheckOutDate);
+      // Also use the saved checkout time from existing billing
+      checkOutTime = this.existingBilling.CheckOutTime || this.loadData.getCurrentTime();
+    } else {
+      // Get the latest checkout date from room details
+      const checkOutDates = this.selectedRoomDetails
+        .map((r: any) => r.CheckOutDate ? new Date(r.CheckOutDate) : null)
+        .filter((d: any) => d !== null);
+      checkOutDate = checkOutDates.length > 0 
+        ? new Date(Math.max(...checkOutDates.map((d: any) => d.getTime())))
+        : new Date();
+    }
+
     this.Billing = {
+      BillingId: this.existingBillingId || null,  // ✅ carry BillingId for edit
       BillingDate: this.loadData.loadDateYMD(new Date()),
       CheckInDate: this.loadData.loadDateYMD(earliestCheckIn),
       CheckInTime: this.selectedRoomDetails[0]?.CheckInTime || '12:00',
-      CheckOutDate: this.loadData.loadDateYMD(new Date()),
-      CheckOutTime: this.loadData.getCurrentTime(),
+      CheckOutDate: this.loadData.loadDateYMD(checkOutDate),
+      CheckOutTime: checkOutTime,
       TotalNoOfRooms: this.selectedRoomDetails.length,
       TotalPerson: this.selectedRoomDetails.reduce(
         (sum: number, r: any) => sum + (r.NoOfPerson || 0),
@@ -653,9 +728,15 @@ resetCheckoutForm() {
 
 
   closeBillingSection() {
+    if(this.existingBillingId)
+    {
+      this.router.navigate(['/admin/billing-list']);
+      return;
+    }
     this.showBillingSection = false;
     this.selectedBooking = null;
     this.selectedGuest = null;
+    
     this.selectedRoomDetails = [];
     this.selectedPaymentDetails = [];
     this.Billing = {};
@@ -752,6 +833,7 @@ resetCheckoutForm() {
     // Prepare billing data
     const billingData = {
       Billing: {
+        BillingId: this.Billing.BillingId || null,  // ✅ send BillingId to backend
         BillingDate: this.Billing.BillingDate,
         RoomBookingId: this.selectedBooking.RoomBookingId,
         GuestId: this.selectedGuest.GuestId,
@@ -779,7 +861,7 @@ resetCheckoutForm() {
       },
       RoomBookingDetails: this.selectedRoomDetails.map((room: any) => ({
         RoomBookingDetailId: room.RoomBookingDetailId,
-        CheckOutDate: this.Billing.CheckOutDate,
+        CheckOutDate: this.loadData.loadDateTime(this.Billing.CheckOutDate),
         CheckOutTime: this.Billing.CheckOutTime,
       })),
       PaymentDetails: this.selectedPaymentDetails.map((payment: any) => ({
