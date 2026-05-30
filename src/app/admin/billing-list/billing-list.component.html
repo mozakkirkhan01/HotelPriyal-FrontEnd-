@@ -201,6 +201,7 @@
                                         <th class="text-right">Due</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Print</th>
+                                        <th class="text-center">Edit</th>
                                         <th class="text-center">View</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -251,6 +252,16 @@
                                                 <i class="bi bi-printer"></i>
                                             </button>
                                         </td>
+
+                                        <!-- Add after the View <td> -->
+<td class="text-center">
+    <button class="btn btn-sm btn-warning"
+        (click)="editBilling(billing)"
+        *ngIf="action.CanEdit"
+        matTooltip="Edit Bill">
+        <i class="bi bi-pencil-square"></i>
+    </button>
+</td>
 
                                         <td class="text-center">
                                             <button class="btn btn-sm btn btn-primary"
