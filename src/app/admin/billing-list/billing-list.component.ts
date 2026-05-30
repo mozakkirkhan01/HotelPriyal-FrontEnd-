@@ -345,4 +345,13 @@ afterHotelSelected(event: any) {
       0
     );
   }
+editBilling(billing: any) {
+    this.router.navigate(['/admin/manage-room-booking-list'], {
+        queryParams: {
+            bookingId: billing.RoomBookingId,
+            billingId: billing.BillingId,  // ✅ pass BillingId directly
+            edit: true
+        }
+    });
+}
 }
