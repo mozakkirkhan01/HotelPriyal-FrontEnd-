@@ -107,22 +107,28 @@ export class ManageRoomBookingListComponent {
       EndFrom: null,
       RoomBookingStatus: 0,
     };
-    // Handle redirect from billing list for editing
-    this.route.queryParams.subscribe(params => {
-      
-      if (params['bookingId'] && params['edit'] === 'true') {
-        this.dataLoading  = true;
-        const bookingId = +params['bookingId'];
-        // ✅ Read billingId directly from query params, not from booking response
-        this.existingBillingId = params['billingId'] ? +params['billingId'] : null;
+// Handle redirect from billing list for editing
+this.route.queryParams.subscribe(params => {
 
-        
-        // this.dataLoading  = false;
-        setTimeout(() => {
-          this.loadBookingForBilling(bookingId);
-        }, 800);
-      }
-    });
+  const isEditMode =
+    params['bookingId'] &&
+    params['edit'] === 'true';
+
+  if (!isEditMode) {
+    return;
+  }
+
+  this.dataLoading = true;
+
+  const bookingId = Number(params['bookingId']);
+
+  this.existingBillingId = params['billingId']
+    ? Number(params['billingId'])
+    : null;
+
+  this.loadBookingForBilling(bookingId);
+
+});
   }
 
   validiateMenu() {
@@ -650,6 +656,7 @@ resetCheckoutForm() {
 
     // Get checkout date - prioritize existing billing's checkout date when editing
     let checkOutDate = new Date();
+    let BillingDate = new Date();
     let checkOutTime = this.loadData.getCurrentTime();
     
     if (this.existingBilling && this.existingBilling.CheckOutDate) {
@@ -657,6 +664,7 @@ resetCheckoutForm() {
       checkOutDate = new Date(this.existingBilling.CheckOutDate);
       // Also use the saved checkout time from existing billing
       checkOutTime = this.existingBilling.CheckOutTime || this.loadData.getCurrentTime();
+      BillingDate = new Date(this.existingBilling.BillingDate);
     } else {
       // Get the latest checkout date from room details
       const checkOutDates = this.selectedRoomDetails
@@ -669,7 +677,7 @@ resetCheckoutForm() {
 
     this.Billing = {
       BillingId: this.existingBillingId || null,  // ✅ carry BillingId for edit
-      BillingDate: this.loadData.loadDateYMD(new Date()),
+      BillingDate: this.loadData.loadDateYMD(BillingDate),
       CheckInDate: this.loadData.loadDateYMD(earliestCheckIn),
       CheckInTime: this.selectedRoomDetails[0]?.CheckInTime || '12:00',
       CheckOutDate: this.loadData.loadDateYMD(checkOutDate),
