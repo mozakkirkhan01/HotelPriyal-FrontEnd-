@@ -677,21 +677,21 @@ export class ManageRoomBookingComponent {
       this.toastr.error('Please select a room!');
       return;
     }
-    if (
-      !this.RoomBookingDetails.NoOfDays ||
-      this.RoomBookingDetails.NoOfDays < 1
-    ) {
-      this.toastr.error('Please enter number of days!');
-      return;
-    }
+    // if (
+    //   !this.RoomBookingDetails.NoOfDays ||
+    //   this.RoomBookingDetails.NoOfDays < 1
+    // ) {
+    //   this.toastr.error('Please enter number of days!');
+    //   return;
+    // }
 
-    if (
-      !this.RoomBookingDetails.NoOfPerson ||
-      this.RoomBookingDetails.NoOfPerson < 1
-    ) {
-      this.toastr.error('Please enter number of person!');
-      return;
-    }
+    // if (
+    //   !this.RoomBookingDetails.NoOfPerson ||
+    //   this.RoomBookingDetails.NoOfPerson < 1
+    // ) {
+    //   this.toastr.error('Please enter number of person!');
+    //   return;
+    // }
     this.RoomBookingDetails.RoomBookingDetailStatus = BookingStatus.Checkin;
     const roomDetail = { ...this.RoomBookingDetails };
     if (this.editingRoomIndex >= 0) {

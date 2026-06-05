@@ -86,18 +86,18 @@
                 </mat-form-field>
 
                 <!-- Id Type -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Id Type </mat-label>
                   <mat-select [(ngModel)]="Guest.IdType" name="IdType" required>
                     <mat-option *ngFor="let p of IdTypeList" [value]="p.Key">
                       {{ p.Value }}
                     </mat-option>
                   </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
 
 
                 <!-- Aadhar No -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Id No</mat-label>
 
                   <input matInput name="AadharNo" [(ngModel)]="Guest.AadharNo" [readonly]="isFieldReadonly()"
@@ -110,7 +110,7 @@
                   <mat-error *ngIf="Guest.AadharNo?.errors?.required">
                     Required!
                   </mat-error>
-                </mat-form-field>
+                </mat-form-field> -->
 
 
                 <!-- Booking Date -->
@@ -131,29 +131,29 @@
                 </mat-form-field>
                 
                 <!-- Pincode -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Pincode</mat-label>
                   <input matInput type="number" name="Pincode" [(ngModel)]="Guest.Pincode"
                     [readonly]="isFieldReadonly()" class="no-spinner" />
-                </mat-form-field>
+                </mat-form-field> -->
                 <!-- Email -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Email</mat-label>
                   <input matInput type="email" name="Email" [(ngModel)]="Guest.Email" [readonly]="isFieldReadonly()" />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Alternative Mobile -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Alt. Mobile</mat-label>
                   <input matInput type="tel" name="AlternativeMobileNo" [(ngModel)]="Guest.AlternativeMobileNo"
-                    [readonly]="isFieldReadonly()" maxlength="10" pattern="[0-9]{10}" placeholder="Optional" />
+                    [readonly]="isFieldReadonly()" maxlength="10" pattern="[0-9]{10}" placeholder="Optional" /> -->
 
                   <!-- <mat-hint align="end">10 digits</mat-hint> -->
 
-                  <mat-error *ngIf="Guest.AlternativeMobileNo?.invalid">
+                  <!-- <mat-error *ngIf="Guest.AlternativeMobileNo?.invalid">
                     Enter valid 10-digit mobile number
                   </mat-error>
-                </mat-form-field>
+                </mat-form-field> -->
 
 
 
@@ -175,15 +175,15 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="card compact-card">
-                  <div class="card-body compact-body">
+                  <!-- <div class="card-body compact-body"> -->
 
-                    <h6 class="card-title compact-title">
+                    <!-- <h6 class="card-title compact-title">
                       Sub Guest Details
                       <small class="text-muted">(Optional)</small>
-                    </h6>
+                    </h6> -->
 
                     <!-- Sub Guest Form -->
-                    <div class="row compact-row">
+                    <!-- <div class="row compact-row">
 
                       <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                         <mat-label>Guest Name</mat-label>
@@ -195,10 +195,10 @@
                         <input matInput type="tel" name="SubContactNo" [(ngModel)]="SubGuestModel.ContactNo" required
                           pattern="^[0-9]{10}$" maxlength="10" minlength="10" inputmode="numeric" />
                         <mat-error>Enter valid 10-digit Contact No</mat-error>
-                      </mat-form-field>
+                      </mat-form-field> -->
 
                       <!-- Id Type -->
-                      <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                      <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                         <mat-label>Id Type </mat-label>
                         <mat-select [(ngModel)]="SubGuestModel.IdType" name="IdType" required>
                           <mat-option *ngFor="let p of IdTypeList" [value]="p.Key">
@@ -212,18 +212,18 @@
                         <input matInput name="SubAadharNo" [(ngModel)]="SubGuestModel.AadharNo" required
                          />
                         <mat-error>Enter valid Id No</mat-error>
-                      </mat-form-field>
+                      </mat-form-field> -->
 
 
-                      <div class="col-lg-2 d-flex align-items-center">
+                      <!-- <div class="col-lg-2 d-flex align-items-center">
                         <button mat-flat-button color="primary" class="mybutton" (click)="addSubGuest()">
                           {{ editingSubGuestIndex >= 0 ? 'Update' : 'Add' }}
                         </button>
                       </div>
-                    </div>
+                    </div> -->
 
                     <!-- Sub Guest Table -->
-                    <table *ngIf="SubGuestList.length > 0" class="table table-bordered table-sm mt-2">
+                    <!-- <table *ngIf="SubGuestList.length > 0" class="table table-bordered table-sm mt-2">
                       <thead>
                         <tr>
                           <th>#</th>
@@ -251,9 +251,9 @@
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </table> -->
 
-                  </div>
+                  <!-- </div> -->
                 </div>
               </div>
             </div>
@@ -300,25 +300,25 @@
                 </mat-form-field>
 
                 <!-- Adult -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Adult</mat-label>
                   <input matInput type="number" [(ngModel)]="RoomBookingDetails.NoOfAdult"
                     (ngModelChange)="onNoOfPersonChange()" name="NoOfAdult" class="no-spinner" required />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Child -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Child</mat-label>
                   <input matInput type="number" [(ngModel)]="RoomBookingDetails.NoOfChild"
                     (ngModelChange)="onNoOfPersonChange()" name="NoOfChild" class="no-spinner" />
-                </mat-form-field>
+                </mat-form-field> -->
 
-                <!-- No of Person -->
+                <!-- No of Person
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>No of Person</mat-label>
                   <input matInput type="number" name="NoOfPerson" [(ngModel)]="RoomBookingDetails.NoOfPerson"
                     class="no-spinner" readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Charge Amount -->
                 <mat-form-field appearance="outline" class="col-lg-2 compact-field">
@@ -495,67 +495,67 @@
 
 
 
-  <div class="section compact-section">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card compact-card">
-          <div class="card-body compact-body">
+  <!-- <div class="section compact-section"> -->
+    <!-- <div class="row"> -->
+      <!-- <div class="col-lg-12"> -->
+        <!-- <div class="card compact-card"> -->
+          <!-- <div class="card-body compact-body"> -->
 
-            <h6 class="card-title compact-title">Payment Details</h6>
+            <!-- <h6 class="card-title compact-title">Payment Details</h6> -->
 
-            <form #formPaymentDetailsTotal="ngForm">
-              <div class="row compact-row">
+            <!-- <form #formPaymentDetailsTotal="ngForm"> -->
+              <!-- <div class="row compact-row"> -->
 
                 <!-- Total Discount -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Total Discount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalDiscount" name="TotalDiscountAmount"
                     class="no-spinner" readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Taxable Amount -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Taxable Amount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TaxableAmount" name="TaxableAmount"
                     class="no-spinner" readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Total CGST -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Total CGST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalCGST" name="TotalCGST" class="no-spinner"
                     readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Total SGST -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-3 compact-field">
                   <mat-label>Total SGST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalSGST" name="TotalSGST" class="no-spinner"
                     readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Total IGST -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total IGST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalIGST" name="TotalIGST" class="no-spinner"
                     readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Total GST -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total GST</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalGST" name="TotalGST" class="no-spinner"
                     readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Total Line Amount -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total Line Amount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalLineAmount" name="TotalLineAmount"
                     class="no-spinner" readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Total Dues Amount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalDuesAmount" name="TotalDuesAmount"
                     class="no-spinner text-danger fw-bold" readonly />
@@ -565,10 +565,10 @@
                   <mat-label>Total Paid Amount</mat-label>
                   <input matInput type="number" [(ngModel)]="Guest.TotalPaidAmount" name="TotalPaidAmount"
                     class="no-spinner text-success fw-bold" readonly />
-                </mat-form-field>
+                </mat-form-field> -->
 
                 <!-- Booking source type  -->
-                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
+                <!-- <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Booking Source</mat-label>
 
                   <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId" required>
@@ -579,15 +579,15 @@
                       {{ x.BookingSourceName }}
                     </mat-option>
                   </mat-select>
-                </mat-form-field>
-              </div>
-            </form>
+                </mat-form-field> -->
+              <!-- </div> -->
+            <!-- </form> -->
 
-          </div>
+          <!-- </div>
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 
   <div class="section compact-section">
@@ -597,6 +597,7 @@
           <div class="card-body compact-body">
 
             <h6 class="card-title compact-title">Payment Collection</h6>
+            
 
             <form #formPaymentCollection="ngForm">
               <div class="row compact-row">
@@ -638,9 +639,21 @@
                 </mat-form-field>
 
                 <!-- Transaction No -->
-                <mat-form-field appearance="outline" class="col-lg-3 compact-field">
+                <mat-form-field appearance="outline" class="col-lg-2 compact-field">
                   <mat-label>Transaction No</mat-label>
                   <input matInput [(ngModel)]="Payment.TransactionNo" name="TransactionNo" />
+                </mat-form-field>
+                                <mat-form-field appearance="outline" class="col-lg-1 compact-field">
+                  <mat-label>Booking Source</mat-label>
+
+                  <mat-select name="BookingSourceName" [(ngModel)]="Guest.BookingSourcetypeId" required>
+
+                    <mat-option value="">--Select--</mat-option>
+
+                    <mat-option *ngFor="let x of BookingSourceTypeList" [value]="x.BookingSourceTypeId">
+                      {{ x.BookingSourceName }}
+                    </mat-option>
+                  </mat-select>
                 </mat-form-field>
 
                 <!-- ADD Button -->
