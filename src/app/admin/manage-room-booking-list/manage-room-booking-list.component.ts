@@ -73,6 +73,7 @@ export class ManageRoomBookingListComponent {
   OpticalSellListALL: any = {};
   OpticalSellListPayments: any = {};
   DueBill: any = {};
+  totalRecords: number = 0;  // Add this with other properties
 
   // View Modal Properties
   selectedBooking: any = null;
@@ -176,61 +177,80 @@ this.route.queryParams.subscribe(params => {
     this.reverse = !this.reverse;
   }
 
-  onTableDataChange(p: any) {
-    this.p = p;
-  }
+onTableDataChange(p: any) {
+  this.p = p;
+  this.getBookingList();  // This will fetch new page data
+}
 
   getPrint(data: any) {
     // this.service.PrintOpticlalBill(data.OpticalBillingId);
   }
+  onPageSizeChange() {
+  this.p = 1;  // Reset to first page
+  this.getBookingList();
+}
 
-  getBookingList() {
-    if (this.filterModel.StartFrom) {
-      this.filterModel.StartFrom = this.loadData.loadDateYMD(
-        this.filterModel.StartFrom
-      );
-    }
-    if (this.filterModel.EndFrom) {
-      this.filterModel.EndFrom = this.loadData.loadDateYMD(
-        this.filterModel.EndFrom
-      );
-    }
+// In manage-room-booking-list.component.ts
 
-    if (this.staffLogin.RoleId != 5) {
-      this.filterModel.HotelId = this.staffLogin.HotelId;
-    }
-
-    const obj: RequestModel = {
-      request: this.localService
-        .encrypt(JSON.stringify(this.filterModel))
-        .toString(),
-    };
-
-    this.dataLoading = true;
-    this.service.getBookingList(obj).subscribe(
-      (r1) => {
-        let response = r1 as any;
-        if (response.Message === ConstantData.SuccessMessage) {
-          this.BookingList = response.BookingList;
-          console.log(this.BookingList);
-          
-          this.BookingTotal.TotalTaxableAmount = response.TotalTaxableAmount;
-          this.BookingTotal.TotalGSTAmount = response.TotalGSTAmount;
-          this.BookingTotal.TotalDiscountAmount = response.TotalDiscountAmount;
-          this.BookingTotal.TotalAmount = response.TotalAmount;
-          this.BookingTotal.TotalPaidAmount = response.TotalPaidAmount;
-          this.BookingTotal.TotalDuesAmount = response.TotalDuesAmount;
-        } else {
-          this.toastr.error(response.Message);
-        }
-        this.dataLoading = false;
-      },
-      (err) => {
-        this.toastr.error('Error while fetching records');
-        this.dataLoading = false;
-      }
+getBookingList() {
+  if (this.filterModel.StartFrom) {
+    this.filterModel.StartFrom = this.loadData.loadDateYMD(
+      this.filterModel.StartFrom
     );
   }
+  if (this.filterModel.EndFrom) {
+    this.filterModel.EndFrom = this.loadData.loadDateYMD(
+      this.filterModel.EndFrom
+    );
+  }
+
+  if (this.staffLogin.RoleId != 5) {
+    this.filterModel.HotelId = this.staffLogin.HotelId;
+  }
+
+  // Add pagination parameters to the request
+  const requestData = {
+    ...this.filterModel,
+    PageNumber: this.p || 1,
+    PageSize: this.itemPerPage || 10
+  };
+
+  const obj: RequestModel = {
+    request: this.localService
+      .encrypt(JSON.stringify(requestData))
+      .toString(),
+  };
+
+  this.dataLoading = true;
+  this.service.getBookingList(obj).subscribe(
+    (r1) => {
+      let response = r1 as any;
+      if (response.Message === ConstantData.SuccessMessage) {
+        this.BookingList = response.BookingList;
+        console.log(this.BookingList);
+        
+        // Update total records if returned from API
+        if (response.TotalRecords) {
+          this.totalRecords = response.TotalRecords;
+        }
+        
+        this.BookingTotal.TotalTaxableAmount = response.TotalTaxableAmount;
+        this.BookingTotal.TotalGSTAmount = response.TotalGSTAmount;
+        this.BookingTotal.TotalDiscountAmount = response.TotalDiscountAmount;
+        this.BookingTotal.TotalAmount = response.TotalAmount;
+        this.BookingTotal.TotalPaidAmount = response.TotalPaidAmount;
+        this.BookingTotal.TotalDuesAmount = response.TotalDuesAmount;
+      } else {
+        this.toastr.error(response.Message);
+      }
+      this.dataLoading = false;
+    },
+    (err) => {
+      this.toastr.error('Error while fetching records');
+      this.dataLoading = false;
+    }
+  );
+}
 
   DeleteBooking(obj: any) {
     if (confirm('Are you sure you want to delete this record?')) {

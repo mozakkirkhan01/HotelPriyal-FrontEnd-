@@ -22,13 +22,12 @@
                 <div class="table-container overflow-auto">
                     <div class="dataTable-top">
                         <div class="dataTable-dropdown d-flex w-auto">
-                            <mat-form-field appearance="outline" class="col-sm-1">
-                                <mat-label>Entries per page</mat-label>
-                                <mat-select [(ngModel)]="itemPerPage">
-                                    <mat-option *ngFor="let option of PageSize" [value]="option">{{ option
-                                        }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
+                           <mat-form-field appearance="outline" class="col-sm-1">
+  <mat-label>Entries per page</mat-label>
+  <mat-select [(ngModel)]="itemPerPage" (selectionChange)="onPageSizeChange()">
+    <mat-option *ngFor="let option of PageSize" [value]="option">{{ option }}</mat-option>
+  </mat-select>
+</mat-form-field>
                             <mat-form-field *ngIf="staffLogin.RoleId == 5" appearance="outline"
                                 class="col-sm-2 compact-field" [style]="{ 'margin-left': '10px' }">
                                 <mat-label>Hotel Name</mat-label>
