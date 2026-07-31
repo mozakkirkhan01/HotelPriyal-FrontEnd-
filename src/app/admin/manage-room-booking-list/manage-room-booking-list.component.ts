@@ -80,6 +80,7 @@ export class ManageRoomBookingListComponent {
   guestDetails: any = null;
   roomDetails: any;
   paymentDetails: any;
+Math: any;
 
   constructor(
     private service: AppService,

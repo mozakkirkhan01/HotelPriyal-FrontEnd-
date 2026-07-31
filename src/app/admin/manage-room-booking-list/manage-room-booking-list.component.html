@@ -160,7 +160,7 @@
     let item of BookingList 
       | filter : Search 
       | orderBy : sortKey : false
-      | paginate : { itemsPerPage: itemPerPage, currentPage: p };
+      | paginate : { itemsPerPage: itemPerPage, currentPage: p, totalItems: totalRecords };
     let i = index
   " [ngClass]="{
       'cancel-row': item.RoomBookingStatus == AllStatusList.Cancelled
